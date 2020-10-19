@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/musabrt/kcommando.svg?branch=master)](https://travis-ci.com/musabrt/kcommando)
 
-##### Annotation based command handler wrapper for JDA.
+Annotation based command handler wrapper for JDA.
 
 ## Usage
 ```java
