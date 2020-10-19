@@ -1,4 +1,9 @@
 <h1 align="center"> KCommando </h1>
+
+[![Build Status](https://travis-ci.com/musabrt/kcommando.svg?branch=master)](https://travis-ci.com/musabrt/kcommando)
+![LICENSE](https://img.shields.io/github/license/MusaBrt/KCommando?style=flat)
+![stars](https://img.shields.io/github/stars/MusaBrt/KCommando?style=flat)
+
 Annotation based command handler wrapper for JDA.
 
 ## Usage
