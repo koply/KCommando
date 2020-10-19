@@ -1,4 +1,4 @@
-<h1 align="center"> KCommando Command Handler </h1>
+<h1 align="center"> KCommando </h1>
 Annotation based command handler wrapper for JDA.
 
 ## Usage
@@ -16,7 +16,8 @@ public class Main {
               .setReadBotMessages(false) // default false
               .build();
     }
-}```
+}
+```
 
 That's it. Now, we need a command.
 
