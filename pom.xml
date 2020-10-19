@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>me.koply.kcommando</groupId>
+    <artifactId>kcommando</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+    <description>Annotation based command handler wrapper for JDA.</description>
+    <url>https://github.com/musabrt/kcommando</url>
+
+    <scm>
+        <connection>scm:git:git://github.com/musabrt/kcommando.git</connection>
+        <developerConnection>scm:git:ssh://github.com/musabrt/kcommando.git</developerConnection>
+        <url>https://github.com/musabrt/kcommando</url>
+    </scm>
+
+    <name>KCommando</name>
+
+    <build>
+        <defaultGoal>clean package</defaultGoal>
+        <sourceDirectory>src</sourceDirectory>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <minimizeJar>false</minimizeJar>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.dv8tion</groupId>
+            <artifactId>JDA</artifactId>
+            <version>4.2.0_209</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.oneandone.reflections8</groupId>
+            <artifactId>reflections8</artifactId>
+            <version>0.11.5</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>jcenter</id>
+            <name>jcenter-bintray</name>
+            <url>https://jcenter.bintray.com</url>
+        </repository>
+    </repositories>
+</project>
