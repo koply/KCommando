@@ -19,14 +19,6 @@
 
     <name>KCommando</name>
 
-    <distributionManagement>
-        <repository>
-            <id>bintray-musabrt-KCommando</id>
-            <name>musabrt-KCommando</name>
-            <url>https://api.bintray.com/maven/musabrt/KCommando/KCommando/;publish=1</url>
-        </repository>
-    </distributionManagement>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
