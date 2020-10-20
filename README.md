@@ -47,7 +47,7 @@ _Optionally you can use final class and final handle method for increase init ti
 
 Names field is can be an array: `names = {"ping", "pingu"}`
 
-## Java Ping-Pong Bot
+### Java Ping-Pong Bot
 ```java
 public class Main implements CommandUtils {
     public static void main(String[] args) {
@@ -67,7 +67,7 @@ public class Main implements CommandUtils {
 }
 ```
 
-## Kotlin Ping-Pong Bot
+### Kotlin Ping-Pong Bot
 ```kotlin
 object Main : CommandUtils {
     
