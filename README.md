@@ -1,11 +1,10 @@
 ![](http://image-write-app.herokuapp.com/?x=880&y=33&size=130&text=koply&url=https%3A%2F%2Fimage-write-app.herokuapp.com%2F%3Fx%3D45%26y%3D25%26size%3D150%26text%3DKCommando%26url%3Dhttps%3A%2F%2Fwww.afcapital.ru%2Fa%2Fpgs%2Fimages%2Fcontent-grid-bg.png)
 
+[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/MusaBrt/KCommando.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/MusaBrt/KCommando/context:java)
 [![Build Status](https://travis-ci.com/musabrt/kcommando.svg?branch=master)](https://travis-ci.com/musabrt/kcommando)
-![LICENSE](https://img.shields.io/github/license/MusaBrt/KCommando?style=flat)
-![stars](https://img.shields.io/github/stars/MusaBrt/KCommando?style=flat)
 ![version](https://img.shields.io/badge/version-1.1.1-blue)
 [![](https://jitpack.io/v/MusaBrt/KCommando.svg)](https://jitpack.io/#MusaBrt/KCommando)
-![LGTM Grade](https://img.shields.io/lgtm/grade/java/github/MusaBrt/KCommando)
+![LICENSE](https://img.shields.io/github/license/MusaBrt/KCommando?style=flat)
 
 Annotation based command handler wrapper for JDA.
 
