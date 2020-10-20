@@ -4,12 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>me.koply.kcommando</groupId>
+    <groupId>me.koply</groupId>
     <artifactId>kcommando</artifactId>
     <version>1.0</version>
     <packaging>pom</packaging>
-    <description>Annotation based command handler wrapper for JDA.</description>
-    <url>https://github.com/MusaBrt/KCommando</url>
 
     <scm>
         <connection>scm:git:git://github.com/MusaBrt/KCommando.git</connection>
@@ -18,6 +16,8 @@
     </scm>
 
     <name>KCommando</name>
+    <description>Annotation based command handler wrapper for JDA.</description>
+    <url>https://github.com/MusaBrt/KCommando</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
