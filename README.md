@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.com/musabrt/kcommando.svg?branch=master)](https://travis-ci.com/musabrt/kcommando)
 ![LICENSE](https://img.shields.io/github/license/MusaBrt/KCommando?style=flat)
 ![stars](https://img.shields.io/github/stars/MusaBrt/KCommando?style=flat)
+![version](https://img.shields.io/badge/version-1.1.1-blue)
+[![](https://jitpack.io/v/MusaBrt/KCommando.svg)](https://jitpack.io/#MusaBrt/KCommando)
 
 Annotation based command handler wrapper for JDA.
 
@@ -44,3 +46,28 @@ public class BasicCommand implements CommandUtils {
 _Optionally you can use final class and final handle method for increase init time._
 
 Names field is can be an array: `names = {"ping", "pingu"}`
+
+## How To Install
+### With Maven:
+```xml
+<repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+</repository>
+
+<dependency>
+    <groupId>com.github.MusaBrt</groupId>
+    <artifactId>KCommando</artifactId>
+    <version>JITPACK-VERSION</version>
+</dependency>
+```
+### With Gradle:
+```gradle
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.MusaBrt:KCommando:JITPACK-VERSION'
+}
+```
