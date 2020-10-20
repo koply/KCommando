@@ -9,12 +9,12 @@
     <version>1.0</version>
     <packaging>pom</packaging>
     <description>Annotation based command handler wrapper for JDA.</description>
-    <url>https://github.com/musabrt/kcommando</url>
+    <url>https://github.com/MusaBrt/KCommando</url>
 
     <scm>
-        <connection>scm:git:git://github.com/musabrt/kcommando.git</connection>
-        <developerConnection>scm:git:ssh://github.com/musabrt/kcommando.git</developerConnection>
-        <url>https://github.com/musabrt/kcommando</url>
+        <connection>scm:git:git://github.com/MusaBrt/KCommando.git</connection>
+        <developerConnection>scm:git:ssh://github.com/MusaBrt/KCommando.git</developerConnection>
+        <url>https://github.com/MusaBrt/KCommando</url>
     </scm>
 
     <name>KCommando</name>
@@ -47,6 +47,14 @@
 
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub MusaBrt Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/MusaBrt/KCommando</url>
+        </repository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
