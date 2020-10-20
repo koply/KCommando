@@ -47,6 +47,26 @@ _Optionally you can use final class and final handle method for increase init ti
 
 Names field is can be an array: `names = {"ping", "pingu"}`
 
+## Java Ping-Pong Bot
+```java
+public class Main implements CommandUtils {
+    public static void main(String[] args) {
+        JDA jda = JDABuilder.createDefault("YOUR-TOKEN").setAutoReconnect(true).build();
+        jda.awaitReady();
+
+        KCommando kcommando = new KCommando(jda)
+                .setPrefix(".")
+                .setPackage(Main.class.getPackage().getName()).build();
+    }
+    
+    @Command(names = "ping",
+            description = "Pong!")
+    public void pingCommand(MessageReceivedEvent e) {
+        e.getTextChannel().sendMessage("Pong!").queue();
+    }    
+}
+```
+
 ## How To Install
 ### With Maven:
 ```xml
