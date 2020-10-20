@@ -61,3 +61,13 @@ Names field is can be an array: `names = {"ping", "pingu"}`
     <version>JITPACK-VERSION</version>
 </dependency>
 ```
+### With Gradle:
+```gradle
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.MusaBrt:KCommando:JITPACK-VERSION'
+}
+```
