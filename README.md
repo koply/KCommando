@@ -3,7 +3,7 @@
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/MusaBrt/KCommando.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/MusaBrt/KCommando/context:java)
 [![Build Status](https://travis-ci.com/musabrt/kcommando.svg?branch=master)](https://travis-ci.com/musabrt/kcommando)
 ![version](https://img.shields.io/badge/version-1.1.1-blue)
-[![](https://jitpack.io/v/MusaBrt/KCommando.svg)](https://jitpack.io/#MusaBrt/KCommando)
+[![jitpack-version](https://jitpack.io/v/MusaBrt/KCommando.svg)](https://jitpack.io/#MusaBrt/KCommando)
 ![LICENSE](https://img.shields.io/github/license/MusaBrt/KCommando?style=flat)
 
 Annotation based command handler wrapper for JDA.
