@@ -45,3 +45,21 @@ public class BasicCommand implements CommandUtils {
 _Optionally you can use final class and final handle method for increase init time._
 
 Names field is can be an array: `names = {"ping", "pingu"}`
+
+## How To Install
+### With Maven:
+```maven
+<repository>
+    <id>github</id>
+    <name>GitHub MusaBrt Apache Maven Packages</name>
+    <url>https://maven.pkg.github.com/MusaBrt/KCommando</url>
+    <releases><enabled>true</enabled></releases>
+    <snapshots><enabled>true</enabled></snapshots>
+</repository>
+
+<dependency>
+    <groupId>me.koply</groupId>
+    <artifactId>kcommando</artifactId>
+    <version>1.1.1</version>
+</dependency>
+```
