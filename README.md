@@ -67,6 +67,28 @@ public class Main implements CommandUtils {
 }
 ```
 
+## Kotlin Ping-Pong Bot
+```kotlin
+object Main : CommandUtils {
+    
+    @JvmStatic
+    fun main() {
+        val jda = JDABuilder.createDefault("YOUR-TOKEN").setAutoReconnect(true).build()
+        jda.awaitReady()
+        
+        val kcommando = KCommando(jda)
+                .setPrefix(".")
+                .setPackage(Main::class.java.`package`.name).build();
+    }
+    
+    @Command(names = ["ping", "pingu"], 
+            description = "Pong!")
+    fun pinCommand(e : MessageReceivedEvent) {
+        e.textChannel.sendMessage("Pong!").queue()
+    }
+}
+```
+
 ## How To Install
 ### With Maven:
 ```xml
