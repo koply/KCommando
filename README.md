@@ -48,7 +48,7 @@ Names field is can be an array: `names = {"ping", "pingu"}`
 
 ## How To Install
 ### With Maven:
-```maven
+```xml
 <repository>
     <id>github</id>
     <name>GitHub MusaBrt Apache Maven Packages</name>
