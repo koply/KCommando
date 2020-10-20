@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.com/musabrt/kcommando.svg?branch=master)](https://travis-ci.com/musabrt/kcommando)
 ![LICENSE](https://img.shields.io/github/license/MusaBrt/KCommando?style=flat)
 ![stars](https://img.shields.io/github/stars/MusaBrt/KCommando?style=flat)
+![version](https://img.shields.io/badge/version-1.1.1-blue)
 
 Annotation based command handler wrapper for JDA.
 
