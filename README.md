@@ -60,6 +60,6 @@ Names field is can be an array: `names = {"ping", "pingu"}`
 <dependency>
     <groupId>me.koply</groupId>
     <artifactId>kcommando</artifactId>
-    <version>1.1.1</version>
+    <version>VERSION</version>
 </dependency>
 ```
