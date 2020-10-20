@@ -5,6 +5,7 @@
 ![stars](https://img.shields.io/github/stars/MusaBrt/KCommando?style=flat)
 ![version](https://img.shields.io/badge/version-1.1.1-blue)
 [![](https://jitpack.io/v/MusaBrt/KCommando.svg)](https://jitpack.io/#MusaBrt/KCommando)
+![LGTM Grade](https://img.shields.io/lgtm/grade/java/github/MusaBrt/KCommando)
 
 Annotation based command handler wrapper for JDA.
 
@@ -83,7 +84,7 @@ object Main : CommandUtils {
     
     @Command(names = ["ping", "pingu"], 
             description = "Pong!")
-    fun pinCommand(e : MessageReceivedEvent) {
+    fun pingCommand(e : MessageReceivedEvent) {
         e.textChannel.sendMessage("Pong!").queue()
     }
 }
