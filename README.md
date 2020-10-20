@@ -51,16 +51,13 @@ Names field is can be an array: `names = {"ping", "pingu"}`
 ### With Maven:
 ```xml
 <repository>
-    <id>github</id>
-    <name>GitHub MusaBrt Apache Maven Packages</name>
-    <url>https://maven.pkg.github.com/MusaBrt/KCommando</url>
-    <releases><enabled>true</enabled></releases>
-    <snapshots><enabled>true</enabled></snapshots>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
 </repository>
 
 <dependency>
-    <groupId>me.koply</groupId>
-    <artifactId>kcommando</artifactId>
-    <version>VERSION</version>
+    <groupId>com.github.MusaBrt</groupId>
+    <artifactId>KCommando</artifactId>
+    <version>JITPACK-VERSION</version>
 </dependency>
 ```
