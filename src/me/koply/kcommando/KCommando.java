@@ -121,5 +121,7 @@ public final class KCommando {
          */
     }
 
-
+    public Params getParams() {
+        return params;
+    }
 }
