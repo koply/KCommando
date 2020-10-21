@@ -6,7 +6,7 @@
 
     <groupId>me.koply</groupId>
     <artifactId>kcommando</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
 
     <scm>
         <connection>scm:git:git://github.com/MusaBrt/KCommando.git</connection>

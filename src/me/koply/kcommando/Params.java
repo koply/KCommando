@@ -2,11 +2,13 @@ package me.koply.kcommando;
 
 import net.dv8tion.jda.api.JDA;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-class Params {
+public class Params {
     private JDA jda;
     private String packagePath, prefix;
     private long cooldown;
@@ -14,7 +16,7 @@ class Params {
     private List<String> owners;
     private HashMap<String, CommandToRun> commandMethods;
     private boolean readBotMessages;
-    private final ConcurrentMap<String, Long> cooldownList = new ConcurrentHashMap<String, Long>();
+    private final ConcurrentMap<String, Long> cooldownList = new ConcurrentHashMap<>();
 
     public HashMap<String, CommandToRun> getCommandMethods() {
         return commandMethods;
