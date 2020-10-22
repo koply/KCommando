@@ -37,7 +37,7 @@ public class BasicCommand implements CommandUtils {
              ownerOnly = false /* false default */
              privateOnly = false /* false default */
              sync = false /* false default */)
-    public void pingo(MessageReceivedEvent e) {
+    public void pingo(MessageReceivedEvent e, Params params) {
         e.getTextChannel().sendMessage(embed("Pong!")).queue();
     }
 }
@@ -60,7 +60,7 @@ public class Main implements CommandUtils {
     
     @Command(names = "ping",
             description = "Pong!")
-    public void pingCommand(MessageReceivedEvent e) {
+    public void pingCommand(MessageReceivedEvent e, Params params) {
         e.getTextChannel().sendMessage("Pong!").queue();
     }    
 }
@@ -82,7 +82,7 @@ object Main : CommandUtils {
     
     @Command(names = ["ping", "pingu"], 
             description = "Pong!")
-    fun pingCommand(e : MessageReceivedEvent) {
+    fun pingCommand(e : MessageReceivedEvent, params : Params) {
         e.textChannel.sendMessage("Pong!").queue()
     }
 }

@@ -86,19 +86,27 @@ public final class CommandHandler extends ListenerAdapter {
         long firstTime = System.currentTimeMillis();
         cooldownList.put(authorID, firstTime);
         if (ctr.getCommandAnnotation().sync()) {
-            try { ctr.getMethod().invoke(ctr.getKlass(), e);}
-            catch (Throwable t) { KCommando.logger.info("Command crashed! Message: " + Arrays.toString(t.getStackTrace())); }
-
+            run(ctr, e);
         } else {
             KCommando.logger.info("Last command has been submitted to ExecutorService.");
             try {
                 executorService.submit(() -> {
-                    try { ctr.getMethod().invoke(ctr.getKlass().newInstance(), e);}
-                    catch (Throwable t) { KCommando.logger.info("Command crashed! Message: " + Arrays.toString(t.getStackTrace())); }
+                    run(ctr, e);
                 });
             } catch (Throwable t) { t.printStackTrace(); }
         }
         KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
+    }
+
+    private void run(CommandToRun ctr, MessageReceivedEvent e) {
+        try {
+            if (ctr.getKlass() != null) {
+                ctr.getMethod().invoke(ctr.getKlass().newInstance(), e, params);
+            } else {
+                ctr.getMethod().invoke(ctr.getKlass(), e, params);
+            }
+        }
+        catch (Throwable t) { KCommando.logger.info("Command crashed! Message: " + Arrays.toString(t.getStackTrace())); }
     }
 
     private boolean cooldownCheck(long userID, ConcurrentMap<Long, Long> cooldownList, long cooldown) {

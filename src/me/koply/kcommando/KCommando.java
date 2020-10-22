@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.reflections8.Reflections;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,7 +42,7 @@ public final class KCommando {
         for (Class<?> clazz : classes) {
             int methodCounter = 0;
             for (Method metod : clazz.getMethods()) {
-                if (metod.getAnnotation(Command.class) == null || metod.getParameterTypes()[0] != MessageReceivedEvent.class) {
+                if (metod.getAnnotation(Command.class) == null || metod.getParameterTypes()[0] != MessageReceivedEvent.class && metod.getParameterTypes()[1] != Params.class) {
                     continue;
                 }
                 Command cmdAnnotation = metod.getAnnotation(Command.class);
@@ -55,8 +56,14 @@ public final class KCommando {
                 String[] packageSplitted = clazz.getPackage().getName().split("\\.");
                 String groupName = packageSplitted[packageSplitted.length-1];
 
+                Class<?> cino = clazz;
+
+                if ((metod.getModifiers() & Modifier.STATIC) == Modifier.STATIC) {
+                    cino = null;
+                }
+
                 CommandToRun ctr = new CommandToRun()
-                        .setKlass(clazz)
+                        .setKlass(cino)
                         .setMethod(metod)
                         .setCommandAnnotation(cmdAnnotation)
                         .setGroupName(groupName);
