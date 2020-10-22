@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -86,14 +87,14 @@ public final class CommandHandler extends ListenerAdapter {
         cooldownList.put(authorID, firstTime);
         if (ctr.getCommandAnnotation().sync()) {
             try { ctr.getMethod().invoke(ctr.getKlass(), e);}
-            catch (Throwable t) { KCommando.logger.info("Command crashed! Message: " + t.getMessage()); }
+            catch (Throwable t) { KCommando.logger.info("Command crashed! Message: " + Arrays.toString(t.getStackTrace())); }
 
         } else {
             KCommando.logger.info("Last command has been submitted to ExecutorService.");
             try {
                 executorService.submit(() -> {
                     try { ctr.getMethod().invoke(ctr.getKlass().newInstance(), e);}
-                    catch (Throwable t) { KCommando.logger.info("Command crashed! Message: " + t.getMessage()); }
+                    catch (Throwable t) { KCommando.logger.info("Command crashed! Message: " + Arrays.toString(t.getStackTrace())); }
                 });
             } catch (Throwable t) { t.printStackTrace(); }
         }
