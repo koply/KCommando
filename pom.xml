@@ -6,7 +6,7 @@
 
     <groupId>me.koply</groupId>
     <artifactId>kcommando</artifactId>
-    <version>1.1.2</version>
+    <version>1.1.3</version>
 
     <scm>
         <connection>scm:git:git://github.com/MusaBrt/KCommando.git</connection>
@@ -52,14 +52,6 @@
 
         </plugins>
     </build>
-
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub MusaBrt Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/MusaBrt/KCommando</url>
-        </repository>
-    </distributionManagement>
 
     <dependencies>
         <dependency>
