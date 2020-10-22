@@ -11,7 +11,17 @@ public interface CommandUtils {
     default MessageEmbed embed(String str) {
         return new EmbedBuilder()
                 .setDescription(str)
-                .setColor(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)))
+                .setColor(randomColor())
                 .build();
+    }
+
+    default EmbedBuilder basicEmbed(String str) {
+        return new EmbedBuilder()
+                .setDescription(str)
+                .setColor(randomColor());
+    }
+
+    default Color randomColor() {
+        return new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255));
     }
 }

@@ -93,7 +93,6 @@ public final class KCommando {
     }
 
     public KCommando setCooldown(long milliseconds) { params.setCooldown(milliseconds);
-        new CooldownService(params.getCooldownList(), milliseconds);
         return this;
     }
 

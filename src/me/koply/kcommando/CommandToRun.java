@@ -1,15 +1,16 @@
 package me.koply.kcommando;
 
 import me.koply.kcommando.annotations.Command;
+
 import java.lang.reflect.Method;
 
-class CommandToRun {
+public class CommandToRun {
     private Command commandAnnotation;
     private Method method;
     private Class<?> klass;
     private String groupName;
 
-    protected Command getCommandAnnotation() {
+    public Command getCommandAnnotation() {
         return commandAnnotation;
     }
 
@@ -36,7 +37,7 @@ class CommandToRun {
         return this;
     }
 
-    protected String getGroupName() {
+    public String getGroupName() {
         return groupName;
     }
 
