@@ -19,6 +19,7 @@ import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+// signed by Koply
 public final class KCommando {
 
     private final Params params = new Params();
