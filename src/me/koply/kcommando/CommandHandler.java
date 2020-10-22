@@ -90,9 +90,7 @@ public final class CommandHandler extends ListenerAdapter {
         } else {
             KCommando.logger.info("Last command has been submitted to ExecutorService.");
             try {
-                executorService.submit(() -> {
-                    run(ctr, e);
-                });
+                executorService.submit(() -> run(ctr, e));
             } catch (Throwable t) { t.printStackTrace(); }
         }
         KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
@@ -101,9 +99,17 @@ public final class CommandHandler extends ListenerAdapter {
     private void run(CommandToRun ctr, MessageReceivedEvent e) {
         try {
             if (ctr.getKlass() != null) {
-                ctr.getMethod().invoke(ctr.getKlass().newInstance(), e, params);
+                if (ctr.isDoubled()) {
+                    ctr.getMethod().invoke(ctr.getKlass().newInstance(), e, params);
+                } else {
+                    ctr.getMethod().invoke(ctr.getKlass().newInstance(), e);
+                }
             } else {
-                ctr.getMethod().invoke(ctr.getKlass(), e, params);
+                if (ctr.isDoubled()) {
+                    ctr.getMethod().invoke(ctr.getKlass(), e, params);
+                } else {
+                    ctr.getMethod().invoke(ctr.getKlass(), e);
+                }
             }
         }
         catch (Throwable t) { KCommando.logger.info("Command crashed! Message: " + Arrays.toString(t.getStackTrace())); }

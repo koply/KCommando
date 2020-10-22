@@ -9,6 +9,7 @@ public class CommandToRun {
     private Method method;
     private Class<?> klass;
     private String groupName;
+    private boolean doubled;
 
     public Command getCommandAnnotation() {
         return commandAnnotation;
@@ -44,5 +45,14 @@ public class CommandToRun {
     protected CommandToRun setGroupName(String groupName) {
         this.groupName = groupName;
         return this;
+    }
+
+    protected CommandToRun setDoubled() {
+        doubled = true;
+        return this;
+    }
+
+    public boolean isDoubled() {
+        return doubled;
     }
 }

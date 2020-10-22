@@ -43,9 +43,13 @@ public final class KCommando {
         for (Class<?> clazz : classes) {
             int methodCounter = 0;
             for (Method metod : clazz.getMethods()) {
-                if (metod.getAnnotation(Command.class) == null || metod.getParameterTypes()[0] != MessageReceivedEvent.class && metod.getParameterTypes()[1] != Params.class) {
-                    continue;
+
+                if (metod.getAnnotation(Command.class) == null) continue;
+                if (metod.getParameterCount() == 1) {
+                    if (metod.getParameterTypes()[0] != MessageReceivedEvent.class) continue;
                 }
+                else if (!((metod.getParameterTypes()[0] == MessageReceivedEvent.class || metod.getParameterTypes()[1] == MessageReceivedEvent.class) && (metod.getParameterTypes()[0] == Params.class || metod.getParameterTypes()[1] == Params.class))) continue;
+
                 Command cmdAnnotation = metod.getAnnotation(Command.class);
                 if (cmdAnnotation.guildOnly() && cmdAnnotation.privateOnly()) {
                     KCommando.logger.info(clazz.getName()+"#"+metod.getName() + " is have GuildOnly and PrivateOnly at the same time. Skipping...");
