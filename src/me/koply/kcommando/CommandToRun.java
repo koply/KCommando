@@ -47,8 +47,8 @@ public class CommandToRun {
         return this;
     }
 
-    protected CommandToRun setDoubled() {
-        doubled = true;
+    protected CommandToRun setDoubled(boolean d) {
+        doubled = d;
         return this;
     }
 

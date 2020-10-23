@@ -43,12 +43,14 @@ public final class KCommando {
         for (Class<?> clazz : classes) {
             int methodCounter = 0;
             for (Method metod : clazz.getMethods()) {
-
+                boolean doubled = false;
                 if (metod.getAnnotation(Command.class) == null) continue;
                 if (metod.getParameterCount() == 1) {
                     if (metod.getParameterTypes()[0] != MessageReceivedEvent.class) continue;
                 }
-                else if (!((metod.getParameterTypes()[0] == MessageReceivedEvent.class || metod.getParameterTypes()[1] == MessageReceivedEvent.class) && (metod.getParameterTypes()[0] == Params.class || metod.getParameterTypes()[1] == Params.class))) continue;
+                else if (((metod.getParameterTypes()[0] == MessageReceivedEvent.class || metod.getParameterTypes()[1] == MessageReceivedEvent.class)
+                        && (metod.getParameterTypes()[0] == Params.class || metod.getParameterTypes()[1] == Params.class))) doubled = true;
+                else continue;
 
                 Command cmdAnnotation = metod.getAnnotation(Command.class);
                 if (cmdAnnotation.guildOnly() && cmdAnnotation.privateOnly()) {
@@ -71,6 +73,7 @@ public final class KCommando {
                         .setKlass(cino)
                         .setMethod(metod)
                         .setCommandAnnotation(cmdAnnotation)
+                        .setDoubled(doubled)
                         .setGroupName(groupName);
 
                 commandMethods.put(cmdAnnotation.names()[0], ctr);
