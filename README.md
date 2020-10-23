@@ -31,11 +31,11 @@ That's it. Now, we need a command.
 ```java
 public class BasicCommand implements CommandUtils {
 
-    @Command(names = "ping"
-             description = "Pong!"
-             guildOnly = false /* false default */
-             ownerOnly = false /* false default */
-             privateOnly = false /* false default */
+    @Command(names = "ping",
+             description = "Pong!",
+             guildOnly = false, /* false default */
+             ownerOnly = false, /* false default */
+             privateOnly = false, /* false default */
              sync = false /* false default */)
     public void pingo(MessageReceivedEvent e /* optionally you can use the Params parameter*/) {
         e.getTextChannel().sendMessage(embed("Pong!")).queue();
