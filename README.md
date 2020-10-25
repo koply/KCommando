@@ -29,15 +29,16 @@ That's it. Now, we need a command.
 
 ## How To Create A Command
 ```java
-public class BasicCommand implements CommandUtils {
-
-    @Command(names = "ping",
+@Command(names = "ping",
              description = "Pong!",
              guildOnly = false, /* false default */
              ownerOnly = false, /* false default */
              privateOnly = false, /* false default */
              sync = false /* false default */)
-    public void pingo(MessageReceivedEvent e /* optionally you can use the Params parameter*/) {
+public class BasicCommand implements CommandUtils {
+
+    @Override
+    public void handle(MessageReceivedEvent e /* optionally you can use the Params parameter*/) {
         e.getTextChannel().sendMessage(embed("Pong!")).queue();
     }
 }
@@ -48,6 +49,9 @@ Names field is can be an array: `names = {"ping", "pingu"}`
 
 ### Java Ping-Pong Bot
 ```java
+
+@Command(names = "ping",
+            description = "Pong!")
 public class Main implements CommandUtils {
     public static void main(String[] args) {
         JDA jda = JDABuilder.createDefault("YOUR-TOKEN").setAutoReconnect(true).build();
@@ -58,9 +62,8 @@ public class Main implements CommandUtils {
                 .setPackage(Main.class.getPackage().getName()).build();
     }
     
-    @Command(names = "ping",
-            description = "Pong!")
-    public void pingCommand(MessageReceivedEvent e) {
+    @Override
+    public void handle(MessageReceivedEvent e) {
         e.getTextChannel().sendMessage("Pong!").queue();
     }    
 }
@@ -68,6 +71,8 @@ public class Main implements CommandUtils {
 
 ### Kotlin Ping-Pong Bot
 ```kotlin
+@Command(names = ["ping", "pingu"], 
+            description = "Pong!")
 object Main : CommandUtils {
     
     @JvmStatic
@@ -80,9 +85,8 @@ object Main : CommandUtils {
                 .setPackage(Main::class.java.`package`.name).build();
     }
     
-    @Command(names = ["ping", "pingu"], 
-            description = "Pong!")
-    fun pingCommand(e : MessageReceivedEvent) {
+    @Override
+    fun handle(e : MessageReceivedEvent) {
         e.textChannel.sendMessage("Pong!").queue()
     }
 }
