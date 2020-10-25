@@ -43,8 +43,14 @@ public final class KCommando {
         int classCounter = 0;
         for (Class<? extends CommandUtils> clazz : classes) {
             Command cmdAnnotation = clazz.getAnnotation(Command.class);
-            if (cmdAnnotation == null) continue;
-            if ((clazz.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) continue;
+            if (cmdAnnotation == null) {
+                KCommando.logger.info(clazz.getName() + " is couldn't have Command annotation. Skipping...");
+                continue;
+            }
+            if ((clazz.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) {
+                KCommando.logger.info(clazz.getName() + " is not public class. Skipping...");
+                continue;
+            }
             int methodCounter = 0;
             boolean doubled = false;
 
@@ -54,12 +60,17 @@ public final class KCommando {
             }
 
             for (Method metod : clazz.getDeclaredMethods()) {
-                if (metod.getParameterCount() == 1) {
-                    if (metod.getParameterTypes()[0] == MessageReceivedEvent.class)
+                Class<?>[] parameters = metod.getParameterTypes();
+                if (parameters.length > 2 || parameters.length == 0) {
+                } else if (parameters.length == 1) {
+                    if (parameters[0] == MessageReceivedEvent.class)
                         methodCounter++;
                 }
-                else if (((metod.getParameterTypes()[0] == MessageReceivedEvent.class || metod.getParameterTypes()[1] == MessageReceivedEvent.class)
-                        && (metod.getParameterTypes()[0] == Params.class || metod.getParameterTypes()[1] == Params.class))) doubled = true;
+                else if (((parameters[0] == MessageReceivedEvent.class || parameters[1] == MessageReceivedEvent.class)
+                        && (parameters[0] == Params.class || parameters[1] == Params.class))) {
+                    doubled = true;
+                    methodCounter++;
+                }
             }
 
             if (methodCounter>1) {

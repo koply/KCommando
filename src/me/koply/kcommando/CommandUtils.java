@@ -3,27 +3,28 @@ package me.koply.kcommando;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.util.Random;
 
 public abstract class CommandUtils {
     // you should override just one
-    public void handle(MessageReceivedEvent e) {}
-    public void handle(MessageReceivedEvent e, Params p) {}
+    public void handle(@NotNull MessageReceivedEvent e) {}
+    public void handle(@NotNull MessageReceivedEvent e, @NotNull Params p) {}
 
     // utility godes
     Random random = new Random();
-    public MessageEmbed embed(String str) {
+    public MessageEmbed embed(Object o) {
         return new EmbedBuilder()
-                .setDescription(str)
+                .setDescription(o.toString())
                 .setColor(randomColor())
                 .build();
     }
 
-    public EmbedBuilder basicEmbed(String str) {
+    public EmbedBuilder basicEmbed(Object o) {
         return new EmbedBuilder()
-                .setDescription(str)
+                .setDescription(o.toString())
                 .setColor(randomColor());
     }
 
