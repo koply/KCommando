@@ -2,12 +2,9 @@ package me.koply.kcommando;
 
 import me.koply.kcommando.annotations.Command;
 
-import java.lang.reflect.Method;
-
 public class CommandToRun {
     private Command commandAnnotation;
-    private Method method;
-    private Class<?> klass;
+    private CommandUtils clazz;
     private String groupName;
     private boolean doubled;
 
@@ -20,23 +17,14 @@ public class CommandToRun {
         return this;
     }
 
-    protected Method getMethod() {
-        return method;
-    }
-
-    protected CommandToRun setMethod(Method method) {
-        this.method = method;
+    protected CommandToRun setClazz(CommandUtils c) {
+        clazz = c;
         return this;
     }
-
-    protected Class<?> getKlass() {
-        return klass;
+    protected CommandUtils getClazz() {
+        return clazz;
     }
 
-    protected CommandToRun setKlass(Class<?> klass) {
-        this.klass = klass;
-        return this;
-    }
 
     public String getGroupName() {
         return groupName;

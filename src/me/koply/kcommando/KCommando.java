@@ -40,48 +40,58 @@ public final class KCommando {
         Reflections reflections = new Reflections(params.getPackagePath());
 
         Set<Class<? extends CommandUtils>> classes = reflections.getSubTypesOf(CommandUtils.class);
-        for (Class<?> clazz : classes) {
+        int classCounter = 0;
+        for (Class<? extends CommandUtils> clazz : classes) {
+            Command cmdAnnotation = clazz.getAnnotation(Command.class);
+            if (cmdAnnotation == null) continue;
+            if ((clazz.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) continue;
             int methodCounter = 0;
-            for (Method metod : clazz.getMethods()) {
-                boolean doubled = false;
-                if (metod.getAnnotation(Command.class) == null) continue;
+            boolean doubled = false;
+
+            if (cmdAnnotation.guildOnly() && cmdAnnotation.privateOnly()) {
+                KCommando.logger.info(clazz.getName() + " is have GuildOnly and PrivateOnly at the same time. Skipping...");
+                continue;
+            }
+
+            for (Method metod : clazz.getDeclaredMethods()) {
                 if (metod.getParameterCount() == 1) {
-                    if (metod.getParameterTypes()[0] != MessageReceivedEvent.class) continue;
+                    if (metod.getParameterTypes()[0] == MessageReceivedEvent.class)
+                        methodCounter++;
                 }
                 else if (((metod.getParameterTypes()[0] == MessageReceivedEvent.class || metod.getParameterTypes()[1] == MessageReceivedEvent.class)
                         && (metod.getParameterTypes()[0] == Params.class || metod.getParameterTypes()[1] == Params.class))) doubled = true;
-                else continue;
+            }
 
-                Command cmdAnnotation = metod.getAnnotation(Command.class);
-                if (cmdAnnotation.guildOnly() && cmdAnnotation.privateOnly()) {
-                    KCommando.logger.info(clazz.getName()+"#"+metod.getName() + " is have GuildOnly and PrivateOnly at the same time. Skipping...");
-                    continue;
-                }
+            if (methodCounter>1) {
+                KCommando.logger.info(clazz.getName() + " is have multiple command method. Skipping...");
+                continue;
+            }
 
-                methodCounter++;
+            String[] packageSplitted = clazz.getPackage().getName().split("\\.");
+            String groupName = packageSplitted[packageSplitted.length-1];
 
-                String[] packageSplitted = clazz.getPackage().getName().split("\\.");
-                String groupName = packageSplitted[packageSplitted.length-1];
-
-                Class<?> cino = clazz;
-
-                if ((metod.getModifiers() & Modifier.STATIC) == Modifier.STATIC) {
-                    cino = null;
-                }
-
+            try {
                 CommandToRun ctr = new CommandToRun()
-                        .setKlass(cino)
-                        .setMethod(metod)
+                        .setClazz(clazz.newInstance())
                         .setCommandAnnotation(cmdAnnotation)
                         .setDoubled(doubled)
                         .setGroupName(groupName);
 
-                commandMethods.put(cmdAnnotation.names()[0], ctr);
+                for (String s : cmdAnnotation.names()) {
+                    commandMethods.put(s, ctr);
+                }
+                classCounter++;
+
+            } catch (Throwable t) {
+                KCommando.logger.warning("Something went wrong.");
+            } finally {
+                KCommando.logger.info(clazz.getName() + " is have command method");
             }
-            KCommando.logger.info(clazz.getName() + " is have " + methodCounter + " command method");
+
         }
         params.setCommandMethods(commandMethods);
         params.getJda().addEventListener(new CommandHandler(params));
+        KCommando.logger.info(classCounter + " commands are initialized.");
         KCommando.logger.info("KCommando system is ready o7");
         return this;
     }

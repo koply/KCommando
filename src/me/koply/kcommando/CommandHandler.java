@@ -82,34 +82,26 @@ public final class CommandHandler extends ListenerAdapter {
             return;
         }
 
-
         long firstTime = System.currentTimeMillis();
         cooldownList.put(authorID, firstTime);
         if (ctr.getCommandAnnotation().sync()) {
             run(ctr, e);
+            KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
         } else {
             KCommando.logger.info("Last command has been submitted to ExecutorService.");
             try {
                 executorService.submit(() -> run(ctr, e));
+                KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
             } catch (Throwable t) { t.printStackTrace(); }
         }
-        KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
     }
 
     private void run(CommandToRun ctr, MessageReceivedEvent e) {
         try {
-            if (ctr.getKlass() != null) {
-                if (ctr.isDoubled()) {
-                    ctr.getMethod().invoke(ctr.getKlass().newInstance(), e, params);
-                } else {
-                    ctr.getMethod().invoke(ctr.getKlass().newInstance(), e);
-                }
+            if (ctr.isDoubled()) {
+                ctr.getClazz().handle(e, params);
             } else {
-                if (ctr.isDoubled()) {
-                    ctr.getMethod().invoke(ctr.getKlass(), e, params);
-                } else {
-                    ctr.getMethod().invoke(ctr.getKlass(), e);
-                }
+                ctr.getClazz().handle(e);
             }
         }
         catch (Throwable t) { KCommando.logger.info("Command crashed! Message: " + Arrays.toString(t.getStackTrace())); }
