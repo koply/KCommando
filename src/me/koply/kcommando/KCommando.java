@@ -62,15 +62,16 @@ public final class KCommando {
 
             for (Method metod : clazz.getDeclaredMethods()) {
                 Class<?>[] parameters = metod.getParameterTypes();
-                if (parameters.length > 2 || parameters.length == 0) {
-                } else if (parameters.length == 1) {
-                    if (parameters[0] == MessageReceivedEvent.class)
-                        methodCounter++;
-                }
-                else if (((parameters[0] == MessageReceivedEvent.class || parameters[1] == MessageReceivedEvent.class)
-                        && (parameters[0] == Params.class || parameters[1] == Params.class))) {
-                    doubled = true;
-                    methodCounter++;
+                if (parameters.length <= 2 && parameters.length != 0) {
+                    if (parameters.length == 1) {
+                        if (parameters[0] == MessageReceivedEvent.class && metod.getName().equals("handle"))
+                            methodCounter++;
+                    }
+                    else if (((parameters[0] == MessageReceivedEvent.class || parameters[1] == MessageReceivedEvent.class)
+                            && (parameters[0] == Params.class || parameters[1] == Params.class))) {
+                        doubled = true;
+                        if (metod.getName().equals("handle")) methodCounter++;
+                    }
                 }
             }
 
