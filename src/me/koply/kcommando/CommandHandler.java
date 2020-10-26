@@ -90,8 +90,10 @@ public final class CommandHandler extends ListenerAdapter {
         } else {
             KCommando.logger.info("Last command has been submitted to ExecutorService.");
             try {
-                executorService.submit(() -> run(ctr, e));
-                KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
+                executorService.submit(() -> {
+                    run(ctr, e);
+                    KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
+                });
             } catch (Throwable t) { t.printStackTrace(); }
         }
     }
