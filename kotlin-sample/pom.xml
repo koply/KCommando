@@ -12,6 +12,7 @@
 
     <properties>
         <kotlin.version>1.4.10</kotlin.version>
+        <kcommando.version>2.3</kcommando.version>
     </properties>
 
     <build>
@@ -94,7 +95,7 @@
         <dependency>
             <groupId>com.github.MusaBrt</groupId>
             <artifactId>KCommando</artifactId>
-            <version>1.1.1</version>
+            <version>${kcommando.version}</version>
         </dependency>
 
         <dependency>
