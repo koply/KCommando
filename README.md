@@ -73,7 +73,7 @@ public class Main implements CommandUtils {
 ```kotlin
 @Command(names = ["ping", "pingu"], 
             description = "Pong!")
-object Main : CommandUtils {
+class Main : CommandUtils {
     
     @JvmStatic
     fun main() {
