@@ -92,6 +92,10 @@ class Main : CommandUtils() {
 }
 ```
 
+### Detailed Samples
+Java -> ![Sample Pom.xml](https://github.com/MusaBrt/KCommando/blob/master/java-sample/pom.xml) - ![Sample Help System](https://github.com/MusaBrt/KCommando/blob/master/java-sample/src/me/koply/javasample/SampleBot.java)
+Kotlin -> ![Sample Pom.xml](https://github.com/MusaBrt/KCommando/blob/master/kotlin-sample/pom.xml) - ![Sample Help System](https://github.com/MusaBrt/KCommando/blob/master/kotlin-sample/src/me/koply/kotlinsample/SampleBot.kt)
+
 ## How To Install
 ### With Maven:
 ```xml
