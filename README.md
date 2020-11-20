@@ -43,7 +43,7 @@ public class BasicCommand extends CommandUtils {
     }
 }
 ```
-_Optionally you can use final class and final handle method for increase init time._
+_Optionally you can use final class and final handle method for decrease init time._
 
 Names field is can be an array: `names = {"ping", "pingu"}`
 
