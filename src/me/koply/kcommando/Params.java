@@ -19,7 +19,7 @@ public class Params {
         return commandMethods;
     }
 
-    protected Params setCommandMethods(HashMap<String, CommandToRun> commandMethods) {
+    public Params setCommandMethods(HashMap<String, CommandToRun> commandMethods) {
         this.commandMethods = commandMethods;
         return this;
     }
@@ -28,16 +28,16 @@ public class Params {
         return jda;
     }
 
-    protected Params setJda(JDA jda) {
+    public Params setJda(JDA jda) {
         this.jda = jda;
         return this;
     }
 
-    protected String getPackagePath() {
+    public String getPackagePath() {
         return packagePath;
     }
 
-    protected Params setPackagePath(String packagePath) {
+    public Params setPackagePath(String packagePath) {
         this.packagePath = packagePath;
         return this;
     }
@@ -46,7 +46,7 @@ public class Params {
         return prefix;
     }
 
-    protected Params setPrefix(String prefix) {
+    public Params setPrefix(String prefix) {
         this.prefix = prefix;
         return this;
     }
@@ -55,7 +55,7 @@ public class Params {
         return cooldown;
     }
 
-    protected Params setCooldown(long cooldown) {
+    public Params setCooldown(long cooldown) {
         this.cooldown = cooldown;
         return this;
     }
@@ -64,7 +64,7 @@ public class Params {
         return groupLocales;
     }
 
-    protected Params setGroupLocales(HashMap<String, String> groupLocales) {
+    public Params setGroupLocales(HashMap<String, String> groupLocales) {
         this.groupLocales = groupLocales;
         return this;
     }
@@ -73,16 +73,16 @@ public class Params {
         return owners;
     }
 
-    protected Params setOwners(String[] owners) {
+    public Params setOwners(String[] owners) {
         this.owners = Arrays.asList(owners);
         return this;
     }
 
-    protected boolean isReadBotMessages() {
+    public boolean isReadBotMessages() {
         return readBotMessages;
     }
 
-    protected Params setReadBotMessages(boolean readBotMessages) {
+    public Params setReadBotMessages(boolean readBotMessages) {
         this.readBotMessages = readBotMessages;
         return this;
     }

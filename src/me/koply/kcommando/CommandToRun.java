@@ -12,16 +12,16 @@ public class CommandToRun {
         return commandAnnotation;
     }
 
-    protected CommandToRun setCommandAnnotation(Command commandAnnotation) {
+    public CommandToRun setCommandAnnotation(Command commandAnnotation) {
         this.commandAnnotation = commandAnnotation;
         return this;
     }
 
-    protected CommandToRun setClazz(CommandUtils c) {
+    public CommandToRun setClazz(CommandUtils c) {
         clazz = c;
         return this;
     }
-    protected CommandUtils getClazz() {
+    public CommandUtils getClazz() {
         return clazz;
     }
 
@@ -30,12 +30,12 @@ public class CommandToRun {
         return groupName;
     }
 
-    protected CommandToRun setGroupName(String groupName) {
+    public CommandToRun setGroupName(String groupName) {
         this.groupName = groupName;
         return this;
     }
 
-    protected CommandToRun setDoubled(boolean d) {
+    public CommandToRun setDoubled(boolean d) {
         doubled = d;
         return this;
     }
