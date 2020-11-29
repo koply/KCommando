@@ -45,18 +45,18 @@ public final class KCommando {
         for (Class<? extends CommandUtils> clazz : classes) {
             Command cmdAnnotation = clazz.getAnnotation(Command.class);
             if (cmdAnnotation == null) {
-                KCommando.logger.info(clazz.getName() + " is couldn't have Command annotation. Skipping...");
+                KCommando.logger.warning(clazz.getName() + " is couldn't have Command annotation. Skipping...");
                 continue;
             }
             if ((clazz.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) {
-                KCommando.logger.info(clazz.getName() + " is not public class. Skipping...");
+                KCommando.logger.warning(clazz.getName() + " is not public class. Skipping...");
                 continue;
             }
             int methodCounter = 0;
             CommandUtils.TYPE type = null;
 
             if (cmdAnnotation.guildOnly() && cmdAnnotation.privateOnly()) {
-                KCommando.logger.info(clazz.getName() + " is have GuildOnly and PrivateOnly at the same time. Skipping...");
+                KCommando.logger.warning(clazz.getName() + " is have GuildOnly and PrivateOnly at the same time. Skipping...");
                 continue;
             }
 
@@ -78,8 +78,8 @@ public final class KCommando {
                 }
             }
 
-            if (methodCounter>1) {
-                KCommando.logger.info(clazz.getName() + " is have multiple command method. Skipping...");
+            if (methodCounter > 1) {
+                KCommando.logger.warning(clazz.getName() + " is have multiple command method. Skipping...");
                 continue;
             }
 

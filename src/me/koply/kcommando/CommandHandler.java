@@ -113,7 +113,6 @@ public final class CommandHandler extends ListenerAdapter {
 
     private boolean cooldownCheck(long userID, ConcurrentMap<Long, Long> cooldownList, long cooldown) {
         long listTime = cooldownList.getOrDefault(userID, 0L);
-        if (listTime == 0) return false;
-        else return System.currentTimeMillis() - listTime <= cooldown;
+        return listTime != 0 && System.currentTimeMillis() - listTime <= cooldown;
     }
 }
