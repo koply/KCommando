@@ -24,7 +24,7 @@ public final class KCommando {
 
     private final Params params = new Params();
     public static final Logger logger = Logger.getLogger("KCommando");
-    public static final String VERSION = "2.3";
+    public static final String VERSION = "2.4";
 
     public KCommando(@NotNull JDA jda) {
         params.setJda(jda);
@@ -53,7 +53,7 @@ public final class KCommando {
                 continue;
             }
             int methodCounter = 0;
-            boolean doubled = false;
+            CommandUtils.TYPE type = null;
 
             if (cmdAnnotation.guildOnly() && cmdAnnotation.privateOnly()) {
                 KCommando.logger.info(clazz.getName() + " is have GuildOnly and PrivateOnly at the same time. Skipping...");
@@ -62,15 +62,18 @@ public final class KCommando {
 
             for (Method metod : clazz.getDeclaredMethods()) {
                 Class<?>[] parameters = metod.getParameterTypes();
-                if (parameters.length <= 2 && parameters.length != 0) {
+                if (parameters.length <= 3 && parameters.length != 0 && metod.getName().equals("handle")) {
                     if (parameters.length == 1) {
-                        if (parameters[0] == MessageReceivedEvent.class && metod.getName().equals("handle"))
+                        if (parameters[0] == MessageReceivedEvent.class) {
                             methodCounter++;
-                    }
-                    else if (((parameters[0] == MessageReceivedEvent.class || parameters[1] == MessageReceivedEvent.class)
-                            && (parameters[0] == Params.class || parameters[1] == Params.class))) {
-                        doubled = true;
-                        if (metod.getName().equals("handle")) methodCounter++;
+                            type = CommandUtils.TYPE.EVENT;
+                        }
+                    } else if (parameters[0] == MessageReceivedEvent.class && parameters[1] == Params.class) {
+                        methodCounter++;
+                        type = CommandUtils.TYPE.PARAMETEREDEVENT;
+                    } else if (parameters[0] == MessageReceivedEvent.class && parameters[1].isArray()) { // ??
+                        methodCounter++;
+                        type = CommandUtils.TYPE.ARGNEVENT;
                     }
                 }
             }
@@ -87,7 +90,7 @@ public final class KCommando {
                 CommandToRun ctr = new CommandToRun()
                         .setClazz(clazz.newInstance())
                         .setCommandAnnotation(cmdAnnotation)
-                        .setDoubled(doubled)
+                        .setType(type)
                         .setGroupName(groupName);
 
                 for (String s : cmdAnnotation.names()) {

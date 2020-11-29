@@ -6,7 +6,7 @@ public class CommandToRun {
     private Command commandAnnotation;
     private CommandUtils clazz;
     private String groupName;
-    private boolean doubled;
+    private CommandUtils.TYPE type;
 
     public Command getCommandAnnotation() {
         return commandAnnotation;
@@ -35,12 +35,12 @@ public class CommandToRun {
         return this;
     }
 
-    public CommandToRun setDoubled(boolean d) {
-        doubled = d;
+    public CommandToRun setType(CommandUtils.TYPE type) {
+        this.type = type;
         return this;
     }
 
-    public boolean isDoubled() {
-        return doubled;
+    public CommandUtils.TYPE getType() {
+        return type;
     }
 }

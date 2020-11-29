@@ -85,23 +85,25 @@ public final class CommandHandler extends ListenerAdapter {
         long firstTime = System.currentTimeMillis();
         cooldownList.put(authorID, firstTime);
         if (ctr.getCommandAnnotation().sync()) {
-            run(ctr, e);
+            run(ctr, e, cmdArgs);
             KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
         } else {
             KCommando.logger.info("Last command has been submitted to ExecutorService.");
             try {
                 executorService.submit(() -> {
-                    run(ctr, e);
+                    run(ctr, e, cmdArgs);
                     KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
                 });
             } catch (Throwable t) { t.printStackTrace(); }
         }
     }
 
-    private void run(CommandToRun ctr, MessageReceivedEvent e) {
+    private void run(CommandToRun ctr, MessageReceivedEvent e, String[] args) {
         try {
-            if (ctr.isDoubled()) {
+            if (ctr.getType() == CommandUtils.TYPE.PARAMETEREDEVENT) {
                 ctr.getClazz().handle(e, params);
+            } else if (ctr.getType() == CommandUtils.TYPE.ARGNEVENT) {
+                ctr.getClazz().handle(e, args);
             } else {
                 ctr.getClazz().handle(e);
             }
