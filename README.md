@@ -47,6 +47,16 @@ _Optionally you can use final class and final handle method for decrease init ti
 
 Names field is can be an array: `names = {"ping", "pingu"}`
 
+## Possible Handle Methods
+
+You can use just one in your command class. Parameters are annotated with @NotNull. You don't need to null check.
+
+```java
+public void handle(MessageReceivedEvent e) {} // CommandUtils.TYPE.EVENT -> 1
+public void handle(MessageReceivedEvent e, Params p) {} // CommandUtils.TYPE.PARAMETEREDEVENT -> 2
+public void handle(MessageReceivedEvent e, String[] args) {} // CommandUtils.TYPE.ARGNEVENT -> 3
+```
+
 ### Java Ping-Pong Bot
 ```java
 
