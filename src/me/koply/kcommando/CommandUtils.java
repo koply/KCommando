@@ -8,33 +8,33 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 import java.util.Random;
 
-public abstract class CommandUtils {
+public interface CommandUtils {
     // you should override just one
-    public void handle(@NotNull MessageReceivedEvent e) {} // 0x1
-    public void handle(@NotNull MessageReceivedEvent e, @NotNull Params p) {} // 0x2
-    public void handle(@NotNull MessageReceivedEvent e, @NotNull String[] args) {} // 0x3
+    default void handle(@NotNull MessageReceivedEvent e) {} // 0x01
+    default void handle(@NotNull MessageReceivedEvent e, @NotNull Params p) {} // 0x02
+    default void handle(@NotNull MessageReceivedEvent e, @NotNull String[] args) {} // 0x03
 
     // utility godes
     Random random = new Random();
-    public MessageEmbed embed(Object o) {
+    default MessageEmbed embed(Object o) {
         return new EmbedBuilder()
                 .setDescription(o.toString())
                 .setColor(randomColor())
                 .build();
     }
 
-    public EmbedBuilder basicEmbed(Object o) {
+    default EmbedBuilder basicEmbed(Object o) {
         return new EmbedBuilder()
                 .setDescription(o.toString())
                 .setColor(randomColor());
     }
 
-    public Color randomColor() {
+    default Color randomColor() {
         return new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255));
     }
 
     enum TYPE {
-        EVENT((byte) 1),PARAMETEREDEVENT((byte) 2),ARGNEVENT((byte) 3);
+        EVENT((byte) 0x01),PARAMETEREDEVENT((byte) 0x02),ARGNEVENT((byte) 0x03);
         byte value;
         TYPE(byte value) {
             this.value = value;
