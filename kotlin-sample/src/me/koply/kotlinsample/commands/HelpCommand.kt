@@ -6,7 +6,7 @@ import me.koply.kotlinsample.SampleBot
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 @Command(names = ["help","yardım"], description="Bu komut!")
-class HelpCommand : CommandUtils() {
+class HelpCommand : CommandUtils {
 
     override fun handle(e: MessageReceivedEvent) {
         e.textChannel.sendMessage(SampleBot.commandsEmbed

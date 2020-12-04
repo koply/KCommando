@@ -12,7 +12,7 @@
 
     <properties>
         <kotlin.version>1.4.10</kotlin.version>
-        <kcommando.version>2.3</kcommando.version>
+        <kcommando.version>2.5</kcommando.version>
     </properties>
 
     <build>
