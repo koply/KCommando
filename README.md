@@ -35,7 +35,7 @@ That's it. Now, we need a command.
              ownerOnly = false, /* false default */
              privateOnly = false, /* false default */
              sync = false /* false default */)
-public class BasicCommand extends CommandUtils {
+public class BasicCommand implements CommandUtils {
 
     @Override
     public void handle(MessageReceivedEvent e /* optionally you can use the Params parameter*/) {
@@ -62,7 +62,7 @@ public void handle(MessageReceivedEvent e, String[] args) {} // CommandUtils.TYP
 
 @Command(names = "ping",
             description = "Pong!")
-public class Main extends CommandUtils {
+public class Main implements CommandUtils {
     public static void main(String[] args) {
         JDA jda = JDABuilder.createDefault("YOUR-TOKEN").setAutoReconnect(true).build();
         jda.awaitReady();
@@ -83,7 +83,7 @@ public class Main extends CommandUtils {
 ```kotlin
 @Command(names = ["ping", "pingu"], 
             description = "Pong!")
-class Main : CommandUtils() {
+class Main : CommandUtils {
     
     @JvmStatic
     fun main() {
