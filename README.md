@@ -20,6 +20,7 @@ public class Main {
               .setPackage("com.example.mybot.commands") // command classes package path
               .setPrefix("!")
               .setReadBotMessages(false) // default false
+              .setCaseSensivity(false) // default false
               .build();
     }
 }
@@ -29,17 +30,25 @@ That's it. Now, we need a command.
 
 ## How To Create A Command
 ```java
-@Command(names = "ping",
-             description = "Pong!",
-             guildOnly = false, /* false default */
-             ownerOnly = false, /* false default */
-             privateOnly = false, /* false default */
-             sync = false /* false default */)
-public class BasicCommand implements CommandUtils {
+@Commander(name = "Ping!"
+           aliases = {"ping", "pingu"},
+           description = "Pong!", /* "-" default */
+           guildOnly = false, /* false default */
+           ownerOnly = false, /* false default */
+           privateOnly = false, /* false default */
+           sync = false /* false default */)
+public class BasicCommand extends Command {
+    
+    public BasicCommand() {
+        // when handle method returns false, runs the declared callback like this
+        getInfo().setOnFalseCallback(e -> e.getMessage().addReaction("⛔").queue());
+    }
 
     @Override
-    public void handle(MessageReceivedEvent e /* optionally you can use the Params parameter*/) {
-        e.getTextChannel().sendMessage(embed("Pong!")).queue();
+    public boolean handle(MessageReceivedEvent e /* optionally you can use the Params parameter*/) {
+        e.getTextChannel().sendMessage(Utils.embed("Pong!")).queue();
+        return true;
+        // if your command is completed successfully, you must return "true"
     }
 }
 ```
@@ -52,17 +61,17 @@ Names field is can be an array: `names = {"ping", "pingu"}`
 You can use just one in your command class. Parameters are annotated with @NotNull. You don't need to null check.
 
 ```java
-public void handle(MessageReceivedEvent e) {} // CommandUtils.TYPE.EVENT -> 1
-public void handle(MessageReceivedEvent e, Params p) {} // CommandUtils.TYPE.PARAMETEREDEVENT -> 2
-public void handle(MessageReceivedEvent e, String[] args) {} // CommandUtils.TYPE.ARGNEVENT -> 3
+public boolean handle(MessageReceivedEvent e) // CommandType.EVENT -> 0x01
+public boolean handle(MessageReceivedEvent e, String[] args)  // CommandType.ARGNEVENT -> 0x02
 ```
 
 ### Java Ping-Pong Bot
 ```java
 
-@Command(names = "ping",
-            description = "Pong!")
-public class Main implements CommandUtils {
+@Commander(name = "Ping!",
+           aliases = {"ping", "pingu"},
+           description = "Pong!")
+public class Main extends Command {
     public static void main(String[] args) {
         JDA jda = JDABuilder.createDefault("YOUR-TOKEN").setAutoReconnect(true).build();
         jda.awaitReady();
@@ -73,17 +82,19 @@ public class Main implements CommandUtils {
     }
     
     @Override
-    public void handle(MessageReceivedEvent e) {
+    public boolean handle(MessageReceivedEvent e) {
         e.getTextChannel().sendMessage("Pong!").queue();
+        return true;
     }    
 }
 ```
 
 ### Kotlin Ping-Pong Bot
 ```kotlin
-@Command(names = ["ping", "pingu"], 
-            description = "Pong!")
-class Main : CommandUtils {
+@Commander(name = "Ping!",
+           aliases = ["ping", "pingu"], 
+           description = "Pong!")
+class Main : Command() {
     
     @JvmStatic
     fun main() {
@@ -96,8 +107,9 @@ class Main : CommandUtils {
     }
     
     @Override
-    fun handle(e : MessageReceivedEvent) {
+    fun handle(e : MessageReceivedEvent) : Boolean {
         e.textChannel.sendMessage("Pong!").queue()
+        return true
     }
 }
 ```

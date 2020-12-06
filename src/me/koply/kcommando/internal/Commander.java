@@ -1,4 +1,4 @@
-package me.koply.kcommando.annotations;
+package me.koply.kcommando.internal;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,9 +7,10 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Command {
-    String[] names();
-    String description();
+public @interface Commander {
+    String name();
+    String[] aliases();
+    String description() default "-";
     boolean privateOnly() default false;
     boolean guildOnly() default false;
     boolean ownerOnly() default false;
