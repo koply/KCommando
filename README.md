@@ -31,7 +31,7 @@ That's it. Now, we need a command.
 ## How To Create A Command
 ```java
 @Commander(name = "Ping!"
-           aliases = {"ping", "pingu"},
+           aliases = "ping",
            description = "Pong!", /* "-" default */
            guildOnly = false, /* false default */
            ownerOnly = false, /* false default */
@@ -54,7 +54,7 @@ public class BasicCommand extends Command {
 ```
 _Optionally you can use final class and final handle method for decrease init time._
 
-Names field is can be an array: `names = {"ping", "pingu"}`
+Aliases field is can be an array: `aliases = {"ping", "pingu"}`
 
 ## Possible Handle Methods
 
@@ -114,7 +114,7 @@ class Main : Command() {
 }
 ```
 
-### Detailed Samples
+### Detailed Samples (CURRENTLY OUTDATED FOR 3.0 NOW)
 Java -> [Sample Pom.xml](https://github.com/MusaBrt/KCommando/blob/master/java-sample/pom.xml) - [Sample Help System](https://github.com/MusaBrt/KCommando/blob/master/java-sample/src/me/koply/javasample/SampleBot.java)
 
 Kotlin -> [Sample Pom.xml](https://github.com/MusaBrt/KCommando/blob/master/kotlin-sample/pom.xml) - [Sample Help System](https://github.com/MusaBrt/KCommando/blob/master/kotlin-sample/src/me/koply/kotlinsample/SampleBot.kt)
