@@ -40,7 +40,8 @@ public class SampleBot {
         final StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, CommandToRun> entry : map.entrySet()) {
             if (set.contains(entry.getValue())) continue;
-            sb.append("`").append(entry.getKey()).append("` -> ").append(entry.getValue().getCommandAnnotation().description()).append("\n");
+            sb.append("`").append(entry.getValue().getClazz().getInfo().getName())
+                    .append("` -> ").append(entry.getValue().getClazz().getInfo().getDescription()).append("\n");
             set.add(entry.getValue());
         }
         COMMANDSEMBED.addField("❯ Komutlar", sb.toString(), false)

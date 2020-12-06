@@ -1,14 +1,18 @@
 package me.koply.kotlinsample.commands
 
-import me.koply.kcommando.CommandUtils
-import me.koply.kcommando.annotations.Command
+import me.koply.kcommando.Command
+import me.koply.kcommando.Utils
+import me.koply.kcommando.internal.Commander
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
-@Command(names = ["ping", "pingu"], description = "Pong!")
-class SimpleCommands : CommandUtils {
+@Commander(name = "Ping",
+        aliases = ["ping", "pingu"],
+        description = "Pong!")
+class SimpleCommands : Command() {
 
-    override fun handle(e: MessageReceivedEvent) {
-        e.textChannel.sendMessage(embed("Pong!")).queue()
+    override fun handle(e: MessageReceivedEvent) : Boolean {
+        e.textChannel.sendMessage(Utils.embed("Pong!")).queue()
+        return true
     }
 
 }

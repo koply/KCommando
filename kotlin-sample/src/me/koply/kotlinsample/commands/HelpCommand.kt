@@ -1,18 +1,22 @@
 package me.koply.kotlinsample.commands
 
-import me.koply.kcommando.CommandUtils
-import me.koply.kcommando.annotations.Command
+import me.koply.kcommando.Command
+import me.koply.kcommando.Utils
+import me.koply.kcommando.internal.Commander
 import me.koply.kotlinsample.SampleBot
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
-@Command(names = ["help","yardım"], description="Bu komut!")
-class HelpCommand : CommandUtils {
+@Commander(name = "Help",
+        aliases = ["help","yardım"],
+        description="Bu komut!")
+class HelpCommand : Command() {
 
-    override fun handle(e: MessageReceivedEvent) {
+    override fun handle(e: MessageReceivedEvent) : Boolean {
         e.textChannel.sendMessage(SampleBot.commandsEmbed
                 .setAuthor(e.author.name, null, e.author.avatarUrl)
                 .setFooter(e.jda.selfUser.name, e.jda.selfUser.avatarUrl)
-                .setColor(randomColor())
+                .setColor(Utils.randomColor())
                 .build()).queue()
+        return true;
     }
 }
