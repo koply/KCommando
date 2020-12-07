@@ -55,7 +55,7 @@ public final class CommandHandler extends ListenerAdapter {
         final String[] cmdArgs = commandRaw.substring(params.getPrefix().length()).split(" ");
         KCommando.logger.info(String.format("Command received | User: %s | Guild: %s | Command: %s", e.getAuthor().getAsTag(), guildName, commandRaw));
 
-        final String command = params.isCaseSensivity() ? cmdArgs[0] : cmdArgs[0].toLowerCase();
+        final String command = params.getCaseSensitivity().isPresent() ? cmdArgs[0] : cmdArgs[0].toLowerCase();
 
         if (!commandsMap.containsKey(command)) {
             KCommando.logger.info("Last command was not a valid command.");
