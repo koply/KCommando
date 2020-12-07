@@ -12,9 +12,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
@@ -93,7 +91,7 @@ public final class KCommando {
                 final CommandToRun ctr = new CommandToRun(commandInstance, groupName, type);
 
                 for (final String s : commandAnnotation.aliases()) {
-                    final String name = params.isCaseSensivity() ? s.toLowerCase() : s;
+                    final String name = params.getCaseSensitivity().map(s::toLowerCase).orElse(s);
                     commandMethods.put(name, ctr);
                 }
                 classCounter++;
@@ -161,8 +159,12 @@ public final class KCommando {
         return this;
     }
 
-    public KCommando setCaseSensivity(boolean caseSensivity) {
-        params.setCaseSensivity(caseSensivity);
+    public KCommando useCaseSensivity() {
+        return useCaseSensivity(Locale.getDefault());
+    }
+
+    public KCommando useCaseSensivity(Locale locale) {
+        params.setCaseSensitivity(locale);
         return this;
     }
 

@@ -2,9 +2,7 @@ package me.koply.kcommando;
 
 import net.dv8tion.jda.api.JDA;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public final class Params {
     private JDA jda;
@@ -13,7 +11,8 @@ public final class Params {
     private HashMap<String, String> groupLocales;
     private final HashSet<String> owners = new HashSet<>();
     private HashMap<String, CommandToRun> commandMethods;
-    private boolean readBotMessages, caseSensivity;
+    private boolean readBotMessages;
+    private Optional<Locale> caseSensitivity = Optional.empty();
 
     public final HashMap<String, CommandToRun> getCommandMethods() {
         return commandMethods;
@@ -79,9 +78,9 @@ public final class Params {
         this.readBotMessages = readBotMessages;
     }
 
-    public final boolean isCaseSensivity() { return caseSensivity; }
+    public Optional<Locale> getCaseSensitivity() { return caseSensitivity; }
 
-    public final void setCaseSensivity(boolean cs) {
-        caseSensivity = cs;
+    public final void setCaseSensitivity(Locale cs) {
+        caseSensitivity = Optional.ofNullable(cs);
     }
 }
