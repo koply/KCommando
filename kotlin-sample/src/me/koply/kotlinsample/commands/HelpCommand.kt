@@ -2,11 +2,11 @@ package me.koply.kotlinsample.commands
 
 import me.koply.kcommando.Command
 import me.koply.kcommando.Utils
-import me.koply.kcommando.internal.Commander
+import me.koply.kcommando.internal.Commando
 import me.koply.kotlinsample.SampleBot
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
-@Commander(name = "Help",
+@Commando(name = "Help",
         aliases = ["help","yardım"],
         description="Bu komut!")
 class HelpCommand : Command() {

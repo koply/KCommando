@@ -2,7 +2,7 @@ package me.koply.kcommando;
 
 import me.koply.kcommando.enums.CommandType;
 import me.koply.kcommando.exceptions.NotEnoughData;
-import me.koply.kcommando.internal.Commander;
+import me.koply.kcommando.internal.Commando;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,7 @@ public final class KCommando {
 
     private final Params params = new Params();
     public static final Logger logger = Logger.getLogger("KCommando");
-    public static final String VERSION = "3.0";
+    public static final String VERSION = "3.1";
 
     public KCommando(@NotNull JDA jda) {
         params.setJda(jda);
@@ -44,7 +44,7 @@ public final class KCommando {
 
         int classCounter = 0;
         for (Class<? extends Command> clazz : classes) {
-            final Commander commandAnnotation = clazz.getAnnotation(Commander.class);
+            final Commando commandAnnotation = clazz.getAnnotation(Commando.class);
             if (commandAnnotation == null) {
                 KCommando.logger.warning(clazz.getName() + " is couldn't have Command annotation. Skipping...");
                 continue;

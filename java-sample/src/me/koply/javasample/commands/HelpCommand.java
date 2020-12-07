@@ -3,11 +3,11 @@ package me.koply.javasample.commands;
 import me.koply.javasample.SampleBot;
 import me.koply.kcommando.Command;
 import me.koply.kcommando.Utils;
-import me.koply.kcommando.internal.Commander;
+import me.koply.kcommando.internal.Commando;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
-@Commander(name = "Help",
+@Commando(name = "Help",
         aliases={"help","yardım"},
         description = "Bu komut!")
 public class HelpCommand extends Command {

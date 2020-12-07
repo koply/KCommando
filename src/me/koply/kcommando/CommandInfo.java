@@ -1,6 +1,6 @@
 package me.koply.kcommando;
 
-import me.koply.kcommando.internal.Commander;
+import me.koply.kcommando.internal.Commando;
 import me.koply.kcommando.internal.KRunnable;
 
 public final class CommandInfo {
@@ -10,7 +10,7 @@ public final class CommandInfo {
     private boolean privateOnly, guildOnly, ownerOnly, sync;
     private KRunnable onFalseCallback, privateOnlyCallback, guildOnlyCallback, ownerOnlyCallback, cooldownCallback;
 
-    protected final void initialize(Commander ant) {
+    protected final void initialize(Commando ant) {
         name = ant.name();
         aliases = ant.aliases();
         description = ant.description();
