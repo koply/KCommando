@@ -1,5 +1,7 @@
 package me.koply.kcommando;
 
+import me.koply.kcommando.enums.CommandType;
+import me.koply.kcommando.internal.KRunnable;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -33,79 +35,95 @@ public final class CommandHandler extends ListenerAdapter {
                 }
             }
             if (i == 0) return;
-            KCommando.logger.info("#CooldownList cleaned. " + i + " entries deleted.");
-
+            KCommando.logger.info("CooldownList cleaned. " + i + " entries deleted.");
         });
 
-        KCommando.logger.info("[KCommando] CommandHandler initialized.");
+        KCommando.logger.info("initialized.");
     }
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent e) {
         if (e.getAuthor().getId().equals(params.getJda().getSelfUser().getId())) return;
-
         if (!params.isReadBotMessages() && e.getAuthor().isBot()) return;
-
         if (e.isWebhookMessage()) return;
 
-        String commandRaw = e.getMessage().getContentRaw();
+        final String commandRaw = e.getMessage().getContentRaw();
         if (!commandRaw.startsWith(params.getPrefix())) return;
 
-        String guildName = e.isFromGuild() ? e.getGuild().getName() : "(PRIVATE)";
+        final String guildName = e.isFromGuild() ? e.getGuild().getName() : "(PRIVATE)";
 
-        String[] cmdArgs = commandRaw.substring(params.getPrefix().length()).split(" ");
+        final String[] cmdArgs = commandRaw.substring(params.getPrefix().length()).split(" ");
         KCommando.logger.info(String.format("Command received | User: %s | Guild: %s | Command: %s", e.getAuthor().getAsTag(), guildName, commandRaw));
 
-        if (!commandsMap.containsKey(cmdArgs[0])) {
+        final String command = params.isCaseSensivity() ? cmdArgs[0] : cmdArgs[0].toLowerCase();
+
+        if (!commandsMap.containsKey(command)) {
             KCommando.logger.info("Last command was not a valid command.");
             return;
         }
 
-        CommandToRun ctr = commandsMap.get(cmdArgs[0]);
-        if (ctr.getCommandAnnotation().guildOnly() && !e.isFromGuild()) {
+        final CommandToRun ctr = commandsMap.get(command);
+        final CommandInfo info = ctr.getClazz().getInfo();
+        if (info.isGuildOnly() && !e.isFromGuild()) {
             KCommando.logger.info("GuildOnly command used from private channel");
+            if (info.getGuildOnlyCallback() != null) {
+                executorService.submit(() -> info.getGuildOnlyCallback().run(e));
+                info.getGuildOnlyCallback().run(e);
+            }
             return;
         }
-        if (ctr.getCommandAnnotation().privateOnly() && e.isFromGuild()) {
+        if (info.isPrivateOnly() && e.isFromGuild()) {
             KCommando.logger.info("PrivateOnly command used from guild channel");
+            if (info.getPrivateOnlyCallback() != null) {
+                executorService.submit(() -> info.getPrivateOnlyCallback().run(e));
+            }
             return;
         }
 
         long authorID = e.getAuthor().getIdLong();
-        if (ctr.getCommandAnnotation().ownerOnly() && !params.getOwners().contains(authorID + "")) {
+        if (info.isOwnerOnly() && !params.getOwners().contains(authorID + "")) {
             KCommando.logger.info("OwnerOnly command used by normal user.");
+            if (info.getOwnerOnlyCallback() != null) {
+                executorService.submit(() -> info.getOwnerOnlyCallback().run(e));
+            }
             return;
         }
 
         if (cooldownCheck(authorID, cooldownList, params.getCooldown()) && !params.getOwners().contains(authorID + "")) {
             KCommando.logger.info("Last command has been declined due to cooldown check");
+            if (info.getCooldownCallback() != null) {
+                executorService.submit(() -> info.getCooldownCallback().run(e));
+            }
             return;
         }
 
         long firstTime = System.currentTimeMillis();
         cooldownList.put(authorID, firstTime);
-        if (ctr.getCommandAnnotation().sync()) {
-            run(ctr, e, cmdArgs);
+        if (info.isSync()) {
+            run(ctr, e, cmdArgs, info);
             KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
         } else {
             KCommando.logger.info("Last command has been submitted to ExecutorService.");
             try {
                 executorService.submit(() -> {
-                    run(ctr, e, cmdArgs);
+                    run(ctr, e, cmdArgs, info);
                     KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
                 });
             } catch (Throwable t) { t.printStackTrace(); }
         }
     }
 
-    private void run(CommandToRun ctr, MessageReceivedEvent e, String[] args) {
+    private void run(CommandToRun ctr, MessageReceivedEvent e, String[] args, CommandInfo info) {
+        KRunnable onFalse = info.getOnFalseCallback();
         try {
-            if (ctr.getType() == CommandUtils.TYPE.PARAMETEREDEVENT) {
-                ctr.getClazz().handle(e, params);
-            } else if (ctr.getType() == CommandUtils.TYPE.ARGNEVENT) {
-                ctr.getClazz().handle(e, args);
+            if (ctr.getType() == CommandType.ARGNEVENT) {
+                if (!ctr.getClazz().handle(e, args) && onFalse != null) {
+                    onFalse.run(e);
+                }
             } else {
-                ctr.getClazz().handle(e);
+                if (!ctr.getClazz().handle(e) && onFalse != null) {
+                    onFalse.run(e);
+                }
             }
         }
         catch (Throwable t) { KCommando.logger.info("Command crashed! Message: " + Arrays.toString(t.getStackTrace())); }

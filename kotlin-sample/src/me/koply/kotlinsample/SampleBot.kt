@@ -29,9 +29,9 @@ class SampleBot(private val token : String) {
     private fun initHelpEmbed(map : HashMap<String, CommandToRun>) {
         val set = HashSet<CommandToRun>()
         val sb = StringBuilder()
-        for ((k,v) in map) {
+        for ((_,v) in map) {
             if (set.contains(v)) continue
-            sb.append("`").append(k).append("` -> ").append(v.commandAnnotation.description).append("\n")
+            sb.append("`").append(v.clazz.info.name).append("` -> ").append(v.clazz.info.description).append("\n")
             set.add(v)
         }
         commandsEmbed.addField("❯ Komutlar", sb.toString(), false)

@@ -1,46 +1,28 @@
 package me.koply.kcommando;
 
-import me.koply.kcommando.annotations.Command;
+import me.koply.kcommando.enums.CommandType;
 
-public class CommandToRun {
-    private Command commandAnnotation;
-    private CommandUtils clazz;
-    private String groupName;
-    private CommandUtils.TYPE type;
+public final class CommandToRun {
 
-    public Command getCommandAnnotation() {
-        return commandAnnotation;
+    public CommandToRun(Command clazz, String groupName, CommandType type) {
+        this.clazz = clazz;
+        this.groupName = groupName;
+        this.type = type;
     }
 
-    public CommandToRun setCommandAnnotation(Command commandAnnotation) {
-        this.commandAnnotation = commandAnnotation;
-        return this;
-    }
+    private final Command clazz;
+    private final String groupName;
+    private final CommandType type;
 
-    public CommandToRun setClazz(CommandUtils c) {
-        clazz = c;
-        return this;
-    }
-    public CommandUtils getClazz() {
+    public final Command getClazz() {
         return clazz;
     }
 
-
-    public String getGroupName() {
+    public final String getGroupName() {
         return groupName;
     }
 
-    public CommandToRun setGroupName(String groupName) {
-        this.groupName = groupName;
-        return this;
-    }
-
-    public CommandToRun setType(CommandUtils.TYPE type) {
-        this.type = type;
-        return this;
-    }
-
-    public CommandUtils.TYPE getType() {
+    public final CommandType getType() {
         return type;
     }
 }

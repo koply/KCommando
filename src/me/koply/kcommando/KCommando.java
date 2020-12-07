@@ -1,7 +1,8 @@
 package me.koply.kcommando;
 
-import me.koply.kcommando.annotations.Command;
+import me.koply.kcommando.enums.CommandType;
 import me.koply.kcommando.exceptions.NotEnoughData;
+import me.koply.kcommando.internal.Commander;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +25,7 @@ public final class KCommando {
 
     private final Params params = new Params();
     public static final Logger logger = Logger.getLogger("KCommando");
-    public static final String VERSION = "2.4";
+    public static final String VERSION = "3.0";
 
     public KCommando(@NotNull JDA jda) {
         params.setJda(jda);
@@ -37,14 +38,14 @@ public final class KCommando {
             throw new NotEnoughData("We couldn't found JDA or commands package path :(");
         }
 
-        HashMap<String, CommandToRun> commandMethods = new HashMap<>();
-        Reflections reflections = new Reflections(params.getPackagePath());
+        final HashMap<String, CommandToRun> commandMethods = new HashMap<>();
+        final Reflections reflections = new Reflections(params.getPackagePath());
+        final Set<Class<? extends Command>> classes = reflections.getSubTypesOf(Command.class);
 
-        Set<Class<? extends CommandUtils>> classes = reflections.getSubTypesOf(CommandUtils.class);
         int classCounter = 0;
-        for (Class<? extends CommandUtils> clazz : classes) {
-            Command cmdAnnotation = clazz.getAnnotation(Command.class);
-            if (cmdAnnotation == null) {
+        for (Class<? extends Command> clazz : classes) {
+            final Commander commandAnnotation = clazz.getAnnotation(Commander.class);
+            if (commandAnnotation == null) {
                 KCommando.logger.warning(clazz.getName() + " is couldn't have Command annotation. Skipping...");
                 continue;
             }
@@ -53,9 +54,9 @@ public final class KCommando {
                 continue;
             }
             int methodCounter = 0;
-            CommandUtils.TYPE type = null;
+            CommandType type = null;
 
-            if (cmdAnnotation.guildOnly() && cmdAnnotation.privateOnly()) {
+            if (commandAnnotation.guildOnly() && commandAnnotation.privateOnly()) {
                 KCommando.logger.warning(clazz.getName() + " is have GuildOnly and PrivateOnly at the same time. Skipping...");
                 continue;
             }
@@ -66,14 +67,11 @@ public final class KCommando {
                     if (parameters.length == 1) {
                         if (parameters[0] == MessageReceivedEvent.class) {
                             methodCounter++;
-                            type = CommandUtils.TYPE.EVENT;
+                            type = CommandType.EVENT;
                         }
-                    } else if (parameters[0] == MessageReceivedEvent.class && parameters[1] == Params.class) {
-                        methodCounter++;
-                        type = CommandUtils.TYPE.PARAMETEREDEVENT;
                     } else if (parameters[0] == MessageReceivedEvent.class && parameters[1].isArray()) { // ??
                         methodCounter++;
-                        type = CommandUtils.TYPE.ARGNEVENT;
+                        type = CommandType.ARGNEVENT;
                     }
                 }
             }
@@ -83,18 +81,20 @@ public final class KCommando {
                 continue;
             }
 
-            String[] packageSplitted = clazz.getPackage().getName().split("\\.");
-            String groupName = packageSplitted[packageSplitted.length-1];
+            final String[] packageSplitted = clazz.getPackage().getName().split("\\.");
+            final String groupName = packageSplitted[packageSplitted.length-1];
 
             try {
-                CommandToRun ctr = new CommandToRun()
-                        .setClazz(clazz.newInstance())
-                        .setCommandAnnotation(cmdAnnotation)
-                        .setType(type)
-                        .setGroupName(groupName);
+                CommandInfo tempinfo = new CommandInfo();
+                tempinfo.initialize(commandAnnotation);
+                CargoTruck.setCargo(tempinfo);
 
-                for (String s : cmdAnnotation.names()) {
-                    commandMethods.put(s, ctr);
+                final Command commandInstance = clazz.getDeclaredConstructor().newInstance();
+                final CommandToRun ctr = new CommandToRun(commandInstance, groupName, type);
+
+                for (final String s : commandAnnotation.aliases()) {
+                    final String name = params.isCaseSensivity() ? s.toLowerCase() : s;
+                    commandMethods.put(name, ctr);
                 }
                 classCounter++;
 
@@ -103,8 +103,8 @@ public final class KCommando {
             } finally {
                 KCommando.logger.info(clazz.getName() + " is have command method");
             }
-
         }
+        CargoTruck.setCargo(null);
         params.setCommandMethods(commandMethods);
         params.getJda().addEventListener(new CommandHandler(params));
         KCommando.logger.info(classCounter + " commands are initialized.");
@@ -112,16 +112,28 @@ public final class KCommando {
         return this;
     }
 
+    public static final class CargoTruck {
+        public static CommandInfo cargo;
+        public static void setCargo(CommandInfo cargo1) {
+            cargo = cargo1;
+        }
+        public static CommandInfo getCargo() {
+            return cargo;
+        }
+    }
+
     private void setupLogger() {
         logger.setUseParentHandlers(false);
 
         ConsoleHandler consoleHandler = new ConsoleHandler();
         consoleHandler.setFormatter(new Formatter() {
-            private final DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
+            private final DateFormat formatter = new SimpleDateFormat("HH:mm:ss.SSS");
             @Override
             public String format(LogRecord record) {
                 // [22/04/2020 18:01:30.533 INFO] Message
-                return String.format("[%s %s] %s\n", formatter.format(new Date(record.getMillis())), record.getLevel(), record.getMessage());
+                final String[] splitted = record.getSourceClassName().split("\\.");
+                final String name = splitted[splitted.length-1];
+                return String.format("[%s %s] %s -> %s\n", formatter.format(new Date(record.getMillis())), record.getLevel(), name, record.getMessage());
             }
         });
         logger.addHandler(consoleHandler);
@@ -146,6 +158,11 @@ public final class KCommando {
     }
 
     public KCommando setReadBotMessages(boolean readBotMessages) { params.setReadBotMessages(readBotMessages);
+        return this;
+    }
+
+    public KCommando setCaseSensivity(boolean caseSensivity) {
+        params.setCaseSensivity(caseSensivity);
         return this;
     }
 

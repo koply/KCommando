@@ -1,16 +1,19 @@
 package me.koply.javasample.commands;
 
-import me.koply.kcommando.CommandUtils;
-import me.koply.kcommando.annotations.Command;
+import me.koply.kcommando.Command;
+import me.koply.kcommando.Utils;
+import me.koply.kcommando.internal.Commander;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-@Command(names = {"ping","pingu"},
+@Commander(name = "Ping",
+        aliases = {"ping","pingu"},
         description = "Pong!")
-public class SimpleCommands extends CommandUtils {
+public class SimpleCommands extends Command {
 
     @Override
-    public void handle(MessageReceivedEvent e) {
-        e.getTextChannel().sendMessage(embed("Pong!")).queue();
+    public boolean handle(MessageReceivedEvent e) {
+        e.getTextChannel().sendMessage(Utils.embed("Pong!")).queue();
+        return true;
     }
 
 }
