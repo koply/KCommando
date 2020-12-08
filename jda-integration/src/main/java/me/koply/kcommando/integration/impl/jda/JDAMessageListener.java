@@ -17,7 +17,7 @@ public class JDAMessageListener extends ListenerAdapter {
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent e) {
         commandHandler.processCommand(new CProcessParameters(
-                new CProcessParameters.Author(e.getAuthor().getName(),
+                new CProcessParameters.Author(e.getAuthor().getName() +"#"+ e.getAuthor().getDiscriminator(),
                         e.getAuthor().getIdLong(),
                         e.getAuthor().isBot()),
                 e.getMessage().isWebhookMessage(),

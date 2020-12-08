@@ -37,27 +37,36 @@ public final class KCommando {
         final Set<Class<? extends Command>> classes = reflections.getSubTypesOf(Command.class);
 
         int classCounter = 0;
-        for (Class<? extends Command<?>> clazz : classes) {
+        for (Class<? extends Command> clazz : classes) {
+            if (clazz.getPackage().getName().contains("me.koply.kcommando.integration.impl")) continue;
+
             final Commando commandAnnotation = clazz.getAnnotation(Commando.class);
             if (commandAnnotation == null) {
-                KCommando.logger.warning(clazz.getName() + " is couldn't have Command annotation. Skipping...");
+                KCommando.logger.warning(clazz.getName() + " is couldn't have Commando annotation. Skipping...");
                 continue;
             }
+
             if ((clazz.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) {
                 KCommando.logger.warning(clazz.getName() + " is not public class. Skipping...");
                 continue;
             }
-            int methodCounter = 0;
-            CommandType type = null;
 
             if (commandAnnotation.guildOnly() && commandAnnotation.privateOnly()) {
-                KCommando.logger.warning(clazz.getName() + " is have GuildOnly and PrivateOnly at the same time. Skipping...");
+                KCommando.logger.warning(clazz.getName() + " has GuildOnly and PrivateOnly at the same time. Skipping...");
                 continue;
             }
-
+            int methodCounter = 0;
+            CommandType type = null;
             for (Method method : clazz.getDeclaredMethods()) {
+                if (method.getReturnType() != boolean.class) continue;
+
                 Class<?>[] parameters = method.getParameterTypes();
-                if (parameters.length <= 3 && parameters.length != 0 && method.getName().equals("handle")) {
+                if (!parameters[0].getPackage().getName().contains("message")) continue;
+                // a bit hardcoded object type checker
+                // org.javacord.api.event.message
+                // net.dv8tion.jda.api.events.message
+
+                if (parameters.length <= 2 && method.getName().equals("handle")) {
                     if (parameters.length == 1) {
                         methodCounter++;
                         type = CommandType.EVENT;
@@ -68,7 +77,7 @@ public final class KCommando {
                 }
             }
 
-            if (methodCounter > 1) {
+            if (methodCounter != 1) {
                 KCommando.logger.warning(clazz.getName() + " is have multiple command method. Skipping...");
                 continue;
             }

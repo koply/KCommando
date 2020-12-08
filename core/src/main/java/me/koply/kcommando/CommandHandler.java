@@ -47,7 +47,7 @@ public final class CommandHandler {
         final String commandRaw = cpp.getRawCommand();
         if (!commandRaw.startsWith(params.getPrefix())) return;
         final String[] cmdArgs = commandRaw.substring(params.getPrefix().length()).split(" ");
-        KCommando.logger.info(String.format("Command received | User: %s | Guild: %s | Command: %s", cpp.getAuthor(), cpp.getGuildName(), commandRaw));
+        KCommando.logger.info(String.format("Command received | User: %s | Guild: %s | Command: %s", cpp.getAuthor().getName(), cpp.getGuildName(), commandRaw));
         final String command = params.getCaseSensitivity().isPresent() ? cmdArgs[0] : cmdArgs[0].toLowerCase();
 
         if (!commandsMap.containsKey(command)) {
@@ -89,7 +89,7 @@ public final class CommandHandler {
             return;
         }
 
-        long firstTime = System.currentTimeMillis();
+        final long firstTime = System.currentTimeMillis();
         cooldownList.put(authorID, firstTime);
         if (info.isSync()) {
             run(ctr, cpp.getEvent(), cmdArgs, info);
