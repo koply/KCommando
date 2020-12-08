@@ -30,7 +30,7 @@ That's it. Now, we need a command.
 
 ## How To Create A Command
 ```java
-@Commander(name = "Ping!"
+@Commando(name = "Ping!"
            aliases = "ping",
            description = "Pong!", /* "-" default */
            guildOnly = false, /* false default */
@@ -68,7 +68,7 @@ public boolean handle(MessageReceivedEvent e, String[] args)  // CommandType.ARG
 ### Java Ping-Pong Bot
 ```java
 
-@Commander(name = "Ping!",
+@Commando(name = "Ping!",
            aliases = {"ping", "pingu"},
            description = "Pong!")
 public class Main extends Command {
@@ -91,7 +91,7 @@ public class Main extends Command {
 
 ### Kotlin Ping-Pong Bot
 ```kotlin
-@Commander(name = "Ping!",
+@Commando(name = "Ping!",
            aliases = ["ping", "pingu"], 
            description = "Pong!")
 class Main : Command() {
@@ -120,6 +120,9 @@ Java -> [Sample Pom.xml](https://github.com/MusaBrt/KCommando/blob/master/java-s
 Kotlin -> [Sample Pom.xml](https://github.com/MusaBrt/KCommando/blob/master/kotlin-sample/pom.xml) - [Sample Help System](https://github.com/MusaBrt/KCommando/blob/master/kotlin-sample/src/me/koply/kotlinsample/SampleBot.kt)
 
 ## How To Install
+
+To always use the latest version, you can write 'master-SNAPSHOT' in the version field.
+
 ### With Maven:
 ```xml
 <repository>
