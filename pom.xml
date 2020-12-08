@@ -6,35 +6,23 @@
 
     <groupId>me.koply</groupId>
     <artifactId>kcommando</artifactId>
-    <version>3.1</version>
+    <packaging>pom</packaging>
+    <version>4.0</version>
+
+    <scm>
+        <connection>scm:git:git://github.com/MusaBrt/KCommando.git</connection>
+        <developerConnection>scm:git:ssh://github.com/MusaBrt/KCommando.git</developerConnection>
+        <url>https://github.com/MusaBrt/KCommando</url>
+    </scm>
+    <modules>
+        <module>core</module>
+        <module>jda-integration</module>
+        <module>javacord-integration</module>
+    </modules>
 
     <name>KCommando</name>
     <description>Annotation based command handler wrapper for JDA.</description>
     <url>https://github.com/MusaBrt/KCommando</url>
-
-    <licenses>
-        <license>
-            <name>GPL-3.0 License</name>
-            <url>https://github.com/MusaBrt/KCommando/blob/master/LICENSE</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <id>koply</id>
-        </developer>
-    </developers>
-
-    <scm>
-        <connection>scm:git:git@github.com:MusaBrt/KCommando.git</connection>
-        <developerConnection>scm:git:git@github.com:MusaBrt/KCommando.git</developerConnection>
-        <url>git@github.com:MusaBrt/KCommando.git</url>
-    </scm>
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/MusaBrt/KCommando/issues</url>
-    </issueManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -42,20 +30,10 @@
 
     <build>
         <defaultGoal>clean package</defaultGoal>
-        <sourceDirectory>src</sourceDirectory>
-
         <plugins>
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.8.2</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <minimizeJar>false</minimizeJar>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -66,29 +44,6 @@
                     <target>8</target>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>net.dv8tion</groupId>
-            <artifactId>JDA</artifactId>
-            <version>4.2.0_209</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.oneandone.reflections8</groupId>
-            <artifactId>reflections8</artifactId>
-            <version>0.11.5</version>
-        </dependency>
-    </dependencies>
-
-    <repositories>
-        <repository>
-            <id>jcenter</id>
-            <name>jcenter-bintray</name>
-            <url>https://jcenter.bintray.com</url>
-        </repository>
-    </repositories>
 </project>
