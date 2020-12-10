@@ -113,8 +113,7 @@ public boolean handle(<EventFromApiWrapper> e, String[] args)  // CommandType.AR
 To always use the latest version, you can write 'master-SNAPSHOT' in the version field.
 
 ### Example Repositories
-
-[Rae Discord Bot](https://github.com/MusaBrt/Rae)
+| [Rae Discord Bot](https://github.com/MusaBrt/Rae)
 
 ### With Maven:
 ```xml
