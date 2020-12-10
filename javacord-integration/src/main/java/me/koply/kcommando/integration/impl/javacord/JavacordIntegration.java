@@ -35,6 +35,6 @@ public class JavacordIntegration implements Integration {
     private String channelName(final MessageCreateEvent event) {
         if (event.isPrivateMessage())
             return "(PRIVATE)";
-        return event.getGroupChannel().map(GroupChannel::getName).map(Optional::get).orElse(event.getServerTextChannel().get().getName());
+        return event.getGroupChannel().map(GroupChannel::getName).map(Optional::get).orElse(event.getServer().get().getName());
     }
 }
