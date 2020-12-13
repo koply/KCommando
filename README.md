@@ -154,6 +154,6 @@ dependencies {
 }
 ```
 
-**Please change 'JITPACK-VERSION' fields to last release version.**
+**Please change 'JITPACK-VERSION' fields to latest release version.**
 
 Github packages are ignored. Please use jitpack repositories.
