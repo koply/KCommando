@@ -4,7 +4,7 @@ import me.koply.kcommando.integration.Integration;
 
 import java.util.*;
 
-public class Parameters {
+public final class Parameters {
     private Integration integration;
     private String packagePath, prefix;
     private long cooldown = 0L;

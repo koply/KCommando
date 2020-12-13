@@ -108,7 +108,7 @@ public final class CommandHandler {
     }
 
     private void run(CommandToRun ctr, Object event, String[] args, CommandInfo info) {
-        KRunnable onFalse = info.getOnFalseCallback();
+        final KRunnable onFalse = info.getOnFalseCallback();
         try {
             if (ctr.getType() == CommandType.ARGNEVENT) {
                 if (!ctr.getClazz().handle(event, args) && onFalse != null) {
@@ -120,7 +120,7 @@ public final class CommandHandler {
                 }
             }
         }
-        catch (Throwable t) { KCommando.logger.info("Command crashed! Message: " + Arrays.toString(t.getStackTrace())); }
+        catch (Throwable t) { KCommando.logger.info("Command crashed! Message: " + t.getMessage() + "\n" + Arrays.toString(t.getStackTrace())); }
     }
 
     private boolean cooldownCheck(long userID, ConcurrentMap<Long, Long> cooldownList, long cooldown) {
