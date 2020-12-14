@@ -23,7 +23,7 @@ public class Main extends JDAIntegration {
               .setPackage("com.example.mybot.commands") // command classes package path
               .setPrefix("!")
               .setReadBotMessages(false) // default false
-              .setCaseSensivity(false) // default false
+              .setCaseSensivity(Locale.getDefault()) // Optional<Locale> -> default false
               .build();
     }
 }
