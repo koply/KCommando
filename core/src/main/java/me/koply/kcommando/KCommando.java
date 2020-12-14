@@ -16,17 +16,18 @@ public class KCommando {
 
     public Parameters params = new Parameters();
     public static final Logger logger = Logger.getLogger("KCommando");
-    public static final String VERSION = "4.1";
+    public static final String VERSION = "4.1.1";
 
     public KCommando(final Integration integration) {
         params.setIntegration(integration);
         setupLogger();
     }
 
+    private KInitializer initializer;
+
     /*
      * only for advanced using
      */
-    private KInitializer initializer;
     public KCommando(final Integration integration, final KInitializer initializer) {
         params = initializer.getParams();
         params.setIntegration(integration);
