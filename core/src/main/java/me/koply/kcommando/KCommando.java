@@ -1,126 +1,42 @@
 package me.koply.kcommando;
 
 import me.koply.kcommando.integration.Integration;
-import me.koply.kcommando.internal.CommandType;
-import me.koply.kcommando.internal.Commando;
-import org.reflections8.Reflections;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-public final class KCommando {
+public class KCommando {
 
-    private final Parameters params = new Parameters();
+    public final Parameters params = new Parameters();
     public static final Logger logger = Logger.getLogger("KCommando");
-    public static final String VERSION = "4.0-SNAPSHOT";
+    public static final String VERSION = "4.1";
 
     public KCommando(final Integration integration) {
         params.setIntegration(integration);
         setupLogger();
     }
 
-    public KCommando build() {
-        KCommando.logger.info("KCommando launching!");
-        if (params.getIntegration() == null || params.getPackagePath() == null) {
-            throw new IllegalArgumentException("We couldn't found integration or commands package path :(");
-        }
-
-        final HashMap<String, CommandToRun> commandMethods = new HashMap<>();
-        final Reflections reflections = new Reflections(params.getPackagePath());
-        final Set<Class<? extends Command>> classes = reflections.getSubTypesOf(Command.class);
-
-        int classCounter = 0;
-        for (Class<? extends Command> clazz : classes) {
-            if (clazz.getPackage().getName().contains("me.koply.kcommando.integration.impl")) continue;
-
-            final Commando commandAnnotation = clazz.getAnnotation(Commando.class);
-            if (commandAnnotation == null) {
-                KCommando.logger.warning(clazz.getName() + " is couldn't have Commando annotation. Skipping...");
-                continue;
-            }
-
-            if ((clazz.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) {
-                KCommando.logger.warning(clazz.getName() + " is not public class. Skipping...");
-                continue;
-            }
-
-            if (commandAnnotation.guildOnly() && commandAnnotation.privateOnly()) {
-                KCommando.logger.warning(clazz.getName() + " has GuildOnly and PrivateOnly at the same time. Skipping...");
-                continue;
-            }
-            int methodCounter = 0;
-            CommandType type = null;
-            for (Method method : clazz.getDeclaredMethods()) {
-                if (method.getReturnType() != boolean.class) continue;
-
-                Class<?>[] parameters = method.getParameterTypes();
-                if (!parameters[0].getPackage().getName().contains("message")) continue;
-                // a bit hardcoded object type checker
-                // org.javacord.api.event.message
-                // net.dv8tion.jda.api.events.message
-
-                if (parameters.length <= 2 && method.getName().equals("handle")) {
-                    if (parameters.length == 1) {
-                        methodCounter++;
-                        type = CommandType.EVENT;
-                    } else if (parameters[1].isArray()) { // ??
-                        methodCounter++;
-                        type = CommandType.ARGNEVENT;
-                    }
-                }
-            }
-
-            if (methodCounter != 1) {
-                KCommando.logger.warning(clazz.getName() + " is have multiple command method. Skipping...");
-                continue;
-            }
-
-            final String[] packageSplitted = clazz.getPackage().getName().split("\\.");
-            final String groupName = packageSplitted[packageSplitted.length-1];
-
-            try {
-                CommandInfo tempinfo = new CommandInfo();
-                tempinfo.initialize(commandAnnotation);
-                CargoTruck.setCargo(tempinfo);
-
-                final Command commandInstance = clazz.getDeclaredConstructor().newInstance();
-                final CommandToRun ctr = new CommandToRun(commandInstance, groupName, type);
-
-                for (final String s : commandAnnotation.aliases()) {
-                    final String name = params.getCaseSensitivity().map(s::toLowerCase).orElse(s);
-                    commandMethods.put(name, ctr);
-                }
-                classCounter++;
-
-            } catch (Throwable t) {
-                KCommando.logger.warning("Something went wrong.");
-            } finally {
-                KCommando.logger.info(clazz.getName() + " is have command method");
-            }
-        }
-        CargoTruck.setCargo(null);
-        params.setCommandMethods(commandMethods);
-        params.getIntegration().register(new CommandHandler(params));
-        KCommando.logger.info(classCounter + " commands are initialized.");
-        KCommando.logger.info("KCommando system is ready o7");
-        return this;
+    /*
+     * only for advanced using
+     */
+    private KCMInitializer initializer;
+    public KCommando(final Integration integration, KCMInitializer initializer) {
+        params.setIntegration(integration);
+        this.initializer = initializer;
+        setupLogger();
     }
 
-    public static final class CargoTruck {
-        private static CommandInfo cargo;
-        public static void setCargo(CommandInfo cargo1) {
-            cargo = cargo1;
-        }
-        public static CommandInfo getCargo() {
-            return cargo;
-        }
+    public KCommando build() {
+        if (initializer == null) initializer=new KCMInitializer(params);
+        initializer.build();
+        return this;
     }
 
     private void setupLogger() {
