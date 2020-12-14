@@ -1,6 +1,5 @@
 package me.koply.kcommando;
 
-
 import me.koply.kcommando.internal.CommandType;
 
 public final class CommandToRun {
