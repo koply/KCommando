@@ -23,7 +23,7 @@ public class Main extends JDAIntegration {
               .setPackage("com.example.mybot.commands") // command classes package path
               .setPrefix("!")
               .setReadBotMessages(false) // default false
-              .setCaseSensivity(false) // default false
+              .setCaseSensivity(Locale.getDefault()) // Optional<Locale> -> default false
               .build();
     }
 }
@@ -110,10 +110,10 @@ public boolean handle(<EventFromApiWrapper> e, String[] args)  // CommandType.AR
 
 ## How To Install
 
-To always use the latest version, you can write 'master-SNAPSHOT' in the version field.
+To always use the latest version, you can write '-SNAPSHOT' in the version field. This use is not recommended.
 
 ### Example Repositories
-| [Rae Discord Bot](https://github.com/MusaBrt/Rae)
+ | [Rae Discord Bot](https://github.com/MusaBrt/Rae)
 
 ### With Maven:
 ```xml
@@ -122,9 +122,18 @@ To always use the latest version, you can write 'master-SNAPSHOT' in the version
     <url>https://jitpack.io</url>
 </repository>
 
+
+<!-- FOR JDA -->
 <dependency>
-    <groupId>com.github.MusaBrt</groupId>
-    <artifactId>KCommando</artifactId>
+    <groupId>com.github.MusaBrt.KCommando</groupId>
+	<artifactId>jda-integration</artifactId>
+    <version>JITPACK-VERSION</version>
+</dependency>
+
+<!-- FOR JAVACORD -->
+<dependency>
+    <groupId>com.github.MusaBrt.KCommando</groupId>
+    <artifactId>javacord-integration</artifactId>
     <version>JITPACK-VERSION</version>
 </dependency>
 ```
@@ -134,9 +143,17 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
+// FOR JDA
 dependencies {
-    implementation 'com.github.MusaBrt:KCommando:JITPACK-VERSION'
+    implementation 'com.github.MusaBrt.KCommando:jda-integration:JITPACK-VERSION'
+}
+
+// FOR JAVACORD
+dependencies {
+    implementation 'com.github.MusaBrt.KCommando:javacord-integration:JITPACK-VERSION'
 }
 ```
+
+**Please change 'JITPACK-VERSION' fields to latest release version.**
 
 Github packages are ignored. Please use jitpack repositories.
