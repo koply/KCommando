@@ -13,6 +13,7 @@ import java.util.Set;
 public class KInitializer {
 
     public final Parameters params;
+    public final Parameters getParams() { return params; }
 
     public KInitializer(Parameters params) {
         this.params = params;

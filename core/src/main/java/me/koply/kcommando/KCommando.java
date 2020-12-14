@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 public class KCommando {
 
-    public final Parameters params = new Parameters();
+    public Parameters params = new Parameters();
     public static final Logger logger = Logger.getLogger("KCommando");
     public static final String VERSION = "4.1";
 
@@ -28,6 +28,7 @@ public class KCommando {
      */
     private KInitializer initializer;
     public KCommando(final Integration integration, final KInitializer initializer) {
+        params = initializer.getParams();
         params.setIntegration(integration);
         this.initializer = initializer;
         setupLogger();
