@@ -10,11 +10,11 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Set;
 
-public class KCMInitializer {
+public class KInitializer {
 
     public final Parameters params;
 
-    public KCMInitializer(Parameters params) {
+    public KInitializer(Parameters params) {
         this.params = params;
     }
 

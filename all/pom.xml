@@ -56,11 +56,6 @@
                         <descriptorRefs>
                             <descriptorRef>jar-with-dependencies</descriptorRef>
                         </descriptorRefs>
-                        <archive>
-                            <manifest>
-                                <mainClass>me.koply.kcommando.all.Main</mainClass>
-                            </manifest>
-                        </archive>
                     </configuration>
                     <executions>
                         <execution>

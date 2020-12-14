@@ -26,15 +26,15 @@ public class KCommando {
     /*
      * only for advanced using
      */
-    private KCMInitializer initializer;
-    public KCommando(final Integration integration, KCMInitializer initializer) {
+    private KInitializer initializer;
+    public KCommando(final Integration integration, final KInitializer initializer) {
         params.setIntegration(integration);
         this.initializer = initializer;
         setupLogger();
     }
 
     public KCommando build() {
-        if (initializer == null) initializer=new KCMInitializer(params);
+        if (initializer == null) initializer=new KInitializer(params);
         initializer.build();
         return this;
     }
