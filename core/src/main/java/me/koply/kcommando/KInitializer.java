@@ -91,13 +91,16 @@ public class KInitializer {
             if (method.getReturnType() != boolean.class) continue;
             final Class<?>[] parameters = method.getParameterTypes();
             if (!parameters[0].getPackage().getName().contains("message")) continue;
-            if (parameters.length <= 2 && method.getName().equals("handle")) {
+            if (parameters.length <= 3 && method.getName().equals("handle")) {
                 if (parameters.length == 1) {
                     methodCounter++;
                     type = CommandType.EVENT;
-                } else if (parameters[1].isArray()) { // ??
+                } else if (parameters.length == 2 && parameters[1].isArray()) { // ??
                     methodCounter++;
                     type = CommandType.ARGNEVENT;
+                } else if (parameters.length == 3 && parameters[2] == String.class) {
+                    methodCounter++;
+                    type = CommandType.PREFIXED;
                 }
             }
         }
