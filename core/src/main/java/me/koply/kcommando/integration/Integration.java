@@ -16,9 +16,8 @@ public abstract class Integration {
 
     /**
      * Adds a custom prefix to the server, but the existing prefix causes it to lose functionality on that server.
-     *
-     * @param guildID: id number of the server to add prefix
-     * @param prefix: prefix to add
+     * @param guildID id number of the server to add prefix
+     * @param prefix prefix to add
      */
     public void addCustomPrefix(long guildID, String prefix) {
         customGuildPrefixes.computeIfAbsent(guildID, aLong -> new HashSet<>());
@@ -27,9 +26,8 @@ public abstract class Integration {
 
     /**
      * Removes a custom prefix from the server
-     *
-     * @param guildID: id number of the server to remove prefix
-     * @param prefix: prefix to remove
+     * @param guildID id number of the server to remove prefix
+     * @param prefix prefix to remove
      */
     public void removeCustomPrefix(long guildID, String prefix) {
         customGuildPrefixes.computeIfPresent(guildID, (aLong, strings) -> {
@@ -40,14 +38,19 @@ public abstract class Integration {
         if (customGuildPrefixes.get(guildID).size() == 0) customGuildPrefixes.remove(guildID);
     }
 
-    // Maybe TODO: enablable custom prefixes for guilds
-
     /**
      * Removes guild from the custom prefix map
-     *
-     * @param guildID: id number of the server to disable custom prefix
+     * @param guildID id number of the server to disable custom prefix
      */
     public void disableCustomPrefix(long guildID) {
         customGuildPrefixes.remove(guildID);
     }
+    // Maybe TODO enablable custom prefixes for guilds
+
+    /*
+     blacklist in guild
+     blacklist general
+     */
+
+
 }
