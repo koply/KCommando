@@ -104,8 +104,9 @@ public class BasicCommand extends JavacordCommand {
 You can use just one in your command class. Parameters cannot be empty. You don't need to null check.
 
 ```java
-public boolean handle(<EventFromApiWrapper> e) // CommandType.EVENT -> 0x01
-public boolean handle(<EventFromApiWrapper> e, String[] args)  // CommandType.ARGNEVENT -> 0x02
+boolean handle(<EventFromApiWrapper> e) // CommandType.EVENT -> 0x01
+boolean handle(<EventFromApiWrapper> e, String[] args)  // CommandType.ARGNEVENT -> 0x02
+boolean handle(<EventFromApiWrapper> e, String[] args, String prefix)  // CommandType.PREFIXED -> 0x03
 ```
 
 ## How To Install
