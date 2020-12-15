@@ -10,12 +10,12 @@ public class CProcessParameters {
     private final Object event;
 
     /**
-     * @param author: Command message authors information,
-     * @param webhookMessage: is command from webhook,
-     * @param rawCommand: Commands message raw string,
-     * @param guildName: Guild's name,
-     * @param guildID: Guild id. if command from private this field is must be -1
-     * @param event: Event object like MessageReceivedEvent
+     * @param author Command message authors information,
+     * @param webhookMessage is command from webhook,
+     * @param rawCommand Commands message raw string,
+     * @param guildName Guild's name,
+     * @param guildID Guild id. if command from private this field is must be -1
+     * @param event Event object like MessageReceivedEvent
      */
     public CProcessParameters(Author author, boolean webhookMessage, String rawCommand, String guildName, long guildID, final Object event) {
         this.author = author;
