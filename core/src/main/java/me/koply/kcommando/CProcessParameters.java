@@ -6,15 +6,23 @@ public class CProcessParameters {
     private final boolean webhookMessage;
     private final String rawCommand;
     private final String guildName;
-    private final boolean fromGuild;
+    private final long guildID;
     private final Object event;
 
-    public CProcessParameters(Author author, boolean webhookMessage, String rawCommand, String guildName, boolean fromGuild, final Object event) {
+    /**
+     * @param author: Command message authors information,
+     * @param webhookMessage: is command from webhook,
+     * @param rawCommand: Commands message raw string,
+     * @param guildName: Guild's name,
+     * @param guildID: Guild id. if command from private this field is must be -1
+     * @param event: Event object like MessageReceivedEvent
+     */
+    public CProcessParameters(Author author, boolean webhookMessage, String rawCommand, String guildName, long guildID, final Object event) {
         this.author = author;
         this.webhookMessage = webhookMessage;
         this.rawCommand = rawCommand;
         this.guildName = guildName;
-        this.fromGuild = fromGuild;
+        this.guildID = guildID;
         this.event = event;
     }
 
@@ -34,8 +42,8 @@ public class CProcessParameters {
         return guildName;
     }
 
-    public boolean isFromGuild() {
-        return fromGuild;
+    public long getGuildID() {
+        return guildID;
     }
 
     public Object getEvent() {

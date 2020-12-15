@@ -23,7 +23,7 @@ public class JDAMessageListener extends ListenerAdapter {
                 e.getMessage().isWebhookMessage(),
                 e.getMessage().getContentRaw(),
                 e.isFromGuild() ? e.getGuild().getName() : "(PRIVATE)",
-                e.isFromGuild(),
+                e.isFromGuild() ? e.getGuild().getIdLong() : -1,
                 e));
     }
 }

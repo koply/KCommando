@@ -13,15 +13,21 @@ public class Test extends JDAIntegration {
         super(jda);
     }
 
+    private static Test instance;
+    public static Test getInstance() { return instance; }
+
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
         String token = sc.nextLine();
         JDA jda = JDABuilder.createLight(token).build();
         jda.awaitReady();
 
-        KCommando kcm = new KCommando(new Test(jda))
+        instance = new Test(jda);
+
+        KCommando kcm = new KCommando(instance)
                 .setPackage(Test.class.getPackage().getName())
                 .setPrefix(".")
                 .build();
+
     }
 }

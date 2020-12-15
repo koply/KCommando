@@ -10,7 +10,7 @@ import org.javacord.api.event.message.MessageCreateEvent;
 
 import java.util.Optional;
 
-public class JavacordIntegration implements Integration {
+public class JavacordIntegration extends Integration {
 
     private final DiscordApi discordApi;
 
@@ -20,16 +20,16 @@ public class JavacordIntegration implements Integration {
 
     @Override
     public void register(CommandHandler commandHandler) {
-        discordApi.addMessageCreateListener(event ->
-            commandHandler.processCommand(new CProcessParameters(new CProcessParameters.Author(event.getMessageAuthor()
+        discordApi.addMessageCreateListener(e ->
+            commandHandler.processCommand(new CProcessParameters(new CProcessParameters.Author(e.getMessageAuthor()
                 .getDiscriminatedName(),
-                event.getMessageAuthor().getId(),
-                event.getMessageAuthor().isBotUser()),
-                event.getMessage().getType() == MessageType.NORMAL_WEBHOOK,
-                event.getMessage().getContent(),
-                channelName(event),
-                event.isServerMessage(),
-                event)));
+                e.getMessageAuthor().getId(),
+                e.getMessageAuthor().isBotUser()),
+                e.getMessage().getType() == MessageType.NORMAL_WEBHOOK,
+                e.getMessage().getContent(),
+                channelName(e),
+                e.isServerMessage() ? e.getServer().get().getId() : -1,
+                e)));
     }
 
     private String channelName(final MessageCreateEvent event) {

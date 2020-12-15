@@ -4,6 +4,7 @@ import me.koply.kcommando.internal.CommandType;
 import me.koply.kcommando.internal.KRunnable;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -13,6 +14,7 @@ import java.util.concurrent.Executors;
 public final class CommandHandler {
 
     private final Parameters params;
+    private final ConcurrentHashMap<Long, HashSet<String>> customPrefixes;
     private final Map<String, CommandToRun> commandsMap;
     private final ConcurrentMap<Long, Long> cooldownList = new ConcurrentHashMap<>();
     private final ExecutorService executorService = Executors.newCachedThreadPool();
@@ -20,6 +22,7 @@ public final class CommandHandler {
     public CommandHandler(Parameters params) {
         this.params = params;
         commandsMap = params.getCommandMethods();
+        customPrefixes = params.getIntegration().getCustomGuildPrefixes();
 
         CronService.getInstance().addRunnable(() -> {
             long current = System.currentTimeMillis();
@@ -37,6 +40,17 @@ public final class CommandHandler {
         KCommando.logger.info("initialized.");
     }
 
+    protected int checkPrefix(String commandRaw, long guildID) {
+        if (customPrefixes.containsKey(guildID)) {
+            for (String prefix : customPrefixes.get(guildID)) {
+                if (commandRaw.startsWith(prefix)) return prefix.length();
+            }
+            return -1;
+        } else {
+            return commandRaw.startsWith(params.getPrefix()) ? params.getPrefix().length() : -1;
+        }
+    }
+
     public void processCommand(final CProcessParameters cpp) {
         final long authorID = cpp.getAuthor().getId();
         if (authorID == params.getSelfUserId() ||
@@ -45,8 +59,11 @@ public final class CommandHandler {
             return;
 
         final String commandRaw = cpp.getRawCommand();
-        if (!commandRaw.startsWith(params.getPrefix())) return;
-        final String[] cmdArgs = commandRaw.substring(params.getPrefix().length()).split(" ");
+        final int resultPrefix = checkPrefix(commandRaw, cpp.getGuildID());
+        if (resultPrefix == -1) return;
+        
+
+        final String[] cmdArgs = commandRaw.substring(resultPrefix).split(" ");
         KCommando.logger.info(String.format("Command received | User: %s | Guild: %s | Command: %s", cpp.getAuthor().getName(), cpp.getGuildName(), commandRaw));
         final String command = params.getCaseSensitivity().isPresent() ? cmdArgs[0] : cmdArgs[0].toLowerCase();
 
@@ -57,7 +74,7 @@ public final class CommandHandler {
 
         final CommandToRun ctr = commandsMap.get(command);
         final CommandInfo info = ctr.getClazz().getInfo();
-        if (info.isGuildOnly() && !cpp.isFromGuild()) {
+        if (info.isGuildOnly() && cpp.getGuildID() == -1) {
             KCommando.logger.info("GuildOnly command used from private channel");
             if (info.getGuildOnlyCallback() != null) {
                 executorService.submit(() -> info.getGuildOnlyCallback().run(cpp.getEvent()));
@@ -65,7 +82,7 @@ public final class CommandHandler {
             }
             return;
         }
-        if (info.isPrivateOnly() && cpp.isFromGuild()) {
+        if (info.isPrivateOnly() && cpp.getGuildID() != -1) {
             KCommando.logger.info("PrivateOnly command used from guild channel");
             if (info.getPrivateOnlyCallback() != null) {
                 executorService.submit(() -> info.getPrivateOnlyCallback().run(cpp.getEvent()));

@@ -4,7 +4,7 @@ import me.koply.kcommando.CommandHandler;
 import me.koply.kcommando.integration.Integration;
 import net.dv8tion.jda.api.JDA;
 
-public class JDAIntegration implements Integration {
+public class JDAIntegration extends Integration {
 
     private final JDA jda;
 
