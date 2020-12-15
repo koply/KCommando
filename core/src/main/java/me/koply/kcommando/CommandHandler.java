@@ -1,6 +1,5 @@
 package me.koply.kcommando;
 
-import me.koply.kcommando.internal.CommandType;
 import me.koply.kcommando.internal.KRunnable;
 
 import java.util.Arrays;
@@ -62,7 +61,7 @@ public final class CommandHandler {
         final int resultPrefix = checkPrefix(commandRaw, cpp.getGuildID());
         if (resultPrefix == -1) return;
         
-
+        final String prefix = commandRaw.substring(0,resultPrefix);
         final String[] cmdArgs = commandRaw.substring(resultPrefix).split(" ");
         KCommando.logger.info(String.format("Command received | User: %s | Guild: %s | Command: %s", cpp.getAuthor().getName(), cpp.getGuildName(), commandRaw));
         final String command = params.getCaseSensitivity().isPresent() ? cmdArgs[0] : cmdArgs[0].toLowerCase();
@@ -78,7 +77,6 @@ public final class CommandHandler {
             KCommando.logger.info("GuildOnly command used from private channel");
             if (info.getGuildOnlyCallback() != null) {
                 executorService.submit(() -> info.getGuildOnlyCallback().run(cpp.getEvent()));
-                info.getGuildOnlyCallback().run(cpp.getEvent());
             }
             return;
         }
@@ -109,13 +107,13 @@ public final class CommandHandler {
         final long firstTime = System.currentTimeMillis();
         cooldownList.put(authorID, firstTime);
         if (info.isSync()) {
-            run(ctr, cpp.getEvent(), cmdArgs, info);
+            run(ctr, cpp.getEvent(), cmdArgs, info, prefix);
             KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
         } else {
-            KCommando.logger.info("Last command has been submitted to ExecutorService.");
             try {
                 executorService.submit(() -> {
-                    run(ctr, cpp.getEvent(), cmdArgs, info);
+                    KCommando.logger.info("Last command has been submitted to ExecutorService.");
+                    run(ctr, cpp.getEvent(), cmdArgs, info, prefix);
                     KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
                 });
             } catch (Throwable t) { t.printStackTrace(); }
@@ -124,17 +122,26 @@ public final class CommandHandler {
 
     }
 
-    private void run(CommandToRun ctr, Object event, String[] args, CommandInfo info) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void run(CommandToRun ctr, Object event, String[] args, CommandInfo info, String prefix) {
         final KRunnable onFalse = info.getOnFalseCallback();
         try {
-            if (ctr.getType() == CommandType.ARGNEVENT) {
-                if (!ctr.getClazz().handle(event, args) && onFalse != null) {
-                    onFalse.run(event);
-                }
-            } else {
-                if (!ctr.getClazz().handle(event) && onFalse != null) {
-                    onFalse.run(event);
-                }
+            switch (ctr.getType().value) {
+                case 0x01:
+                    if (!ctr.getClazz().handle(event) && onFalse != null) {
+                        onFalse.run(event);
+                    }
+                    break;
+                case 0x02:
+                    if (!ctr.getClazz().handle(event, args) && onFalse != null) {
+                        onFalse.run(event);
+                    }
+                    break;
+                case 0x03:
+                    if (!ctr.getClazz().handle(event, args, prefix) && onFalse != null) {
+                        onFalse.run(event);
+                    }
+                    break;
             }
         }
         catch (Throwable t) { KCommando.logger.info("Command crashed! Message: " + t.getMessage() + "\n" + Arrays.toString(t.getStackTrace())); }
