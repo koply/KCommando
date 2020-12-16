@@ -98,7 +98,6 @@ public class BasicCommand extends JavacordCommand {
 }
 ```
 
-
 ## Possible Handle Methods
 
 You can use just one in your command class. Parameters cannot be empty. You don't need to null check.
@@ -108,6 +107,36 @@ boolean handle(<EventFromApiWrapper> e) // CommandType.EVENT -> 0x01
 boolean handle(<EventFromApiWrapper> e, String[] args)  // CommandType.ARGNEVENT -> 0x02
 boolean handle(<EventFromApiWrapper> e, String[] args, String prefix)  // CommandType.PREFIXED -> 0x03
 ```
+
+## How To Use Custom Prefixes
+
+You can add custom prefixes for guilds.
+`Integration#addCustomPrefix(long guildID, String prefix)` this method for add a prefix for selected guild. 
+If a guild has a custom prefix, the normal prefix will be unavailable on that server, but will be able to use multiprefix at the same time.
+
+You can remove and disable custom prefixes for single guild.
+`Integration#removeCustomPrefix(long guildID, String prefix)` this method for remove a prefix for selected guild. This method is safe to use.
+
+`Integration#disableCustomPrefix(long guildID)` this method disables all custom prefixes for selected guild.
+
+## How To Use Blacklist
+
+I prefer use a static instance of subclass of Integration.
+
+##### Blacklist User From All Commands
+`Integration#getBlacklistedUsers().add(userID)` this method blocks selected user from all commands in the bot.
+
+`Integration#getBlacklistedUsers().remove(userID)` this method unblocks selected user.
+
+##### Blacklist Member From All Commands In Single Guild
+`Integration#getBlacklistedMembers()` this method returns all blacklisted members with guilds. (guildID, set of the blacklisted members)
+
+`Integration#getBlacklistedMembers(long guildID)` this method returns all blacklisted members in selected guild.
+
+##### Blacklist Channel From All Commands In Single Guild
+`Integration#getBlacklistedChannels()` this method returns all blacklisted channels with guilds. (guildID, set of the blacklisted channels)
+
+`Integration#getBlacklistedChannels(long guildID)` this method returns all blacklisted channels in selected guild.
 
 ## How To Install
 
