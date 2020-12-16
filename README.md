@@ -17,7 +17,10 @@ Annotation based command handler framework for JDA & Javacord.
 	- [Blacklist User](#blacklist-user)
 	- [Blacklist Member](#blacklist-member)
 	- [Blacklist Channel](#blacklist-channel)
-	
+	- [Callback For Blacklisted Usage](#callback-for-blacklisted-usages)
+6. [Install](#how-to-install)
+	- [Maven](#with-maven)
+	- [Gradle](#with-gradle)
 	
 # KCommando Integrations
 
@@ -144,31 +147,34 @@ If a guild has a custom prefix, the normal prefix will be unavailable on that se
 
 I prefer use a static instance of subclass of Integration. You can see tests of jda and javacord integrations.
 
-#### Blacklist User
+### Blacklist User
 ```java
 Integration#getBlacklistedUsers().add(userID) // blocks selected user from all commands in the bot.
 Integration#getBlacklistedUsers().remove(userID) // unblocks selected user.
 ```
 
-#### Blacklist Member
+### Blacklist Member
 ```java
 Integration#getBlacklistedMembers() // returns all blacklisted members with guilds. (guildID, set of the blacklisted members)
 Integration#getBlacklistedMembers(long guildID) // returns all blacklisted members in selected guild.
 ```
 
-#### Blacklist Channel
+### Blacklist Channel
 ```java
 Integration#getBlacklistedChannels() // returns all blacklisted channels with guilds. (guildID, set of the blacklisted channels)
 Integration#getBlacklistedChannels(long guildID) // returns all blacklisted channels in selected guild.
 ```
 
+### Callback For Blacklisted Usages
+
+When a command declined due to blacklist, runs this callback.
+```java
+Integration#setBlacklistCallback( (JRunnable) e -> e.getMessage().addReaction("⛔") )
+```
 
 ## How To Install
 
 To always use the latest version, you can write '-SNAPSHOT' in the version field. This use is not recommended.
-
-### Example Repositories
- | [Rae Discord Bot](https://github.com/MusaBrt/Rae)
 
 ### With Maven:
 ```xml
@@ -212,3 +218,6 @@ dependencies {
 **Please change 'JITPACK-VERSION' fields to latest release version.**
 
 Github packages are ignored. Please use jitpack repositories.
+
+> Example Repositories
+ | [Rae Discord Bot](https://github.com/MusaBrt/Rae)
