@@ -130,33 +130,37 @@ boolean handle(<EventFromApiWrapper> e, String[] args, String prefix)  // Comman
 
 You can add custom prefixes for guilds.
 
-`Integration#addCustomPrefix(long guildID, String prefix)` this method for add a prefix for selected guild. 
+```java
+Integration#addCustomPrefix(long guildID, String prefix) // adds a prefix for selected guild.
+Integration#removeCustomPrefix(long guildID, String prefix) // removes a prefix for selected guild. This method is safe to use.
+Integration#disableCustomPrefix(long guildID) // disables all custom prefixes for selected guild.
+```
 
 If a guild has a custom prefix, the normal prefix will be unavailable on that server, but will be able to use multiprefix at the same time. You can remove and disable custom prefixes for single guild.
 
-`Integration#removeCustomPrefix(long guildID, String prefix)` this method for remove a prefix for selected guild. This method is safe to use.
-
-`Integration#disableCustomPrefix(long guildID)` this method disables all custom prefixes for selected guild.
 
 
 ## How To Use Blacklist
 
-I prefer use a static instance of subclass of Integration.
+I prefer use a static instance of subclass of Integration. You can see tests of jda and javacord integrations.
 
 #### Blacklist User
-`Integration#getBlacklistedUsers().add(userID)` this method blocks selected user from all commands in the bot.
-
-`Integration#getBlacklistedUsers().remove(userID)` this method unblocks selected user.
+```java
+Integration#getBlacklistedUsers().add(userID) // blocks selected user from all commands in the bot.
+Integration#getBlacklistedUsers().remove(userID) // unblocks selected user.
+```
 
 #### Blacklist Member
-`Integration#getBlacklistedMembers()` this method returns all blacklisted members with guilds. (guildID, set of the blacklisted members)
-
-`Integration#getBlacklistedMembers(long guildID)` this method returns all blacklisted members in selected guild.
+```java
+Integration#getBlacklistedMembers() // returns all blacklisted members with guilds. (guildID, set of the blacklisted members)
+Integration#getBlacklistedMembers(long guildID) // returns all blacklisted members in selected guild.
+```
 
 #### Blacklist Channel
-`Integration#getBlacklistedChannels()` this method returns all blacklisted channels with guilds. (guildID, set of the blacklisted channels)
-
-`Integration#getBlacklistedChannels(long guildID)` this method returns all blacklisted channels in selected guild.
+```java
+Integration#getBlacklistedChannels() // returns all blacklisted channels with guilds. (guildID, set of the blacklisted channels)
+Integration#getBlacklistedChannels(long guildID) // returns all blacklisted channels in selected guild.
+```
 
 
 ## How To Install
