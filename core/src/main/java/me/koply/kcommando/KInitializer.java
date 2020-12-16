@@ -12,15 +12,29 @@ import java.util.Set;
 
 public class KInitializer {
 
-    public final Parameters params;
+    private final Parameters params;
     public final Parameters getParams() { return params; }
+    
+    private final CommandHandler commandHandler;
 
     public KInitializer(Parameters params) {
         this.params = params;
+        this.commandHandler = new CommandHandler(params);
     }
 
-    /*
-     * returns command classes
+    /**
+     * this constructor for advanced usage
+     *
+     * @param params parameters for the runs bot
+     * @param commandHandler custom commandHandler instance for the kcommando
+     */
+    public KInitializer(Parameters params, CommandHandler commandHandler) {
+        this.params = params;
+        this.commandHandler = commandHandler;
+    }
+
+    /**
+     * @return command classes
      */
     public Set<Class<? extends Command>> getCommands() {
         final Reflections reflections = new Reflections(params.getPackagePath());
@@ -29,7 +43,7 @@ public class KInitializer {
 
     private int classCounter = 0;
     /*
-     * Classic build pattern. Register's CommandHandler and uses reflections.
+     * Classic build pattern. Register's CommandHandler and uses reflections from getCommands method.
      */
     public void build() {
         KCommando.logger.info("KCommando launching!");
@@ -45,13 +59,13 @@ public class KInitializer {
         }
         CargoTruck.setCargo(null);
         params.setCommandMethods(commandMethods);
-        params.getIntegration().register(new CommandHandler(params));
+        params.getIntegration().register(commandHandler);
         KCommando.logger.info(classCounter + " commands are initialized.");
         KCommando.logger.info("KCommando system is ready o7");
     }
 
-    /*
-     * if returns true skips class
+    /**
+     * @return if returns true skips class
      */
     private boolean preCheck(Class<? extends Command> clazz) {
         if (clazz.getPackage().getName().contains("me.koply.kcommando.integration.impl")) return true;
@@ -62,8 +76,8 @@ public class KInitializer {
         return false;
     }
 
-    /*
-     * if returns true skips class
+    /**
+     * @return if returns true skips class
      */
     private boolean annotationCheck(Commando ant, String clazzName) {
         if (ant == null) {
@@ -76,13 +90,14 @@ public class KInitializer {
         return false;
     }
 
-    /*
-     * if returns null skips class
+    /**
      * checks handle methods for type
      *
      * a bit hardcoded object type checker
      * org.javacord.api.event.message
      * net.dv8tion.jda.api.events.message
+     *
+     * @return if returns null, skips the current class
      */
     private CommandType methodCheck(Class<? extends Command> clazz) {
         int methodCounter = 0;

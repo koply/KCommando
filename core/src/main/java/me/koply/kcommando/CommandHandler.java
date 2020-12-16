@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public final class CommandHandler {
+public class CommandHandler {
 
     private final Parameters params;
     private final ConcurrentHashMap<Long, HashSet<String>> customPrefixes;
@@ -39,6 +39,12 @@ public final class CommandHandler {
         KCommando.logger.info("initialized.");
     }
 
+    /**
+     *
+     * @param commandRaw raw command string
+     * @param guildID guild id for check prefix
+     * @return if prefix correct returns prefix's length.
+     */
     protected int checkPrefix(String commandRaw, long guildID) {
         if (customPrefixes.containsKey(guildID)) {
             for (String prefix : customPrefixes.get(guildID)) {
@@ -48,6 +54,63 @@ public final class CommandHandler {
         } else {
             return commandRaw.startsWith(params.getPrefix()) ? params.getPrefix().length() : -1;
         }
+    }
+
+    /**
+     * @param command pure command string
+     * @return commandsMaps contains command param
+     */
+    protected boolean containsCommand(String command) {
+         return commandsMap.containsKey(command);
+    }
+
+    /**
+     * command check for guildOnly, privateOnly, ownerOnly
+     *
+     * @param info commandInfo object from current command
+     * @param cpp command process parameters for usage
+     * @return if command correct, returns false.
+     */
+    protected boolean commandCheck(CommandInfo info, CProcessParameters cpp) {
+        if (info.isGuildOnly() && cpp.getGuildID() == -1) {
+            KCommando.logger.info("GuildOnly command used from private channel");
+            if (info.getGuildOnlyCallback() != null) {
+                executorService.submit(() -> info.getGuildOnlyCallback().run(cpp.getEvent()));
+            }
+            return true;
+        }
+        if (info.isPrivateOnly() && cpp.getGuildID() != -1) {
+            KCommando.logger.info("PrivateOnly command used from guild channel");
+            if (info.getPrivateOnlyCallback() != null) {
+                executorService.submit(() -> info.getPrivateOnlyCallback().run(cpp.getEvent()));
+            }
+            return true;
+        }
+        if (info.isOwnerOnly() && !params.getOwners().contains(cpp.getAuthor().getId() + "")) {
+            KCommando.logger.info("OwnerOnly command used by normal user.");
+            if (info.getOwnerOnlyCallback() != null) {
+                executorService.submit(() -> info.getOwnerOnlyCallback().run(cpp.getEvent()));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param info current command info
+     * @param cpp command process parameters
+     * @param authorID current commands author id
+     * @return if cooldown is correct returns false
+     */
+    protected boolean cooldownCheck(CommandInfo info, CProcessParameters cpp, long authorID) {
+        if (cooldownMapChecker(authorID, cooldownList, params.getCooldown()) && !params.getOwners().contains(authorID + "")) {
+            KCommando.logger.info("Last command has been declined due to cooldown check");
+            if (info.getCooldownCallback() != null) {
+                executorService.submit(() -> info.getCooldownCallback().run(cpp.getEvent()));
+            }
+            return true;
+        }
+        return false;
     }
 
     public void processCommand(final CProcessParameters cpp) {
@@ -66,64 +129,51 @@ public final class CommandHandler {
         KCommando.logger.info(String.format("Command received | User: %s | Guild: %s | Command: %s", cpp.getAuthor().getName(), cpp.getGuildName(), commandRaw));
         final String command = params.getCaseSensitivity().isPresent() ? cmdArgs[0] : cmdArgs[0].toLowerCase();
 
-        if (!commandsMap.containsKey(command)) {
+        if (!containsCommand(command)) {
             KCommando.logger.info("Last command was not a valid command.");
             return;
         }
 
         final CommandToRun ctr = commandsMap.get(command);
         final CommandInfo info = ctr.getClazz().getInfo();
-        if (info.isGuildOnly() && cpp.getGuildID() == -1) {
-            KCommando.logger.info("GuildOnly command used from private channel");
-            if (info.getGuildOnlyCallback() != null) {
-                executorService.submit(() -> info.getGuildOnlyCallback().run(cpp.getEvent()));
-            }
-            return;
-        }
-        if (info.isPrivateOnly() && cpp.getGuildID() != -1) {
-            KCommando.logger.info("PrivateOnly command used from guild channel");
-            if (info.getPrivateOnlyCallback() != null) {
-                executorService.submit(() -> info.getPrivateOnlyCallback().run(cpp.getEvent()));
-            }
-            return;
-        }
 
-        if (info.isOwnerOnly() && !params.getOwners().contains(authorID + "")) {
-            KCommando.logger.info("OwnerOnly command used by normal user.");
-            if (info.getOwnerOnlyCallback() != null) {
-                executorService.submit(() -> info.getOwnerOnlyCallback().run(cpp.getEvent()));
-            }
-            return;
-        }
-
-        if (cooldownCheck(authorID, cooldownList, params.getCooldown()) && !params.getOwners().contains(authorID + "")) {
-            KCommando.logger.info("Last command has been declined due to cooldown check");
-            if (info.getCooldownCallback() != null) {
-                executorService.submit(() -> info.getCooldownCallback().run(cpp.getEvent()));
-            }
+        if (commandCheck(info, cpp) || cooldownCheck(info, cpp, authorID)) {
             return;
         }
 
         final long firstTime = System.currentTimeMillis();
         cooldownList.put(authorID, firstTime);
-        if (info.isSync()) {
-            run(ctr, cpp.getEvent(), cmdArgs, info, prefix);
-            KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
-        } else {
+        runCommand(firstTime, info, ctr, cpp, cmdArgs, prefix);
+    }
+
+    /**
+     * runs the command
+     *
+     * @param firstTime first time of the command for submitted to runner
+     * @param info CommandInfo object for get some information about the command
+     * @param ctr CommandToRun object for run the command
+     * @param cpp Command parameters from api
+     * @param cmdArgs raw command text splitted by spaces and cutted the prefix.
+     * @param prefix the current prefix
+     */
+    protected void runCommand(long firstTime, CommandInfo info, CommandToRun ctr, CProcessParameters cpp, String[] cmdArgs, String prefix) {
+        // async runner first. because async chance is higher than sync commands
+        if (!info.isSync()) {
             try {
                 executorService.submit(() -> {
                     KCommando.logger.info("Last command has been submitted to ExecutorService.");
-                    run(ctr, cpp.getEvent(), cmdArgs, info, prefix);
+                    internalCaller(ctr, cpp.getEvent(), cmdArgs, info, prefix);
                     KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
                 });
             } catch (Throwable t) { t.printStackTrace(); }
+        } else {
+            internalCaller(ctr, cpp.getEvent(), cmdArgs, info, prefix);
+            KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
         }
-
-
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void run(CommandToRun ctr, Object event, String[] args, CommandInfo info, String prefix) {
+    protected void internalCaller(CommandToRun ctr, Object event, String[] args, CommandInfo info, String prefix) {
         final KRunnable onFalse = info.getOnFalseCallback();
         try {
             switch (ctr.getType().value) {
@@ -147,7 +197,7 @@ public final class CommandHandler {
         catch (Throwable t) { KCommando.logger.info("Command crashed! Message: " + t.getMessage() + "\n" + Arrays.toString(t.getStackTrace())); }
     }
 
-    private boolean cooldownCheck(long userID, ConcurrentMap<Long, Long> cooldownList, long cooldown) {
+    protected boolean cooldownMapChecker(long userID, ConcurrentMap<Long, Long> cooldownList, long cooldown) {
         long listTime = cooldownList.getOrDefault(userID, 0L);
         return listTime != 0 && System.currentTimeMillis() - listTime <= cooldown;
     }
