@@ -41,6 +41,24 @@ public class CommandHandler {
 
     /**
      *
+     * @param guildID current guild's id, if command couldn't have guild its must be -1
+     * @param authorID current author's id.
+     * @param channelID current guild text channel id. if command couldn't have channel its must be -1
+     * @return if command blacklisted returns true.
+     */
+    protected boolean blacklistCheck(long guildID, long authorID, long channelID) {
+        HashSet<Long> blacklistedMembers = guildID == -1 ? null : params.getIntegration().getBlacklistedMembers().getOrDefault(guildID, null);
+        boolean isBlacklistedMember = blacklistedMembers != null && blacklistedMembers.contains(authorID);
+
+        HashSet<Long> blacklistedChannels = channelID == -1 ? null : params.getIntegration().getBlacklistedChannels().getOrDefault(guildID, null);
+        boolean isBlacklistedChannel = blacklistedChannels != null && blacklistedChannels.contains(channelID);
+
+        return params.getIntegration().getBlacklistedUsers().contains(authorID) ||
+                isBlacklistedMember || isBlacklistedChannel;
+    }
+
+    /**
+     *
      * @param commandRaw raw command string
      * @param guildID guild id for check prefix
      * @return if prefix correct returns prefix's length.
@@ -119,6 +137,12 @@ public class CommandHandler {
                 (!params.isReadBotMessages() && cpp.getAuthor().isBot()) ||
                 cpp.isWebhookMessage())
             return;
+
+        if (blacklistCheck(cpp.getGuildID(), authorID, cpp.getChannelID())) {
+            if (params.getIntegration().getBlacklistCallback() != null)
+                params.getIntegration().getBlacklistCallback().run(cpp.getEvent());
+            return;
+        }
 
         final String commandRaw = cpp.getRawCommand();
         final int resultPrefix = checkPrefix(commandRaw, cpp.getGuildID());

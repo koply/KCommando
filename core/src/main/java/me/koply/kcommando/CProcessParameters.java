@@ -8,6 +8,7 @@ public class CProcessParameters {
     private final String guildName;
     private final long guildID;
     private final Object event;
+    private final long channelID;
 
     /**
      * @param author Command message authors information,
@@ -17,13 +18,14 @@ public class CProcessParameters {
      * @param guildID Guild id. if command from private this field is must be -1
      * @param event Event object like MessageReceivedEvent
      */
-    public CProcessParameters(Author author, boolean webhookMessage, String rawCommand, String guildName, long guildID, final Object event) {
+    public CProcessParameters(Author author, boolean webhookMessage, String rawCommand, String guildName, long guildID, final Object event, long channelID) {
         this.author = author;
         this.webhookMessage = webhookMessage;
         this.rawCommand = rawCommand;
         this.guildName = guildName;
         this.guildID = guildID;
         this.event = event;
+        this.channelID = channelID;
     }
 
     public Author getAuthor() {
@@ -48,6 +50,10 @@ public class CProcessParameters {
 
     public Object getEvent() {
         return event;
+    }
+
+    public long getChannelID() {
+        return channelID;
     }
 
     public static final class Author {

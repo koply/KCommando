@@ -1,8 +1,11 @@
 package me.koply.kcommando.integration;
 
 import me.koply.kcommando.CommandHandler;
+import me.koply.kcommando.internal.KRunnable;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class Integration {
@@ -11,7 +14,7 @@ public abstract class Integration {
     public abstract void register(CommandHandler commandHandler);
 
     // for set the custom guild prefixes
-    static final ConcurrentHashMap<Long, HashSet<String>> customGuildPrefixes = new ConcurrentHashMap<>();
+    final ConcurrentHashMap<Long, HashSet<String>> customGuildPrefixes = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<Long, HashSet<String>> getCustomGuildPrefixes() { return customGuildPrefixes; }
 
     /**
@@ -45,12 +48,28 @@ public abstract class Integration {
     public void disableCustomPrefix(long guildID) {
         customGuildPrefixes.remove(guildID);
     }
-    // Maybe TODO enablable custom prefixes for guilds
+    // Maybe TODO: enablable custom prefixes for guilds
 
-    /*
-     blacklist in guild
-     blacklist general
-     */
+    // blacklist user from all commands
+    final Set<Long> blacklistedUsers = Collections.synchronizedSet(new HashSet<>());
+    public Set<Long> getBlacklistedUsers() { return blacklistedUsers; }
 
+    // blacklist in single guild
+    // guild id, blacklisted user id
+    final ConcurrentHashMap<Long, HashSet<Long>> blacklistedMembers = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Long, HashSet<Long>> getBlacklistedMembers() { return blacklistedMembers; }
 
+    // blacklist a guild's channel
+    final ConcurrentHashMap<Long, HashSet<Long>> blacklistedChannels = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Long, HashSet<Long>> getBlacklistedChannels() { return blacklistedChannels; }
+
+    private KRunnable blacklistCallback;
+    public Integration setBlacklistCallback(KRunnable callback) {
+        blacklistCallback = callback;
+        return this;
+    }
+
+    public KRunnable getBlacklistCallback() {
+        return blacklistCallback;
+    }
 }
