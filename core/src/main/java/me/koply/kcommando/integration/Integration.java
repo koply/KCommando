@@ -40,28 +40,57 @@ public abstract class Integration {
         });
         if (customGuildPrefixes.get(guildID).size() == 0) customGuildPrefixes.remove(guildID);
     }
-
     /**
      * Removes guild from the custom prefix map
      * @param guildID id number of the server to disable custom prefix
      */
     public void disableCustomPrefix(long guildID) {
         customGuildPrefixes.remove(guildID);
+        // Maybe TODO: enablable custom prefixes for guilds
     }
-    // Maybe TODO: enablable custom prefixes for guilds
 
-    // blacklist user from all commands
+    // blacklist user from all commands in the bot
     final Set<Long> blacklistedUsers = Collections.synchronizedSet(new HashSet<>());
     public Set<Long> getBlacklistedUsers() { return blacklistedUsers; }
 
     // blacklist in single guild
     // guild id, blacklisted user id
     final ConcurrentHashMap<Long, HashSet<Long>> blacklistedMembers = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<Long, HashSet<Long>> getBlacklistedMembers() { return blacklistedMembers; }
 
-    // blacklist a guild's channel
+    /**
+     * @return all blacklisted members as map (guildID, set of the member ids)
+     */
+    public ConcurrentHashMap<Long, HashSet<Long>> getBlacklistedMembers() {
+        return blacklistedMembers;
+    }
+
+    /**
+     * @param guildID to get blacklisted members on the guild
+     * @return all blacklisted members on the selected guild
+     */
+    public HashSet<Long> getBlacklistedMembers(long guildID) {
+        blacklistedMembers.computeIfAbsent(guildID, aLong -> new HashSet<>());
+        return blacklistedMembers.get(guildID);
+    }
+
+    // blacklist for guild channels
     final ConcurrentHashMap<Long, HashSet<Long>> blacklistedChannels = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<Long, HashSet<Long>> getBlacklistedChannels() { return blacklistedChannels; }
+
+    /**
+     * @return all blacklisted channels as map (guildID, set of the channel ids)
+     */
+    public ConcurrentHashMap<Long, HashSet<Long>> getBlacklistedChannels() {
+        return blacklistedChannels;
+    }
+
+    /**
+     * @param guildID to get blacklisted channels on the guild
+     * @return all blacklisted channels on the selected guild
+     */
+    public HashSet<Long> getBlacklistedChannels(long guildID) {
+        blacklistedChannels.computeIfAbsent(guildID, aLong -> new HashSet<>());
+        return blacklistedChannels.get(guildID);
+    }
 
     private KRunnable blacklistCallback;
     public Integration setBlacklistCallback(KRunnable callback) {
