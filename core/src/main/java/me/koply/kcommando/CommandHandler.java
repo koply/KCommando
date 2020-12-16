@@ -131,6 +131,17 @@ public class CommandHandler {
         return false;
     }
 
+    protected void foundSimilars(String command, Object event) {
+        HashSet<CommandInfo> similarCommands = new HashSet<>();
+        for (Map.Entry<String, CommandToRun> entry : commandsMap.entrySet()) {
+            double similarity = Util.similarity(entry.getKey(), command);
+            if (similarity >= 0.5) {
+                similarCommands.add(entry.getValue().getClazz().getInfo());
+            }
+        }
+        params.getIntegration().getSuggestionsCallback().run(event, similarCommands);
+    }
+
     public void processCommand(final CProcessParameters cpp) {
         final long authorID = cpp.getAuthor().getId();
         if (authorID == params.getSelfUserId() ||
@@ -154,7 +165,9 @@ public class CommandHandler {
         final String command = params.getCaseSensitivity().isPresent() ? cmdArgs[0] : cmdArgs[0].toLowerCase();
 
         if (!containsCommand(command)) {
-            KCommando.logger.info("Last command was not a valid command.");
+            if (params.getIntegration().getSuggestionsCallback() != null) {
+                foundSimilars(command, cpp.getEvent());
+            }
             return;
         }
 

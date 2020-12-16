@@ -15,11 +15,11 @@ public class KInitializer {
     private final Parameters params;
     public final Parameters getParams() { return params; }
     
-    private final CommandHandler commandHandler;
+    private final Class<? extends CommandHandler> commandHandler;
 
     public KInitializer(Parameters params) {
         this.params = params;
-        this.commandHandler = new CommandHandler(params);
+        this.commandHandler = CommandHandler.class;
     }
 
     /**
@@ -30,7 +30,7 @@ public class KInitializer {
      */
     public KInitializer(Parameters params, CommandHandler commandHandler) {
         this.params = params;
-        this.commandHandler = commandHandler;
+        this.commandHandler = commandHandler.getClass();
     }
 
     /**
@@ -59,7 +59,13 @@ public class KInitializer {
         }
         CargoTruck.setCargo(null);
         params.setCommandMethods(commandMethods);
-        params.getIntegration().register(commandHandler);
+        try {
+            params.getIntegration().register(commandHandler.getDeclaredConstructor(Parameters.class).newInstance(params));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            KCommando.logger.info("An unexpected error caught at initialize the command handler.");
+        }
+
         KCommando.logger.info(classCounter + " commands are initialized.");
         KCommando.logger.info("KCommando system is ready o7");
     }

@@ -2,6 +2,7 @@ package me.koply.kcommando.integration;
 
 import me.koply.kcommando.CommandHandler;
 import me.koply.kcommando.internal.KRunnable;
+import me.koply.kcommando.internal.SuggestionsCallback;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -93,12 +94,39 @@ public abstract class Integration {
     }
 
     private KRunnable blacklistCallback;
+
+    /**
+     * When a command declined due to a blacklist, runs this callback.
+     * @param callback to run
+     * @return this integration
+     */
     public Integration setBlacklistCallback(KRunnable callback) {
         blacklistCallback = callback;
         return this;
     }
 
+    // internal
     public KRunnable getBlacklistCallback() {
         return blacklistCallback;
+    }
+
+
+    private SuggestionsCallback suggestionsCallback;
+
+    /**
+     * When a command declined due to wrong usage and the bot has similar commands calls this callback
+     * if it doesn't find similar commands, the HashSet will be empty
+     *
+     * @param suggestionsCallback to run
+     * @return this integration
+     */
+    public Integration setSuggestionsCallback(SuggestionsCallback suggestionsCallback) {
+        this.suggestionsCallback = suggestionsCallback;
+        return this;
+    }
+
+    // internal
+    public SuggestionsCallback getSuggestionsCallback() {
+        return suggestionsCallback;
     }
 }
