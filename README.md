@@ -5,7 +5,7 @@
 [![jitpack-version](https://jitpack.io/v/MusaBrt/KCommando.svg)](https://jitpack.io/#MusaBrt/KCommando)
 ![LICENSE](https://img.shields.io/github/license/MusaBrt/KCommando?style=flat)
 
-Annotation based command handler framework for JDA & Javacord.
+Annotation-based multifunctional command handler framework for JDA & Javacord.
 
 ## Features
 1. [Integrations](#kcommando-integrations)
@@ -13,7 +13,7 @@ Annotation based command handler framework for JDA & Javacord.
 3. [Javacord Section](#javacord-section)
 4. [Command Features](#command-features)
 	- [Possible Handle Methods](#possible-handle-methods)
-	- [Command Callbacks](#command-callbacks)
+	- [Command Callbacks](#command-callbacks) *(onFalse, ownerOnly, guildOnly, privateOnly, cooldown)*
 5. [Cool Features](#cool-features)
 	- [Custom Prefixes](#how-to-use-custom-prefixes)
 	- [Blacklist User](#blacklist-user)
@@ -135,27 +135,27 @@ boolean handle(<Event> e, String[] args, String prefix)  // CommandType.PREFIXED
 ## Command Callbacks
 **Note:** All lines must be inside the constructor of your command.
 
-#### On False Callback: This callback is runs when the command is returns false.
+#### On False Callback: This callback is run when the command returns false.
 ```java
 getInfo().setOnFalseCallback( (JRunnable) e -> e.getMessage().addReaction("⛔") );
 ```
 
-#### Owner Only Callback: This callback is runs when the command for the bot owner is used by a normal user.
+#### Owner Only Callback: This callback is run when the command for the bot owner is used by a normal user.
 ```java
 getInfo().setOwnerOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
 
-#### Guild Only Callback: This callback is runs when the command for guild in the private message is used.
+#### Guild Only Callback: This callback is run when the command for guild in the private message is used.
 ```java
 getInfo().setGuildOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
 
-#### Private Only Callback: This callback is runs when the command for private conversations in the guild is used.
+#### Private Only Callback: This callback is run when the command for private conversations in the guild is used.
 ```java
 getInfo().setPrivateOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
 
-#### Cooldown Callback: This callback is runs when command declined due cooldown.
+#### Cooldown Callback: This callback is run when the command declined due to cooldown.
 ```java
 getInfo().setCooldownCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
@@ -167,18 +167,18 @@ getInfo().setCooldownCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔
 You can add custom prefixes for guilds.
 
 ```java
-Integration#addCustomPrefix(long guildID, String prefix) // adds a prefix for selected guild.
-Integration#removeCustomPrefix(long guildID, String prefix) // removes a prefix for selected guild. This method is safe to use.
+Integration#addCustomPrefix(long guildID, String prefix) // adds a prefix for the selected guild.
+Integration#removeCustomPrefix(long guildID, String prefix) // removes a prefix for the selected guild. This method is safe to use.
 Integration#disableCustomPrefix(long guildID) // disables all custom prefixes for selected guild.
 ```
 
-If a guild has a custom prefix, the normal prefix will be unavailable on that server, but will be able to use multiprefix at the same time. You can remove and disable custom prefixes for single guild.
+If a guild has a custom prefix, the normal prefix will be unavailable on that guild but will be able to use more than one prefixes at the same time. You can remove and disable custom prefixes for the single guild.
 
 
 
 ## How To Use Blacklist
 
-I prefer use a static instance of subclass of Integration. You can see tests of jda and javacord integrations.
+I prefer to use a static instance of a subclass of Integration. You can see tests of jda and javacord integrations.
 
 ### Blacklist User
 ```java
@@ -188,19 +188,19 @@ Integration#getBlacklistedUsers().remove(userID) // unblocks selected user.
 
 ### Blacklist Member
 ```java
-Integration#getBlacklistedMembers() // returns all blacklisted members with guilds. (guildID, set of the blacklisted members)
-Integration#getBlacklistedMembers(long guildID) // returns all blacklisted members in selected guild.
+Integration#getBlacklistedMembers() // returns all blacklisted members with guilds. (guildID, the set of the blacklisted members)
+Integration#getBlacklistedMembers(long guildID) // returns all blacklisted members in the selected guild.
 ```
 
 ### Blacklist Channel
 ```java
-Integration#getBlacklistedChannels() // returns all blacklisted channels with guilds. (guildID, set of the blacklisted channels)
-Integration#getBlacklistedChannels(long guildID) // returns all blacklisted channels in selected guild.
+Integration#getBlacklistedChannels() // returns all blacklisted channels with guilds. (guildID, the set of the blacklisted channels)
+Integration#getBlacklistedChannels(long guildID) // returns all blacklisted channels in the selected guild.
 ```
 
 ### Callback For Blacklisted Usages
 
-When a command declined due to blacklist, runs this callback.
+When a command declined due to a blacklist, runs this callback.
 ```java
 Integration#setBlacklistCallback( (JRunnable) e -> e.getMessage().addReaction("⛔") )
 ```
@@ -248,7 +248,7 @@ dependencies {
 }
 ```
 
-**Please change 'JITPACK-VERSION' fields to latest release version.**
+**Please change 'JITPACK-VERSION' fields to the latest release version.**
 
 Github packages are ignored. Please use jitpack repositories.
 
