@@ -136,27 +136,28 @@ boolean handle(<Event> e, String[] args, String prefix)  // CommandType.PREFIXED
 **Note:** All lines must be inside the constructor of your command.
 
 #### On False Callback: This callback is runs when the command is returns false.
-
 ```java
 getInfo().setOnFalseCallback( (JRunnable) e -> e.getMessage().addReaction("⛔") );
 ```
 
 #### Owner Only Callback: This callback is runs when the command for the bot owner is used by a normal user.
-
 ```java
 getInfo().setOwnerOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
 
-#### Guild Only Callback: This callback is runs when a command for guild in the private message is used.
-
+#### Guild Only Callback: This callback is runs when the command for guild in the private message is used.
 ```java
 getInfo().setGuildOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
 
-#### Private Only Callback: This callback is runs when a command for private conversations in the guild is used.
-
+#### Private Only Callback: This callback is runs when the command for private conversations in the guild is used.
 ```java
 getInfo().setPrivateOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
+```
+
+#### Cooldown Callback: This callback is runs when command declined due cooldown.
+```java
+getInfo().setCooldownCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
 
 # Cool Features
