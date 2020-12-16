@@ -24,6 +24,6 @@ public class JDAMessageListener extends ListenerAdapter {
                 e.getMessage().getContentRaw(),
                 e.isFromGuild() ? e.getGuild().getName() : "(PRIVATE)",
                 e.isFromGuild() ? e.getGuild().getIdLong() : -1,
-                e));
+                e, e.getChannel().getIdLong()));
     }
 }

@@ -29,7 +29,7 @@ public class JavacordIntegration extends Integration {
                 e.getMessage().getContent(),
                 channelName(e),
                 e.isServerMessage() ? e.getServer().get().getId() : -1,
-                e)));
+                e, e.getChannel().getId())));
     }
 
     private String channelName(final MessageCreateEvent event) {
