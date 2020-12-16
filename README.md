@@ -182,8 +182,8 @@ I prefer to use a static instance of a subclass of Integration. You can see test
 
 ### Blacklist User
 ```java
-Integration#getBlacklistedUsers().add(userID) // blocks selected user from all commands in the bot.
-Integration#getBlacklistedUsers().remove(userID) // unblocks selected user.
+Integration#getBlacklistedUsers().add(long userID) // blocks selected user from all commands in the bot.
+Integration#getBlacklistedUsers().remove(long userID) // unblocks selected user.
 ```
 
 ### Blacklist Member
