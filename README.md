@@ -13,10 +13,7 @@ Annotation based command handler framework for JDA & Javacord.
 3. [Javacord Section](#javacord-section)
 4. [Command Features](#command-features)
 	- [Possible Handle Methods](#possible-handle-methods)
-	- [On False Callback](#on-false-callback)
-	- [Owner Only Callback](#owner-only-callback)
-	- [Guild Only Callback](#guild-only-callback)
-	- [Private Only Callback](#private-only-callback)
+	- [Command Callbacks](#command-callbacks)
 5. [Cool Features](#cool-features)
 	- [Custom Prefixes](#how-to-use-custom-prefixes)
 	- [Blacklist User](#blacklist-user)
@@ -135,32 +132,29 @@ boolean handle(<Event> e, String[] args)  // CommandType.ARGNEVENT -> 0x02
 boolean handle(<Event> e, String[] args, String prefix)  // CommandType.PREFIXED -> 0x03
 ```
 
-**Note For Callbacks:** All lines must be inside the constructor of your command.
+## Command Callbacks
+**Note:** All lines must be inside the constructor of your command.
 
-## On False Callback
+#### On False Callback: This callback is runs when the command is returns false.
 
-This callback is runs when the command is returns false.
 ```java
 getInfo().setOnFalseCallback( (JRunnable) e -> e.getMessage().addReaction("⛔") );
 ```
 
-## Owner Only Callback
+#### Owner Only Callback: This callback is runs when the command for the bot owner is used by a normal user.
 
-This callback is runs when the command for the bot owner is used by a normal user.
 ```java
 getInfo().setOwnerOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
 
-## Guild Only Callback
+#### Guild Only Callback: This callback is runs when a command for guild in the private message is used.
 
-This callback is runs when a command for guild in the private message is used.
 ```java
 getInfo().setGuildOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
 
-## Private Only Callback
+#### Private Only Callback: This callback is runs when a command for private conversations in the guild is used.
 
-This callback is runs when a command for private conversations in the guild is used.
 ```java
 getInfo().setPrivateOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
