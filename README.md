@@ -21,6 +21,7 @@ Annotation based command handler framework for JDA & Javacord.
 6. [Install](#how-to-install)
 	- [Maven](#with-maven)
 	- [Gradle](#with-gradle)
+7. [Example Repositories](#example-repositories)
 	
 # KCommando Integrations
 
@@ -219,5 +220,5 @@ dependencies {
 
 Github packages are ignored. Please use jitpack repositories.
 
-> Example Repositories
+## Example Repositories
  | [Rae Discord Bot](https://github.com/MusaBrt/Rae)
