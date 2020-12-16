@@ -11,7 +11,12 @@ Annotation based command handler framework for JDA & Javacord.
 1. [Integrations](#kcommando-integrations)
 2. [JDA Section](#integration-usage-for-jda)
 3. [Javacord Section](#javacord-section)
-4. [Handle Methods](#possible-command-handle-methods)
+4. [Command Features](#command-features)
+	- [Possible Handle Methods](#possible-handle-methods)
+	- [On False Callback](#on-false-callback)
+	- [Owner Only Callback](#owner-only-callback)
+	- [Guild Only Callback](#guild-only-callback)
+	- [Private Only Callback](#private-only-callback)
 5. [Cool Features](#cool-features)
 	- [Custom Prefixes](#how-to-use-custom-prefixes)
 	- [Blacklist User](#blacklist-user)
@@ -118,17 +123,49 @@ public class BasicCommand extends JavacordCommand {
 }
 ```
 
-## Possible Command Handle Methods
+# Command Features
+
+## Possible Handle Methods
 
 You can use just one in your command class. Parameters cannot be empty. You don't need to null check.
 
 ```java
-boolean handle(<EventFromApiWrapper> e) // CommandType.EVENT -> 0x01
-boolean handle(<EventFromApiWrapper> e, String[] args)  // CommandType.ARGNEVENT -> 0x02
-boolean handle(<EventFromApiWrapper> e, String[] args, String prefix)  // CommandType.PREFIXED -> 0x03
+boolean handle(<Event> e) // CommandType.EVENT -> 0x01
+boolean handle(<Event> e, String[] args)  // CommandType.ARGNEVENT -> 0x02
+boolean handle(<Event> e, String[] args, String prefix)  // CommandType.PREFIXED -> 0x03
 ```
 
+**Note For Callbacks:** All lines must be inside the constructor of your command.
 
+## On False Callback
+
+This callback is runs when the command is returns false.
+```java
+getInfo().setOnFalseCallback( (JRunnable) e -> e.getMessage().addReaction("⛔") );
+```
+
+## Owner Only Callback
+
+This callback is runs when the command for the bot owner is used by a normal user.
+```java
+getInfo().setOwnerOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
+```
+
+## Guild Only Callback
+
+This callback is runs when a command for guild in the private message is used.
+```java
+getInfo().setGuildOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
+```
+
+## Private Only Callback
+
+This callback is runs when a command for private conversations in the guild is used.
+```java
+getInfo().setPrivateOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
+```
+
+# Cool Features
 
 ## How To Use Custom Prefixes
 
