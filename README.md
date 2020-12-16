@@ -7,7 +7,21 @@
 
 Annotation based command handler framework for JDA & Javacord.
 
-## Usage For JDA
+## Features
+1. [Integrations](#kcommando-integrations)
+2. [JDA Section](#integration-usage-for-jda)
+3. [Javacord Section](#javacord-section)
+4. [Handle Methods](#possible-command-handle-methods)
+5. [Cool Features](#cool-features)
+	- [Custom Prefixes](#how-to-use-custom-prefixes)
+	- [Blacklist User](#blacklist-user)
+	- [Blacklist Member](#blacklist-member)
+	- [Blacklist Channel](#blacklist-channel)
+	
+	
+# KCommando Integrations
+
+### Integration Usage For JDA
 ```java
 public class Main extends JDAIntegration {
     
@@ -60,7 +74,9 @@ _Optionally you can use final class and final handle method for decrease init ti
 
 Aliases field is can be an array: `aliases = {"ping", "pingu"}`
 
-## Usage For Javacord
+## Javacord Section
+
+### Integration Usage For Javacord
 ```java
 public class Main extends JavacordIntegration {
     
@@ -98,7 +114,7 @@ public class BasicCommand extends JavacordCommand {
 }
 ```
 
-## Possible Handle Methods
+## Possible Command Handle Methods
 
 You can use just one in your command class. Parameters cannot be empty. You don't need to null check.
 
@@ -108,35 +124,40 @@ boolean handle(<EventFromApiWrapper> e, String[] args)  // CommandType.ARGNEVENT
 boolean handle(<EventFromApiWrapper> e, String[] args, String prefix)  // CommandType.PREFIXED -> 0x03
 ```
 
+
+
 ## How To Use Custom Prefixes
 
 You can add custom prefixes for guilds.
-`Integration#addCustomPrefix(long guildID, String prefix)` this method for add a prefix for selected guild. 
-If a guild has a custom prefix, the normal prefix will be unavailable on that server, but will be able to use multiprefix at the same time.
 
-You can remove and disable custom prefixes for single guild.
+`Integration#addCustomPrefix(long guildID, String prefix)` this method for add a prefix for selected guild. 
+
+If a guild has a custom prefix, the normal prefix will be unavailable on that server, but will be able to use multiprefix at the same time. You can remove and disable custom prefixes for single guild.
+
 `Integration#removeCustomPrefix(long guildID, String prefix)` this method for remove a prefix for selected guild. This method is safe to use.
 
 `Integration#disableCustomPrefix(long guildID)` this method disables all custom prefixes for selected guild.
+
 
 ## How To Use Blacklist
 
 I prefer use a static instance of subclass of Integration.
 
-##### Blacklist User From All Commands
+#### Blacklist User
 `Integration#getBlacklistedUsers().add(userID)` this method blocks selected user from all commands in the bot.
 
 `Integration#getBlacklistedUsers().remove(userID)` this method unblocks selected user.
 
-##### Blacklist Member From All Commands In Single Guild
+#### Blacklist Member
 `Integration#getBlacklistedMembers()` this method returns all blacklisted members with guilds. (guildID, set of the blacklisted members)
 
 `Integration#getBlacklistedMembers(long guildID)` this method returns all blacklisted members in selected guild.
 
-##### Blacklist Channel From All Commands In Single Guild
+#### Blacklist Channel
 `Integration#getBlacklistedChannels()` this method returns all blacklisted channels with guilds. (guildID, set of the blacklisted channels)
 
 `Integration#getBlacklistedChannels(long guildID)` this method returns all blacklisted channels in selected guild.
+
 
 ## How To Install
 
