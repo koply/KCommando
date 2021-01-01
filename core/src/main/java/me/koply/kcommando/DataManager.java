@@ -10,11 +10,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DataManager {
 
     private final File dataFile;
-    public DataManager(File dataFile) {
+    private final Parameters params;
+    public DataManager(File dataFile, Parameters params) {
         this.dataFile = dataFile;
+        this.params = params;
     }
 
-    public void initDataFile(Parameters params) {
+    public void initDataFile() {
         final String dataString = Util.readFile(dataFile);
         if (dataString.isEmpty()) {
             KCommando.logger.warning("Data file isn't filled. Skipping...");
@@ -38,7 +40,7 @@ public class DataManager {
                 final JSONArray blacklistedMembersArray = guildObject.getJSONArray("blacklistedMembers");
                 if (!blacklistedMembersArray.isEmpty()) {
                     final HashSet<Long> blacklistedMembers = params.getIntegration().getBlacklistedMembers(id);
-                    for (int i = -1; ++i< blacklistedMembersArray.length();) {
+                    for (int i = -1; ++i < blacklistedMembersArray.length();) {
                         blacklistedMembers.add((long) blacklistedMembersArray.get(i));
                     }
                 }
@@ -46,7 +48,7 @@ public class DataManager {
                 final JSONArray blacklistedChannelsArray = guildObject.getJSONArray("blacklistedChannels");
                 if (!blacklistedChannelsArray.isEmpty()) {
                     final HashSet<Long> blacklistedChannels = params.getIntegration().getBlacklistedChannels(id);
-                    for (int i = -1; ++i< blacklistedChannelsArray.length();) {
+                    for (int i = -1; ++i < blacklistedChannelsArray.length();) {
                         blacklistedChannels.add((long) blacklistedChannelsArray.get(i));
                     }
                 }
@@ -65,6 +67,7 @@ public class DataManager {
     }
 
     public void saveDatas() {
+        final JSONObject rootJson = new JSONObject();
 
     }
 }
