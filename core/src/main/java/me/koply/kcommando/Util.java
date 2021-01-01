@@ -1,8 +1,31 @@
 package me.koply.kcommando;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 class Util {
+
+    public static String readFile(File file) {
+        final StringBuilder sb = new StringBuilder();
+        try {
+            final FileInputStream fs = new FileInputStream(file);
+            final InputStreamReader isr = new InputStreamReader(fs, StandardCharsets.UTF_8);
+            final BufferedReader br = new BufferedReader(isr);
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                sb.append(line).append("\n");
+            }
+            fs.close();
+            isr.close();
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            return sb.toString();
+        }
+    }
+
     /**
      * JaroWinklerDistance
      * Copied from https://commons.apache.org/sandbox/commons-text/jacoco/org.apache.commons.text.similarity/JaroWinklerDistance.java.html

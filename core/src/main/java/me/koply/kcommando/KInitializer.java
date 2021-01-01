@@ -10,12 +10,13 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Set;
 
+@SuppressWarnings("rawtypes") // raw use of parameterized class 'Command'
 public class KInitializer {
 
     private final Parameters params;
     public final Parameters getParams() { return params; }
     
-    private final Class<? extends CommandHandler> commandHandler;
+    private final  Class<? extends CommandHandler>commandHandler;
 
     public KInitializer(Parameters params) {
         this.params = params;
@@ -26,11 +27,11 @@ public class KInitializer {
      * this constructor for advanced usage
      *
      * @param params parameters for the runs bot
-     * @param commandHandler custom commandHandler instance for the kcommando
+     * @param commandHandler custom commandHandler *class* for the kcommando
      */
-    public KInitializer(Parameters params, CommandHandler commandHandler) {
+    public KInitializer(Parameters params, Class<? extends CommandHandler> commandHandler) {
         this.params = params;
-        this.commandHandler = commandHandler.getClass();
+        this.commandHandler = commandHandler;
     }
 
     /**
@@ -42,7 +43,7 @@ public class KInitializer {
     }
 
     private int classCounter = 0;
-    /*
+    /**
      * Classic build pattern. Register's CommandHandler and uses reflections from getCommands method.
      */
     public void build() {
@@ -50,6 +51,8 @@ public class KInitializer {
         if (params.getIntegration() == null || params.getPackagePath() == null) {
             throw new IllegalArgumentException("We couldn't found integration or commands package path :(");
         }
+
+        params.getDataManager().ifPresent(x -> x.initDataFile(params));
 
         final HashMap<String, CommandToRun> commandMethods = new HashMap<>();
         final Set<Class<? extends Command>> classes = getCommands();
@@ -133,14 +136,15 @@ public class KInitializer {
         return type;
     }
 
-    /*
+    /**
      * creates info and pushes to cargo
+     *
+     * @param ant the command annotation
      */
-    public CommandInfo infoGenerator(Commando ant) {
+    public void infoGenerator(Commando ant) {
         CommandInfo tempinfo = new CommandInfo();
         tempinfo.initialize(ant);
         CargoTruck.setCargo(tempinfo);
-        return tempinfo;
     }
 
     public void registerCommand(final Class<? extends Command> clazz, final HashMap<String, CommandToRun> commandMethods) {

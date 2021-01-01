@@ -25,8 +25,8 @@ public class KCommando {
 
     private KInitializer initializer;
 
-    /*
-     * only for advanced using
+    /**
+     * only advanced using
      */
     public KCommando(final Integration integration, final KInitializer initializer) {
         params = initializer.getParams();

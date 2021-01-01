@@ -15,6 +15,7 @@ public class JavacordIntegration extends Integration {
     private final DiscordApi discordApi;
 
     public JavacordIntegration(final DiscordApi discordApi) {
+        super(discordApi.getClientId());
         this.discordApi = discordApi;
     }
 
@@ -28,7 +29,7 @@ public class JavacordIntegration extends Integration {
                 e.getMessage().getType() == MessageType.NORMAL_WEBHOOK,
                 e.getMessage().getContent(),
                 channelName(e),
-                e.isServerMessage() ? e.getServer().get().getId() : -1,
+                e.getServer().isPresent() ? e.getServer().get().getId() : -1,
                 e, e.getChannel().getId())));
     }
 

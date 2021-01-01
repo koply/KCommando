@@ -2,6 +2,7 @@ package me.koply.kcommando;
 
 import me.koply.kcommando.integration.Integration;
 
+import java.io.File;
 import java.util.*;
 
 public final class Parameters {
@@ -13,7 +14,7 @@ public final class Parameters {
     private Map<String, CommandToRun> commandMethods;
     private boolean readBotMessages;
     private Optional<Locale> caseSensitivity = Optional.empty();
-    private long selfUserId;
+    private Optional<DataManager> dataManager = Optional.empty();
 
     public final Map<String, CommandToRun> getCommandMethods() {
         return commandMethods;
@@ -77,14 +78,6 @@ public final class Parameters {
         caseSensitivity = Optional.ofNullable(cs);
     }
 
-    public long getSelfUserId() {
-        return selfUserId;
-    }
-
-    public void setSelfUserId(long selfUserId) {
-        this.selfUserId = selfUserId;
-    }
-
     public Integration getIntegration() {
         return integration;
     }
@@ -93,4 +86,12 @@ public final class Parameters {
         this.integration = integration;
     }
 
+    public Optional<DataManager> getDataManager() {
+        return dataManager;
+    }
+
+    public Parameters setDataFile(File dataFile) {
+        this.dataManager = Optional.of(new DataManager(dataFile));
+        return this;
+    }
 }

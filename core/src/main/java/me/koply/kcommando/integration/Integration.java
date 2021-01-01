@@ -11,7 +11,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class Integration {
 
-    // for kcommando core to register Handler to api wrapper
+    private final long selfID;
+    public final long getSelfID() { return selfID; }
+    protected Integration(long selfID) {
+        this.selfID = selfID;
+    }
+
+    // registers the handler for this instegration
     public abstract void register(CommandHandler commandHandler);
 
     // for set the custom guild prefixes
@@ -45,9 +51,9 @@ public abstract class Integration {
      * Removes guild from the custom prefix map
      * @param guildID id number of the server to disable custom prefix
      */
-    public void disableCustomPrefix(long guildID) {
+    public void removeAllCustomPrefixes(long guildID) {
         customGuildPrefixes.remove(guildID);
-        // Maybe TODO: enablable custom prefixes for guilds
+        // Still maybe TODO: enablable custom prefixes for guilds
     }
 
     // blacklist user from all commands in the bot

@@ -9,6 +9,7 @@ public class JDAIntegration extends Integration {
     private final JDA jda;
 
     public JDAIntegration(final JDA jda) {
+        super(jda.getSelfUser().getIdLong());
         this.jda = jda;
     }
 

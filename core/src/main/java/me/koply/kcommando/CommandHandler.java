@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 public class CommandHandler {
 
     private final Parameters params;
+    private final long selfUserID;
     private final ConcurrentHashMap<Long, HashSet<String>> customPrefixes;
     private final Map<String, CommandToRun> commandsMap;
     private final ConcurrentMap<Long, Long> cooldownList = new ConcurrentHashMap<>();
@@ -22,6 +23,7 @@ public class CommandHandler {
         this.params = params;
         commandsMap = params.getCommandMethods();
         customPrefixes = params.getIntegration().getCustomGuildPrefixes();
+        selfUserID = params.getIntegration().getSelfID();
 
         CronService.getInstance().addRunnable(() -> {
             long current = System.currentTimeMillis();
@@ -40,7 +42,6 @@ public class CommandHandler {
     }
 
     /**
-     *
      * @param guildID current guild's id, if command couldn't have guild its must be -1
      * @param authorID current author's id.
      * @param channelID current guild text channel id. if command couldn't have channel its must be -1
@@ -58,7 +59,6 @@ public class CommandHandler {
     }
 
     /**
-     *
      * @param commandRaw raw command string
      * @param guildID guild id for check prefix
      * @return if prefix correct returns prefix's length.
@@ -144,7 +144,7 @@ public class CommandHandler {
 
     public void processCommand(final CProcessParameters cpp) {
         final long authorID = cpp.getAuthor().getId();
-        if (authorID == params.getSelfUserId() ||
+        if (authorID == selfUserID ||
                 (!params.isReadBotMessages() && cpp.getAuthor().isBot()) ||
                 cpp.isWebhookMessage())
             return;
