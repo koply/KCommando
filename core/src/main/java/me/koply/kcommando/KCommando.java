@@ -2,14 +2,9 @@ package me.koply.kcommando;
 
 import me.koply.kcommando.integration.Integration;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.io.File;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 public class KCommando {
@@ -20,7 +15,6 @@ public class KCommando {
 
     public KCommando(final Integration integration) {
         params.setIntegration(integration);
-        setupLogger();
     }
 
     private KInitializer initializer;
@@ -32,7 +26,6 @@ public class KCommando {
         params = initializer.getParams();
         params.setIntegration(integration);
         this.initializer = initializer;
-        setupLogger();
     }
 
     public KCommando build() {
@@ -40,24 +33,6 @@ public class KCommando {
         initializer.build();
         return this;
     }
-
-    private void setupLogger() {
-        logger.setUseParentHandlers(false);
-
-        ConsoleHandler consoleHandler = new ConsoleHandler();
-        consoleHandler.setFormatter(new Formatter() {
-            private final DateFormat formatter = new SimpleDateFormat("HH:mm:ss.SSS");
-            @Override
-            public String format(LogRecord record) {
-                final String[] splitted = record.getSourceClassName().split("\\.");
-                final String name = splitted[splitted.length-1];
-                return String.format("[%s %s] %s -> %s\n", formatter.format(new Date(record.getMillis())), record.getLevel(), name, record.getMessage());
-            }
-        });
-        logger.addHandler(consoleHandler);
-    }
-
-    // setters
 
     public KCommando setPackage(String path) { params.setPackagePath(path);
         return this;
@@ -79,6 +54,11 @@ public class KCommando {
         return this;
     }
 
+    public KCommando setDataFile(File dataFile) {
+        params.setDataFile(dataFile);
+        return this;
+    }
+
     public KCommando useCaseSensitivity() {
         return useCaseSensitivity(Locale.getDefault());
     }
@@ -86,6 +66,10 @@ public class KCommando {
     public KCommando useCaseSensitivity(Locale locale) {
         params.setCaseSensitivity(locale);
         return this;
+    }
+
+    public Parameters getParameters() {
+        return params;
     }
 
     /*
@@ -96,11 +80,9 @@ public class KCommando {
     public KCommando setGroupLocales(Map<String, String> groupLocales) { params.setGroupLocales(groupLocales);
         return this;
         /*
-          TODO: Pre defined Help command in lib with groupLocales.
+          Still TODO: Pre defined Help command in lib with groupLocales.
          */
     }
 
-    public Parameters getParameters() {
-        return params;
-    }
+
 }
