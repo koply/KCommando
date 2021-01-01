@@ -15,6 +15,7 @@ Annotation-based multifunctional command handler framework for JDA & Javacord.
 	- [Possible Handle Methods](#possible-handle-methods)
 	- [Command Callbacks](#command-callbacks) *(onFalse, ownerOnly, guildOnly, privateOnly, cooldown)*
 5. [Cool Features](#cool-features)
+	- [Suggested Commands](#how-to-use-suggested-commands)
 	- [Custom Prefixes](#how-to-use-custom-prefixes)
 	- [Blacklist User](#blacklist-user)
 	- [Blacklist Member](#blacklist-member)
@@ -161,6 +162,24 @@ getInfo().setCooldownCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔
 ```
 
 # Cool Features
+
+## How To Use Suggested Commands
+
+Runs this callback with the similar commands list and the event object when an incorrect command is used. You must change the `**event**` part according to the API you use.
+
+```java
+Integration#setSuggestionsCallback((SuggestionsCallback<**Event**>) (e,suggestions) -> {
+	if (suggestions.isEmpty()) {
+		// no commands found
+		return;
+	}
+	StringBuilder sb = new StringBuilder();
+	for (CommandInfo info : suggestions) {
+		sb.append( Arrays.toString(info.getAliases()) ).append(" - ");
+	}
+	e.getChannel().sendMessage("Last command is not found. Suggestions: \n"+sb.toString()).queue();
+	});
+```
 
 ## How To Use Custom Prefixes
 
