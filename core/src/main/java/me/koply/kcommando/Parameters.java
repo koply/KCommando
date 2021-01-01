@@ -91,7 +91,7 @@ public final class Parameters {
     }
 
     public Parameters setDataFile(File dataFile) {
-        this.dataManager = Optional.of(new DataManager(dataFile));
+        this.dataManager = Optional.of(new DataManager(dataFile, this));
         return this;
     }
 }

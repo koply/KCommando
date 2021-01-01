@@ -52,7 +52,7 @@ public class KInitializer {
             throw new IllegalArgumentException("We couldn't found integration or commands package path :(");
         }
 
-        params.getDataManager().ifPresent(x -> x.initDataFile(params));
+        params.getDataManager().ifPresent(DataManager::initDataFile);
 
         final HashMap<String, CommandToRun> commandMethods = new HashMap<>();
         final Set<Class<? extends Command>> classes = getCommands();

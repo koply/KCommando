@@ -40,11 +40,11 @@ public class Main extends JDAIntegration {
         
         KCommando kcommando = new KCommando(new Main(jda))
               .setCooldown(5000L) // 5 seconds as 5000 ms
-              .setOwners("FIRST_OWNER_ID", "SECOND_OWNER_ID")
+              .setOwners("FIRST_OWNER_ID", "SECOND_OWNER_ID") // varargs
               .setPackage("com.example.mybot.commands") // command classes package path
               .setPrefix("!")
               .setReadBotMessages(false) // default false
-              .setCaseSensivity(Locale.getDefault()) // Optional<Locale> -> default false
+              .setCaseSensivity(Locale.getDefault()) // Locale to use case sensivity
               .build();
     }
 }
@@ -54,18 +54,18 @@ That's it. Now, we need a command.
 
 ### How To Create A Command For JDA
 ```java
-@Commando(name = "Ping!"
-           aliases = "ping",
-           description = "Pong!", /* "-" default */
-           guildOnly = false, /* false default */
-           ownerOnly = false, /* false default */
-           privateOnly = false, /* false default */
-           sync = false /* false default */)
+@Commando(name = "Ping!",
+          aliases = "ping",
+          description = "Pong!", /* "-"   default */
+          guildOnly = false,     /* false default */
+          ownerOnly = false,     /* false default */
+          privateOnly = false,   /* false default */
+          sync = false           /* false default */ )
 public class BasicCommand extends JDACommand {
     
     public BasicCommand() {
         // when handle method returns false, runs the declared callback like this
-        getInfo().setOnFalseCallback( (KRunnable<MessageReceivedEvent>) e -> e.getMessage().addReaction("⛔").queue() );
+        getInfo().setOnFalseCallback( (JRunnable) e -> e.getMessage().addReaction("⛔").queue() );
     }
 
     @Override
@@ -103,13 +103,13 @@ public class Main extends JavacordIntegration {
 
 ### How To Create A Command For Javacord
 ```java
-@Commando(name = "Ping!"
-           aliases = "ping")
+@Commando(name = "Ping!",
+          aliases = "ping")
 public class BasicCommand extends JavacordCommand {
     
     public BasicCommand() {
         // when handle method returns false, runs the declared callback like this
-        getInfo().setOnFalseCallback( (KRunnable<MessageCreateEvent>) e -> e.getMessage().addReaction("⛔") );
+        getInfo().setOnFalseCallback( (JRunnable) e -> e.getMessage().addReaction("⛔") );
     }
 
     @Override
@@ -136,28 +136,33 @@ boolean handle(<Event> e, String[] args, String prefix)  // CommandType.PREFIXED
 ## Command Callbacks
 **Note:** All lines must be inside the constructor of your command.
 
-#### On False Callback: This callback is run when the command returns false.
+#### On False Callback: 
 ```java
+// This callback is run when the command returns false.
 getInfo().setOnFalseCallback( (JRunnable) e -> e.getMessage().addReaction("⛔") );
 ```
 
-#### Owner Only Callback: This callback is run when the command for the bot owner is used by a normal user.
+#### Owner Only Callback: 
 ```java
+// This callback is run when the command for the bot owner is used by a normal user.
 getInfo().setOwnerOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
 
-#### Guild Only Callback: This callback is run when the command for guild in the private message is used.
+#### Guild Only Callback: 
 ```java
+// This callback is run when the command for guild in the private message is used.
 getInfo().setGuildOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
 
-#### Private Only Callback: This callback is run when the command for private conversations in the guild is used.
+#### Private Only Callback:
 ```java
+// This callback is run when the command for private conversations in the guild is used.
 getInfo().setPrivateOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
 
-#### Cooldown Callback: This callback is run when the command declined due to cooldown.
+#### Cooldown Callback:
 ```java
+// This callback is run when the command declined due to cooldown.
 getInfo().setCooldownCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
 
@@ -178,7 +183,7 @@ Integration#setSuggestionsCallback((SuggestionsCallback<**Event**>) (e,suggestio
 		sb.append( Arrays.toString(info.getAliases()) ).append(" - ");
 	}
 	e.getChannel().sendMessage("Last command is not found. Suggestions: \n"+sb.toString()).queue();
-	});
+});
 ```
 
 ## How To Use Custom Prefixes
@@ -186,9 +191,14 @@ Integration#setSuggestionsCallback((SuggestionsCallback<**Event**>) (e,suggestio
 You can add custom prefixes for guilds.
 
 ```java
-Integration#addCustomPrefix(long guildID, String prefix) // adds a prefix for the selected guild.
-Integration#removeCustomPrefix(long guildID, String prefix) // removes a prefix for the selected guild. This method is safe to use.
-Integration#disableCustomPrefix(long guildID) // disables all custom prefixes for selected guild.
+// adds a prefix for the selected guild.
+Integration#addCustomPrefix(long guildID, String prefix) 
+
+// removes a prefix for the selected guild. This method is safe to use.
+Integration#removeCustomPrefix(long guildID, String prefix)
+
+// removes all custom prefixes for selected guild. 
+Integration#removeAllCustomPrefixes(long guildID) 
 ```
 
 If a guild has a custom prefix, the normal prefix will be unavailable on that guild but will be able to use more than one prefixes at the same time. You can remove and disable custom prefixes for the single guild.
@@ -201,20 +211,29 @@ I prefer to use a static instance of a subclass of Integration. You can see test
 
 ### Blacklist User
 ```java
-Integration#getBlacklistedUsers().add(long userID) // blocks selected user from all commands in the bot.
-Integration#getBlacklistedUsers().remove(long userID) // unblocks selected user.
+// blocks selected user from all commands in the bot.
+Integration#getBlacklistedUsers().add(long userID) 
+
+// unblocks selected user.
+Integration#getBlacklistedUsers().remove(long userID) 
 ```
 
 ### Blacklist Member
 ```java
-Integration#getBlacklistedMembers() // returns all blacklisted members with guilds. (guildID, the set of the blacklisted members)
-Integration#getBlacklistedMembers(long guildID) // returns all blacklisted members in the selected guild.
+// returns all blacklisted members with guilds. (guildID, the set of the blacklisted members)
+Integration#getBlacklistedMembers() 
+
+// returns all blacklisted members in the selected guild.
+Integration#getBlacklistedMembers(long guildID) 
 ```
 
 ### Blacklist Channel
 ```java
-Integration#getBlacklistedChannels() // returns all blacklisted channels with guilds. (guildID, the set of the blacklisted channels)
-Integration#getBlacklistedChannels(long guildID) // returns all blacklisted channels in the selected guild.
+// returns all blacklisted channels with guilds. (guildID, the set of the blacklisted channels)
+Integration#getBlacklistedChannels()
+
+// returns all blacklisted channels in the selected guild.
+Integration#getBlacklistedChannels(long guildID)
 ```
 
 ### Callback For Blacklisted Usages
