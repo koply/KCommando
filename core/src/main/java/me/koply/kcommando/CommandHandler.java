@@ -131,7 +131,7 @@ public class CommandHandler {
         return false;
     }
 
-    protected void foundSimilars(String command, Object event) {
+    protected void findSimilars(String command, Object event) {
         HashSet<CommandInfo> similarCommands = new HashSet<>();
         for (Map.Entry<String, CommandToRun> entry : commandsMap.entrySet()) {
             double similarity = Util.similarity(entry.getKey(), command);
@@ -166,7 +166,7 @@ public class CommandHandler {
 
         if (!containsCommand(command)) {
             if (params.getIntegration().getSuggestionsCallback() != null) {
-                foundSimilars(command, cpp.getEvent());
+                findSimilars(command, cpp.getEvent());
             }
             return;
         }
