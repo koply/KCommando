@@ -320,3 +320,5 @@ Github packages are ignored. Please use jitpack repositories.
 
 ## Example Repositories
  | [Rae Discord Bot](https://github.com/MusaBrt/Rae)
+
+Tests are includes help and prefix usage. [JDA Test Area](https://github.com/MusaBrt/KCommando/tree/master/jda-integration/src/main/test/me/koply/jdatest) - [Javacord Test Area](https://github.com/MusaBrt/KCommando/tree/master/javacord-integration/src/main/test/me/koply/javacordtest)
