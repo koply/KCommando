@@ -16,82 +16,103 @@ public final class Parameters {
     private Optional<Locale> caseSensitivity = Optional.empty();
     private Optional<DataManager> dataManager = Optional.empty();
 
-    public final Map<String, CommandToRun> getCommandMethods() {
-        return commandMethods;
+    public final Integration getIntegration() {
+        return integration;
     }
 
-    public final void setCommandMethods(HashMap<String, CommandToRun> commandMethods) {
-        this.commandMethods = commandMethods;
+    public final Parameters setIntegration(Integration integration) {
+        this.integration = integration;
+        return this;
     }
 
     public final String getPackagePath() {
         return packagePath;
     }
 
-    public final void setPackagePath(String packagePath) {
+    public final Parameters setPackagePath(String packagePath) {
         this.packagePath = packagePath;
+        return this;
     }
 
     public final String getPrefix() {
         return prefix;
     }
 
-    public final void setPrefix(String prefix) {
+    public final Parameters setPrefix(String prefix) {
         this.prefix = prefix;
+        return this;
     }
 
     public final long getCooldown() {
         return cooldown;
     }
 
-    public final void setCooldown(long cooldown) {
+    public final Parameters setCooldown(long cooldown) {
         this.cooldown = cooldown;
+        return this;
     }
 
     public final Map<String, String> getGroupLocales() {
         return groupLocales;
     }
 
-    public final void setGroupLocales(Map<String, String> groupLocales) {
+    public final Parameters setGroupLocales(Map<String, String> groupLocales) {
         this.groupLocales = groupLocales;
+        return this;
+    }
+
+    public final Parameters setOwners(String...owners) {
+        this.owners.addAll(Arrays.asList(owners));
+        return this;
     }
 
     public final Set<String> getOwners() {
         return owners;
     }
 
-    public final void setOwners(String[] owners) {
-        this.owners.addAll(Arrays.asList(owners));
+    public final Map<String, CommandToRun> getCommandMethods() {
+        return commandMethods;
+    }
+
+    public final Parameters setCommandMethods(Map<String, CommandToRun> commandMethods) {
+        this.commandMethods = commandMethods;
+        return this;
     }
 
     public final boolean isReadBotMessages() {
         return readBotMessages;
     }
 
-    public final void setReadBotMessages(boolean readBotMessages) {
+    public final Parameters setReadBotMessages(boolean readBotMessages) {
         this.readBotMessages = readBotMessages;
+        return this;
     }
 
-    public Optional<Locale> getCaseSensitivity() { return caseSensitivity; }
-
-    public final void setCaseSensitivity(Locale cs) {
-        caseSensitivity = Optional.ofNullable(cs);
+    public final Optional<Locale> getCaseSensitivity() {
+        return caseSensitivity;
     }
 
-    public Integration getIntegration() {
-        return integration;
+    public final Parameters setCaseSensitivity(Locale caseSensitivity) {
+        this.caseSensitivity = Optional.of(caseSensitivity);
+        return this;
     }
 
-    public void setIntegration(Integration integration) {
-        this.integration = integration;
-    }
-
-    public Optional<DataManager> getDataManager() {
+    public final Optional<DataManager> getDataManager() {
         return dataManager;
     }
 
-    public Parameters setDataFile(File dataFile) {
+    public final Parameters setDataManager(Optional<DataManager> dataManager) {
+        this.dataManager = dataManager;
+        return this;
+    }
+
+    public final Parameters setDataFile(File dataFile) {
         this.dataManager = Optional.of(new DataManager(dataFile, this));
+        return this;
+    }
+
+    public final Parameters setDataManager(DataManager dataManager) {
+        this.dataManager = Optional.of(dataManager);
         return this;
     }
 }

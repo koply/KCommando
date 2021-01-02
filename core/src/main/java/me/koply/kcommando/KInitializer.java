@@ -22,7 +22,7 @@ public class KInitializer {
     private final Parameters params;
     public final Parameters getParams() { return params; }
     
-    private final  Class<? extends CommandHandler>commandHandler;
+    private final Class<? extends CommandHandler> commandHandler;
 
     public KInitializer(Parameters params) {
         this.params = params;

@@ -8,6 +8,8 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.event.message.MessageCreateEvent;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -22,7 +24,7 @@ public class Test extends JavacordIntegration {
         return instance;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Scanner sc = new Scanner(System.in);
         String token = sc.nextLine();
         DiscordApi api = new DiscordApiBuilder().setToken(token).login().join();
@@ -41,9 +43,13 @@ public class Test extends JavacordIntegration {
             e.getChannel().sendMessage("Last command is not found. Suggestions: \n"+sb.toString());
         });
 
+        File dataFile = new File("data.json");
+        if (!dataFile.exists()) dataFile.createNewFile();
+
         KCommando kcm = new KCommando(instance)
                 .setPackage(Test.class.getPackage().getName())
                 .setPrefix(".")
+                .setDataFile(dataFile)
                 .build();
     }
 }

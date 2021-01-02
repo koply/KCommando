@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -40,9 +41,13 @@ public class Test extends JDAIntegration {
             e.getChannel().sendMessage("Last command is not found. Suggestions: \n"+sb.toString()).queue();
         });
 
+        File dataFile = new File("data.json");
+        if (!dataFile.exists()) dataFile.createNewFile();
+
         KCommando kcm = new KCommando(instance)
                 .setPackage(Test.class.getPackage().getName())
                 .setPrefix(".")
+                .setDataFile(dataFile)
                 .build();
 
     }
