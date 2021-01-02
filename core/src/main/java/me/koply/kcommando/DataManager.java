@@ -119,10 +119,10 @@ public class DataManager {
 
     private <T> void dataProcess(String key, HashMap<Long, JSONObject> guildObject, Map.Entry<Long, HashSet<T>> entry) {
         JSONObject tempGuild = guildObject.containsKey(entry.getKey()) ? guildObject.get(entry.getKey()) : new JSONObject();
-        if (tempGuild.opt("id") != null) tempGuild.put("id", entry.getKey());
-        JSONArray tempPrefixes = new JSONArray();
-        tempPrefixes.putAll(entry.getValue());
-        tempGuild.put(key, tempPrefixes);
+        if (tempGuild.opt("id") == null) tempGuild.put("id", entry.getKey());
+        JSONArray tempArray = new JSONArray();
+        tempArray.putAll(entry.getValue());
+        tempGuild.put(key, tempArray);
         guildObject.put(entry.getKey(), tempGuild);
     }
 }
