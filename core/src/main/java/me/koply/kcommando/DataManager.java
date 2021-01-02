@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +38,6 @@ public class DataManager {
      *   ],
      *   "blacklistedUsers": [0000000L, 0000000L]
      * }
-     *
      */
 
     /**
@@ -93,51 +93,29 @@ public class DataManager {
         KCommando.logger.info("Data file readed successfully.");
     }
 
+    /**
+     * @return the jsonobject of all data
+     */
     public JSONObject getAllDatas() {
         final JSONObject rootJson = new JSONObject();
-        final HashSet<JSONObject> guildObject = new HashSet<>();
+        final HashMap<Long, JSONObject> guildDatas = new HashMap<>();
 
-        final ConcurrentHashMap<Long, HashSet<Long>> blacklistedMembers = new ConcurrentHashMap<>(params.getIntegration().getBlacklistedMembers());
-        final ConcurrentHashMap<Long, HashSet<Long>> blacklistedChannels = new ConcurrentHashMap<>(params.getIntegration().getBlacklistedChannels());
-        final ConcurrentHashMap<Long, HashSet<String>> customGuildPrefixes = new ConcurrentHashMap<>(params.getIntegration().getCustomGuildPrefixes());
+        ConcurrentHashMap<Long, HashSet<Long>> blacklistedMembers = params.getIntegration().getBlacklistedMembers();
+        ConcurrentHashMap<Long, HashSet<Long>> blacklistedChannels = params.getIntegration().getBlacklistedChannels();
+        ConcurrentHashMap<Long, HashSet<String>> customPrefixes = params.getIntegration().getCustomGuildPrefixes();
 
         for (Map.Entry<Long, HashSet<Long>> entry : blacklistedMembers.entrySet()) {
-            JSONObject tempGuild = new JSONObject();
-            tempGuild.put("id", entry.getKey());
-            tempGuild.put("blacklistedMembers", getJArrayFromSet(blacklistedMembers.get(entry.getKey())));
-
-            if (blacklistedChannels.containsKey(entry.getKey())) {
-                tempGuild.put("blacklistedChannels", getJArrayFromSet(blacklistedChannels.get(entry.getKey())));
-                blacklistedChannels.remove(entry.getKey());
-            }
-            if (customGuildPrefixes.containsKey(entry.getKey())) {
-                tempGuild.put("customPrefixes", getJArrayFromSet(customGuildPrefixes.get(entry.getKey())));
-                customGuildPrefixes.remove(entry.getKey());
-            }
-            guildObject.add(tempGuild);
+            internalProcess("blacklistedMembers", guildDatas, entry);
         }
-
         for (Map.Entry<Long, HashSet<Long>> entry : blacklistedChannels.entrySet()) {
-            JSONObject tempGuild = new JSONObject();
-            tempGuild.put("id", entry.getKey());
-            tempGuild.put("blacklistedChannels", getJArrayFromSet(blacklistedChannels.get(entry.getKey())));
-
-            if (customGuildPrefixes.containsKey(entry.getKey())) {
-                tempGuild.put("customPrefixes", getJArrayFromSet(customGuildPrefixes.get(entry.getKey())));
-                customGuildPrefixes.remove(entry.getKey());
-            }
-            guildObject.add(tempGuild);
+            internalProcess("blacklistedChannels", guildDatas, entry);
         }
-
-
-        for (Map.Entry<Long, HashSet<String>> entry : customGuildPrefixes.entrySet()) {
-            JSONObject tempGuild = new JSONObject();
-            tempGuild.put("id", entry.getKey());
-            tempGuild.put("customPrefixes", getJArrayFromSet(customGuildPrefixes.get(entry.getKey())));
-            guildObject.add(tempGuild);
+        for (Map.Entry<Long, HashSet<String>> entry : customPrefixes.entrySet()) {
+            internalProcess("customPrefixes", guildDatas, entry);
         }
-
-        rootJson.put("guildDatas", guildObject);
+        JSONArray guildDatasArray = new JSONArray();
+        guildDatas.forEach((k,v) -> guildDatasArray.put(v));
+        rootJson.put("guildDatas", guildDatasArray);
 
         final Set<Long> blacklistedUsers = params.getIntegration().getBlacklistedUsers();
         final JSONArray jsonArray = new JSONArray();
@@ -146,7 +124,10 @@ public class DataManager {
         return rootJson;
     }
 
-    private <T> JSONArray getJArrayFromSet(HashSet<T> set) {
-        return new JSONArray().putAll(set);
+    private <T> void internalProcess(String name, HashMap<Long, JSONObject> guildDatas, Map.Entry<Long, HashSet<T>> entry) {
+        JSONObject guild = guildDatas.containsKey(entry.getKey()) ? guildDatas.get(entry.getKey()) : new JSONObject();
+        if (guild.opt("id") == null) guild.put("id", entry.getKey());
+        guild.put(name, new JSONArray().putAll(entry.getValue()));
+        guildDatas.put(entry.getKey(), guild);
     }
 }
