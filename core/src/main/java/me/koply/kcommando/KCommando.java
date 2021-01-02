@@ -59,6 +59,15 @@ public class KCommando {
         return this;
     }
 
+    /**
+     * @param dataManager The DataManager instance to be used by kcommando
+     * @return this object
+     */
+    public KCommando setDataManager(DataManager dataManager) {
+        params.setDataManager(dataManager);
+        return this;
+    }
+
     public KCommando useCaseSensitivity() {
         return useCaseSensitivity(Locale.getDefault());
     }

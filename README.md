@@ -8,6 +8,7 @@
 Annotation-based multifunctional command handler framework for JDA & Javacord.
 
 ## Features
+All these features have a modular structure and you can edit all of these modules and integrate them for your projects.
 1. [Integrations](#kcommando-integrations)
 2. [JDA Section](#integration-usage-for-jda)
 3. [Javacord Section](#javacord-section)
@@ -20,6 +21,7 @@ Annotation-based multifunctional command handler framework for JDA & Javacord.
 	- [Blacklist User](#blacklist-user)
 	- [Blacklist Member](#blacklist-member)
 	- [Blacklist Channel](#blacklist-channel)
+	- [Data Preservence (Blacklist-Prefix)](#data-preservence)
 	- [Callback For Blacklisted Usage](#callback-for-blacklisted-usages)
 6. [Install](#how-to-install)
 	- [Maven](#with-maven)
@@ -38,6 +40,11 @@ public class Main extends JDAIntegration {
         JDA jda = JDABuilder.createDefault("TOKEN").build();
         jda.awaitReady();
         
+        File dataFile = new File("./data.json");
+        // data file asset control
+        if (!dataFile.exists())
+            dataFile.createNewFile();
+
         KCommando kcommando = new KCommando(new Main(jda))
               .setCooldown(5000L) // 5 seconds as 5000 ms
               .setOwners("FIRST_OWNER_ID", "SECOND_OWNER_ID") // varargs
@@ -45,6 +52,7 @@ public class Main extends JDAIntegration {
               .setPrefix("!")
               .setReadBotMessages(false) // default false
               .setCaseSensivity(Locale.getDefault()) // Locale to use case sensivity
+              .setDataFile(dataFile) // data file for blacklist and prefix preservence
               .build();
     }
 }
@@ -235,6 +243,26 @@ Integration#getBlacklistedChannels()
 // returns all blacklisted channels in the selected guild.
 Integration#getBlacklistedChannels(long guildID)
 ```
+
+### Data Preservence
+Your blacklist and prefix data are automatically saved by KCommando to the file you predetermined. KCommando couldn't have an autosave system **yet**. If you need to use your own database system, you can write your own [DataManager](https://github.com/MusaBrt/KCommando/blob/master/core/src/main/java/me/koply/kcommando/DataManager.java) class and set your own DataManager class to KCommando with `KCommando#setDataManager(DataManager)`. If you use your own DataManager instance, you don't need to use `KCommando#setDataFile(File)`. Because this is ignored while defined the custom DataManager.
+
+Data File Struct:
+```json
+{
+  "guildDatas": [
+    {
+      "id": 00000000L,
+      "blacklistedMembers": [0000000L, 0000000L],
+      "blacklistedChannels": [0000000L, 00000000L],
+      "customPrefixes": ["!", "."]
+    }
+  ],
+  "blacklistedUsers": [0000000L, 0000000L]
+}
+```
+
+All this blacklist and prefix things are concurrent for thread safety.
 
 ### Callback For Blacklisted Usages
 
