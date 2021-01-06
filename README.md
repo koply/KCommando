@@ -247,6 +247,8 @@ Integration#getBlacklistedChannels(long guildID)
 ### Data Preservence
 Your blacklist and prefix data are automatically saved by KCommando to the file you predetermined. KCommando couldn't have an autosave system **yet**. If you need to use your own database system, you can write your own [DataManager](https://github.com/MusaBrt/KCommando/blob/master/core/src/main/java/me/koply/kcommando/DataManager.java) class and set your own DataManager class to KCommando with `KCommando#setDataManager(DataManager)`. If you use your own DataManager instance, you don't need to use `KCommando#setDataFile(File)`. Because this is ignored while defined the custom DataManager.
 
+Pure data preservence usage isn't recommended on advanced bots. You should to create and use another class that implements DataManager. That's why the modular design.
+
 Data File Struct:
 ```json
 {
