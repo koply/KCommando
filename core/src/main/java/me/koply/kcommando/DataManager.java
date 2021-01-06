@@ -102,14 +102,16 @@ public class DataManager {
 
     /**
      * fills the data maps from datafile to maps in the params instance (customprefix, blacklist)
+     * you can return null
      */
-    public void initDataFile() {
+    public JSONObject initDataFile() {
         readDataFile();
-        if (preCheck()) return;
+        if (preCheck()) return null;
         final JSONObject rootJson = new JSONObject(dataFileString);
         pullBlacklistedUsers(rootJson);
         pullGuildDatas(rootJson);
         KCommando.logger.info("Data file readed successfully.");
+        return rootJson;
     }
 
     /**
