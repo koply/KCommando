@@ -21,8 +21,8 @@ public class DataManager {
         // TODO auto backup
 
         // windows and linux shutdown hook
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> Util.writeFile(dataFile, getAllDatas().toString()), "TerminateProcess"));
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> Util.writeFile(dataFile, getAllDatas().toString()), "Shutdown-thread"));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> Util.writeFile(dataFile, pushToJson().toString()), "TerminateProcess"));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> Util.writeFile(dataFile, pushToJson().toString()), "Shutdown-thread"));
     }
 
     /*
@@ -40,23 +40,31 @@ public class DataManager {
      * }
      */
 
+    protected String dataFileString;
+    protected void readDataFile() {
+        dataFileString = Util.readFile(dataFile);
+    }
+
     /**
-     * fills the data maps from datafile to maps in the params instance (customprefix, blacklist)
+     * @return when this returns true, the initDataFile is returns.
      */
-    public void initDataFile() {
-        final String dataString = Util.readFile(dataFile);
-        if (dataString.isEmpty()) {
+    protected boolean preCheck() {
+        if (dataFileString.isEmpty()) {
             KCommando.logger.warning("Data file isn't filled. Skipping...");
-            return;
-        }
-        final JSONObject rootJson = new JSONObject(dataString);
+            return true;
+        } else return false;
+    }
+
+    protected void pullBlacklistedUsers(JSONObject rootJson) {
         final JSONArray blacklistedUsersArray = rootJson.getJSONArray("blacklistedUsers");
         if (!blacklistedUsersArray.isEmpty()) {
             for (Object blacklistedUser : blacklistedUsersArray) {
                 params.getIntegration().getBlacklistedUsers().add((long) blacklistedUser);
             }
         }
+    }
 
+    protected void pullGuildDatas(JSONObject rootJson) {
         final JSONArray guildDatas = rootJson.optJSONArray("guildDatas");
         final ConcurrentHashMap<Long, HashSet<String>> allCustomPrefixes = params.getIntegration().getCustomGuildPrefixes();
         if (guildDatas != null) {
@@ -90,13 +98,24 @@ public class DataManager {
                 }
             }
         }
+    }
+
+    /**
+     * fills the data maps from datafile to maps in the params instance (customprefix, blacklist)
+     */
+    public void initDataFile() {
+        readDataFile();
+        if (preCheck()) return;
+        final JSONObject rootJson = new JSONObject(dataFileString);
+        pullBlacklistedUsers(rootJson);
+        pullGuildDatas(rootJson);
         KCommando.logger.info("Data file readed successfully.");
     }
 
     /**
      * @return the jsonobject of all data
      */
-    public JSONObject getAllDatas() {
+    public JSONObject pushToJson() {
         final JSONObject rootJson = new JSONObject();
         final HashMap<Long, JSONObject> guildDatas = new HashMap<>();
 
