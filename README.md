@@ -71,7 +71,7 @@ That's it. Now, we need a command.
           ownerOnly = false,     /* false default */
           privateOnly = false,   /* false default */
           sync = false,          /* false default */
-		  onlyArguments = false  /* false default */)
+          onlyArguments = false  /* false default */)
 public class BasicCommand extends JDACommand {
     
     public BasicCommand() {
