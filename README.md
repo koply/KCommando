@@ -71,7 +71,7 @@ That's it. Now, we need a command.
           ownerOnly = false,     /* false default */
           privateOnly = false,   /* false default */
           sync = false,          /* false default */
-	  onlyArguments = false  /* false default */)
+		  onlyArguments = false  /* false default */)
 public class BasicCommand extends JDACommand {
     
     public BasicCommand() {
@@ -166,7 +166,6 @@ args[2]: "123"
 
 prefix: "!"
 ```
-
 
 ## Argument Methods
 Argument methods must be public and boolean. If argument method returns false, the `onFalse` callback is run. Names are not important for argument methods. 
