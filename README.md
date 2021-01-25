@@ -187,15 +187,15 @@ boolean name(<Event> e, String[] args, String prefix)  // CommandType.PREFIXED -
 @Argument(arg = "jump")
 public boolean nameIsNotImportant(<Event> e){
     // somethings
-	if (fail) return false;
-	return true;
+    if (fail) return false;
+    return true;
 }
 
 @Argument(arg = {"think", "thonk"})
 public boolean anotherArgumentMethod(<Event> e){
-	// somethings
-	if (fail) return false;
-	return true;
+    // somethings
+    if (fail) return false;
+    return true;
 }
 ```
 
