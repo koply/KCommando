@@ -239,15 +239,15 @@ Runs this callback with the similar commands list and the event object when an i
 
 ```java
 Integration#setSuggestionsCallback((SuggestionsCallback<**Event**>) (e,suggestions) -> {
-	if (suggestions.isEmpty()) {
-		// no commands found
-		return;
-	}
-	StringBuilder sb = new StringBuilder();
-	for (CommandInfo info : suggestions) {
-		sb.append( Arrays.toString(info.getAliases()) ).append(" - ");
-	}
-	e.getChannel().sendMessage("Last command is not found. Suggestions: \n"+sb.toString()).queue();
+    if (suggestions.isEmpty()) {
+        // no commands found
+        return;
+    }
+    StringBuilder sb = new StringBuilder();
+    for (CommandInfo info : suggestions) {
+        sb.append( Arrays.toString(info.getAliases()) ).append(" - ");
+    }
+    e.getChannel().sendMessage("Last command is not found. Suggestions: \n"+sb.toString()).queue();
 });
 ```
 
@@ -352,7 +352,7 @@ To always use the latest version, you can write '-SNAPSHOT' in the version field
 <!-- FOR JDA -->
 <dependency>
     <groupId>com.github.MusaBrt.KCommando</groupId>
-	<artifactId>jda-integration</artifactId>
+    <artifactId>jda-integration</artifactId>
     <version>JITPACK-VERSION</version>
 </dependency>
 
