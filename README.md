@@ -24,10 +24,11 @@ All these features have a modular structure and you can edit all of these module
 	- [Blacklist Channel](#blacklist-channel)
 	- [Data Preservence (Blacklist-Prefix)](#data-preservence)
 	- [Callback For Blacklisted Usage](#callback-for-blacklisted-usages)
-6. [Install](#how-to-install)
+6. [CRON Service](#cron-service)
+7. [Install](#how-to-install)
 	- [Maven](#with-maven)
 	- [Gradle](#with-gradle)
-7. [Example Repositories](#example-repositories)
+8. [Example Repositories](#example-repositories)
 	
 # KCommando Integrations
 
@@ -328,6 +329,14 @@ All this blacklist and prefix things are concurrent for thread safety.
 When a command declined due to a blacklist, runs this callback.
 ```java
 Integration#setBlacklistCallback( (JRunnable) e -> e.getMessage().addReaction("⛔") )
+```
+
+## Cron Service
+KCommando has a minute based async CronService and you can use this service.
+```java
+CronService.getInstance().addRunnable(() -> {
+	// somethings
+}, 5); /* every 5 minutes */
 ```
 
 ## How To Install
