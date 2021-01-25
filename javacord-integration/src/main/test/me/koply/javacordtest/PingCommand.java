@@ -1,6 +1,7 @@
 package me.koply.javacordtest;
 
 import me.koply.kcommando.integration.impl.javacord.JavacordCommand;
+import me.koply.kcommando.internal.Argument;
 import me.koply.kcommando.internal.Commando;
 import me.koply.kcommando.internal.KRunnable;
 import org.javacord.api.event.message.MessageCreateEvent;
@@ -15,8 +16,13 @@ public class PingCommand extends JavacordCommand {
 
     @Override
     public boolean handle(MessageCreateEvent e, String[] args) {
-        if (args.length == 1) e.getChannel().sendMessage("Hello World!");
-        else return false;
+        e.getChannel().sendMessage("Hello World!");
+        return true;
+    }
+
+    @Argument(arg = "test")
+    public boolean test(MessageCreateEvent e) {
+        e.getChannel().sendMessage("Ben test");
         return true;
     }
 }

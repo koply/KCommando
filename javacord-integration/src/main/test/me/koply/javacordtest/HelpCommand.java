@@ -10,6 +10,7 @@ import java.awt.*;
         aliases = "help",
         description = "This command")
 public class HelpCommand extends JavacordCommand {
+
     @Override
     public boolean handle(MessageCreateEvent e) {
         e.getChannel().sendMessage(Test.getInstance().getHelpEmbed()
