@@ -13,6 +13,7 @@ All these features have a modular structure and you can edit all of these module
 2. [JDA Section](#integration-usage-for-jda)
 3. [Javacord Section](#javacord-section)
 4. [Command Features](#command-features)
+    - [Argument Methods](#argument-methods)
 	- [Possible Handle Methods](#possible-handle-methods)
 	- [Command Callbacks](#command-callbacks) *(onFalse, ownerOnly, guildOnly, privateOnly, cooldown)*
 5. [Cool Features](#cool-features)
@@ -68,7 +69,8 @@ That's it. Now, we need a command.
           guildOnly = false,     /* false default */
           ownerOnly = false,     /* false default */
           privateOnly = false,   /* false default */
-          sync = false           /* false default */ )
+          sync = false,          /* false default */
+		  onlyArguments = false  /* false default */)
 public class BasicCommand extends JDACommand {
     
     public BasicCommand() {
@@ -82,6 +84,12 @@ public class BasicCommand extends JDACommand {
         return true;
         // if your command is completed successfully, you must return "true"
     }
+    
+    @Argument(arg = "test")
+	public boolean test(MessageReceivedEvent e) {
+		e.getChannel.sendMessage("Test!").queue();
+		return true;
+	}
 }
 ```
 
@@ -126,6 +134,12 @@ public class BasicCommand extends JavacordCommand {
         return true;
         // if your command is completed successfully, you must return "true"
     }
+    
+    @Argument(arg = "test")
+    public boolean test(MessageCreateEvent e) {
+       e.getChannel.sendMessage( "Test!" );
+       return true;
+    }
 }
 ```
 
@@ -139,6 +153,49 @@ You can use just one in your command class. Parameters cannot be empty. You don'
 boolean handle(<Event> e) // CommandType.EVENT -> 0x01
 boolean handle(<Event> e, String[] args)  // CommandType.ARGNEVENT -> 0x02
 boolean handle(<Event> e, String[] args, String prefix)  // CommandType.PREFIXED -> 0x03
+```
+
+### Properties of the args and prefix parameters
+Args are splitted by the "space" chars. The 0. index is command text for args parameter but doesn't have the prefix.
+```
+Entered Command: "!ping test 123"
+args[0]: "ping"
+args[1]: "test"
+args[2]: "123"
+
+prefix: "!"
+```
+
+
+## Argument Methods
+Argument methods must be public and boolean. If argument method returns false, the `onFalse` callback is run. Names are not important for argument methods. 
+
+If the Commando annotation of command has `onlyArguments = true` the command is only available for pure usage and use with arguments.
+There is no limit to using arguments, you can use as many arguments as you want. Arguments __has__ case sensitivity.
+
+The parameters you can use are:
+```java
+boolean name(<Event> e) // CommandType.EVENT -> 0x01
+boolean name(<Event> e, String[] args)  // CommandType.ARGNEVENT -> 0x02
+boolean name(<Event> e, String[] args, String prefix)  // CommandType.PREFIXED -> 0x03
+```
+
+#### Example:
+
+```java
+@Argument(arg = "jump")
+public boolean nameIsNotImportant(<Event> e){
+    // somethings
+	if (fail) return false;
+	return true;
+}
+
+@Argument(arg = {"think", "thonk"})
+public boolean anotherArgumentMethod(<Event> e){
+	// somethings
+	if (fail) return false;
+	return true;
+}
 ```
 
 ## Command Callbacks
