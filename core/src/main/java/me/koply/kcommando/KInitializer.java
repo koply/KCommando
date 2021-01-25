@@ -139,11 +139,6 @@ public class KInitializer {
         CargoTruck.setCargo(tempinfo);
     }
 
-    // sadece bir methodun parametrelerini kontrol ettiğin bir method oluştur ve methodCheck methodunu da
-    // oluşturacağın methoda bağla, ayrıca parametre kontrol edeceğin için argRegisterer içinde de
-    // o methodu kullanacaksın
-    // argüman methodu da boolean dönderecek ve false dönderirse callback çalışacak
-
     /**
      * a bit hardcoded object type checker
      * org.javacord.api.event.message
