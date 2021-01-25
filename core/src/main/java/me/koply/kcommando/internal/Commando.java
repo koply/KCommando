@@ -15,4 +15,5 @@ public @interface Commando {
     boolean guildOnly() default false;
     boolean ownerOnly() default false;
     boolean sync() default false;
+    boolean onlyArguments() default false;
 }

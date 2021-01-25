@@ -12,6 +12,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Set;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
@@ -153,20 +154,20 @@ public class KInitializer {
      * @return found CommandType
      */
     protected CommandType internalMethodCheck(Method method, boolean checkHandle) {
-        CommandType type = null;
         if (method.getReturnType() != boolean.class) return null;
         final Class<?>[] parameters = method.getParameterTypes();
         if (!parameters[0].getPackage().getName().contains("message")) return null;
-        if (parameters.length <= 3 && (!checkHandle || method.getName().equals("handle"))) {
+        boolean isOk = !checkHandle || method.getName().equals("handle");
+        if (parameters.length <= 3 && isOk) {
             if (parameters.length == 1) {
-                type = CommandType.EVENT;
+                return CommandType.EVENT;
             } else if (parameters.length == 2 && parameters[1].isArray()) { // ??
-                type = CommandType.ARGNEVENT;
+                return CommandType.ARGNEVENT;
             } else if (parameters.length == 3 && parameters[2] == String.class) {
-                type = CommandType.PREFIXED;
+                return CommandType.PREFIXED;
             }
         }
-        return type;
+        return null;
     }
 
     /**
@@ -175,16 +176,10 @@ public class KInitializer {
      * @return if returns null, skips the current class
      */
     protected CommandType methodCheck(Class<? extends Command> clazz) {
-        int methodCounter = 0;
         CommandType type = null;
         for (Method method : clazz.getDeclaredMethods()) {
             type = internalMethodCheck(method, true);
-            if (type != null) methodCounter++;
-        }
-
-        if (methodCounter != 1) {
-            KCommando.logger.warning(clazz.getName() + " is have multiple command method. Skipping...");
-            return null;
+            if (type != null) break;
         }
         return type;
     }
@@ -197,15 +192,20 @@ public class KInitializer {
         HashMap<String, CommandToRun.MethodToRun> argumentMethods = new HashMap<>();
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods) {
+            if ((method.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) continue;
             Argument argm = method.getAnnotation(Argument.class);
-            if (argm != null) {
-                String[] argStr = argm.arg();
-                CommandType type = internalMethodCheck(method, false);
-                if (type != null) {
-                    CommandToRun.MethodToRun mtr = new CommandToRun.MethodToRun(method, type);
-                    for (String s : argStr) {
-                        argumentMethods.put(s, mtr);
-                    }
+            if (argm == null) continue;
+
+            String[] argStr = argm.arg();
+            CommandType type = internalMethodCheck(method, false);
+            if (type == null) continue;
+
+            CommandToRun.MethodToRun mtr = new CommandToRun.MethodToRun(method, type, argm.caseSensitivity());
+            for (String s : argStr) {
+                if (argm.caseSensitivity()) {
+                    argumentMethods.put(s.toLowerCase(Locale.ROOT), mtr);
+                } else {
+                    argumentMethods.put(s, mtr);
                 }
             }
         }
@@ -218,8 +218,8 @@ public class KInitializer {
 
         final Commando commandAnnotation = clazz.getAnnotation(Commando.class);
         if (annotationCheck(commandAnnotation, clazz.getName())) return;
-
         final CommandType type = methodCheck(clazz);
+
         if (type == null) return;
 
         final String[] packageSplitted = clazz.getPackage().getName().split("\\.");
@@ -227,7 +227,6 @@ public class KInitializer {
 
         try {
             infoGenerator(commandAnnotation);
-
             HashMap<String, CommandToRun.MethodToRun> argumentMethods = argRegisterer(clazz);
 
             final Command commandInstance = clazz.getDeclaredConstructor().newInstance();

@@ -5,6 +5,7 @@ import me.koply.kcommando.internal.CommandType;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
+@SuppressWarnings("rawtypes")
 public final class CommandToRun {
 
     public CommandToRun(Command clazz, String groupName, CommandType type, HashMap<String, MethodToRun> argumentMethods) {
@@ -36,13 +37,15 @@ public final class CommandToRun {
     }
 
     public static final class MethodToRun {
-        public MethodToRun(Method method, CommandType type) {
+        public MethodToRun(Method method, CommandType type, boolean caseSensitivity) {
             this.method = method;
             this.type = type;
+            this.caseSensitivity = caseSensitivity;
         }
 
         private final Method method;
         private final CommandType type;
+        private final boolean caseSensitivity;
 
         public Method getMethod() {
             return method;
@@ -50,6 +53,10 @@ public final class CommandToRun {
 
         public CommandType getType() {
             return type;
+        }
+
+        public boolean isCaseSensitivity() {
+            return caseSensitivity;
         }
     }
 }

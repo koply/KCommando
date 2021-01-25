@@ -1,10 +1,11 @@
 package me.koply.kcommando;
 
+import me.koply.kcommando.internal.CommandType;
 import me.koply.kcommando.internal.KRunnable;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
@@ -89,6 +90,7 @@ public class CommandHandler {
      * @param cpp command process parameters for usage
      * @return if command correct, returns false.
      */
+    @SuppressWarnings("unchecked")
     protected boolean commandCheck(CommandInfo info, CProcessParameters cpp) {
         if (info.isGuildOnly() && cpp.getGuildID() == -1) {
             KCommando.logger.info("GuildOnly command used from private channel");
@@ -177,24 +179,22 @@ public class CommandHandler {
         if (commandCheck(info, cpp) || cooldownCheck(info, cpp, authorID)) {
             return;
         }
-
-        final long firstTime = System.currentTimeMillis();
-        cooldownList.put(authorID, firstTime);
-        runCommand(firstTime, info, ctr, cpp, cmdArgs, prefix);
+        runCommand(info, ctr, cpp, cmdArgs, prefix);
     }
 
     /**
      * runs the command
      *
-     * @param firstTime first time of the command for submitted to runner
      * @param info CommandInfo object for get some information about the command
      * @param ctr CommandToRun object for run the command
      * @param cpp Command parameters from api
      * @param cmdArgs raw command text splitted by spaces and cutted the prefix.
      * @param prefix the current prefix
      */
-    protected void runCommand(long firstTime, CommandInfo info, CommandToRun ctr, CProcessParameters cpp, String[] cmdArgs, String prefix) {
+    protected void runCommand(CommandInfo info, CommandToRun ctr, CProcessParameters cpp, String[] cmdArgs, String prefix) {
         // async runner first. because async chance is higher than sync commands
+        final long firstTime = System.currentTimeMillis();
+        cooldownList.put(cpp.getAuthor().getId(), firstTime);
         if (!info.isSync()) {
             try {
                 executorService.submit(() -> {
@@ -209,29 +209,73 @@ public class CommandHandler {
         }
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     protected void internalCaller(CommandToRun ctr, Object event, String[] args, CommandInfo info, String prefix) {
         final KRunnable onFalse = info.getOnFalseCallback();
         try {
-            switch (ctr.getType().value) {
-                case 0x01:
-                    if (!ctr.getClazz().handle(event) && onFalse != null) {
-                        onFalse.run(event);
-                    }
-                    break;
-                case 0x02:
-                    if (!ctr.getClazz().handle(event, args) && onFalse != null) {
-                        onFalse.run(event);
-                    }
-                    break;
-                case 0x03:
-                    if (!ctr.getClazz().handle(event, args, prefix) && onFalse != null) {
-                        onFalse.run(event);
-                    }
-                    break;
+            HashMap<String, CommandToRun.MethodToRun> argumentMethods = ctr.getArgumentMethods();
+            if (args.length > 1) {
+                CommandToRun.MethodToRun mtr = argumentMethods.get(args[1]);
+                boolean contains = mtr.isCaseSensitivity()
+                        ? argumentMethods.containsKey(args[1])
+                        : argumentMethods.containsKey(args[1].toLowerCase(Locale.ROOT));
+                if (contains) {
+                    argWrapper(mtr.getType(), mtr.getMethod(), ctr.getClazz(), event, onFalse, args, prefix);
+                } else if (info.isOnlyArguments()) {
+                    if (onFalse != null) onFalse.run(event);
+                } else {
+                    handleWrapper(ctr.getType(), ctr.getClazz(), event, onFalse, args, prefix);
+                }
+            } else {
+                handleWrapper(ctr.getType(), ctr.getClazz(), event, onFalse, args, prefix);
             }
+        } catch (Throwable t) { KCommando.logger.info("Command crashed! Message: " + t.getMessage() + "\n" + Arrays.toString(t.getStackTrace())); }
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void handleWrapper(CommandType type, Command clazz,
+                               Object event, KRunnable onFalse,
+                               String[] args, String prefix) {
+        switch (type.value) {
+            case 0x01:
+                if (!clazz.handle(event) && onFalse != null) {
+                    onFalse.run(event);
+                }
+                break;
+            case 0x02:
+                if (!clazz.handle(event, args) && onFalse != null) {
+                    onFalse.run(event);
+                }
+                break;
+            case 0x03:
+                if (!clazz.handle(event, args, prefix) && onFalse != null) {
+                    onFalse.run(event);
+                }
+                break;
         }
-        catch (Throwable t) { KCommando.logger.info("Command crashed! Message: " + t.getMessage() + "\n" + Arrays.toString(t.getStackTrace())); }
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void argWrapper(CommandType type, Method method,
+                            Command clazz, Object event,
+                            KRunnable onFalse, String[] args,
+                            String prefix) throws InvocationTargetException, IllegalAccessException {
+        switch (type.value) {
+            case 0x01:
+                if (!(boolean)method.invoke(clazz, event) && onFalse != null) {
+                    onFalse.run(event);
+                }
+                break;
+            case 0x02:
+                if (!(boolean)method.invoke(clazz, event, args) && onFalse != null) {
+                    onFalse.run(event);
+                }
+                break;
+            case 0x03:
+                if (!(boolean)method.invoke(clazz, event, args, prefix) && onFalse != null) {
+                    onFalse.run(event);
+                }
+                break;
+        }
     }
 
     protected boolean cooldownMapChecker(long userID, ConcurrentMap<Long, Long> cooldownList, long cooldown) {

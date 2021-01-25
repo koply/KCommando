@@ -3,11 +3,12 @@ package me.koply.kcommando;
 import me.koply.kcommando.internal.Commando;
 import me.koply.kcommando.internal.KRunnable;
 
+@SuppressWarnings("rawtypes")
 public final class CommandInfo {
     private String name;
     private String[] aliases;
     private String description;
-    private boolean privateOnly, guildOnly, ownerOnly, sync;
+    private boolean privateOnly, guildOnly, ownerOnly, sync, onlyArguments;
     private KRunnable onFalseCallback, privateOnlyCallback, guildOnlyCallback, ownerOnlyCallback, cooldownCallback;
 
     protected final void initialize(Commando ant) {
@@ -18,6 +19,7 @@ public final class CommandInfo {
         guildOnly = ant.guildOnly();
         ownerOnly = ant.ownerOnly();
         sync = ant.sync();
+        onlyArguments = ant.onlyArguments();
     }
 
     public final String getName() { return name; }
@@ -44,6 +46,10 @@ public final class CommandInfo {
 
     public final boolean isSync() {
         return sync;
+    }
+
+    public final boolean isOnlyArguments() {
+        return onlyArguments;
     }
 
     public final KRunnable getOnFalseCallback() {
