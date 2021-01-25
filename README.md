@@ -87,10 +87,10 @@ public class BasicCommand extends JDACommand {
     }
     
     @Argument(arg = "test")
-	public boolean test(MessageReceivedEvent e) {
-		e.getChannel.sendMessage("Test!").queue();
-		return true;
-	}
+    public boolean test(MessageReceivedEvent e) {
+        e.getChannel.sendMessage("Test!").queue();
+        return true;
+    }
 }
 ```
 
