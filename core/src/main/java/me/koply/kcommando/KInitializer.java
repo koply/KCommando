@@ -1,5 +1,6 @@
 package me.koply.kcommando;
 
+import me.koply.kcommando.internal.Argument;
 import me.koply.kcommando.internal.CargoTruck;
 import me.koply.kcommando.internal.CommandType;
 import me.koply.kcommando.internal.Commando;
@@ -127,11 +128,49 @@ public class KInitializer {
     }
 
     /**
-     * checks handle methods for type
+     * creates info and pushes to cargo
      *
+     * @param ant the command annotation
+     */
+    public void infoGenerator(Commando ant) {
+        CommandInfo tempinfo = new CommandInfo();
+        tempinfo.initialize(ant);
+        CargoTruck.setCargo(tempinfo);
+    }
+
+    // sadece bir methodun parametrelerini kontrol ettiğin bir method oluştur ve methodCheck methodunu da
+    // oluşturacağın methoda bağla, ayrıca parametre kontrol edeceğin için argRegisterer içinde de
+    // o methodu kullanacaksın
+    // argüman methodu da boolean dönderecek ve false dönderirse callback çalışacak
+
+    /**
      * a bit hardcoded object type checker
      * org.javacord.api.event.message
      * net.dv8tion.jda.api.events.message
+     *
+     * @param method Method for check
+     * @param checkHandle check for handle name
+     * @return found CommandType
+     */
+    protected CommandType internalMethodCheck(Method method, boolean checkHandle) {
+        CommandType type = null;
+        if (method.getReturnType() != boolean.class) return null;
+        final Class<?>[] parameters = method.getParameterTypes();
+        if (!parameters[0].getPackage().getName().contains("message")) return null;
+        if (parameters.length <= 3 && (!checkHandle || method.getName().equals("handle"))) {
+            if (parameters.length == 1) {
+                type = CommandType.EVENT;
+            } else if (parameters.length == 2 && parameters[1].isArray()) { // ??
+                type = CommandType.ARGNEVENT;
+            } else if (parameters.length == 3 && parameters[2] == String.class) {
+                type = CommandType.PREFIXED;
+            }
+        }
+        return type;
+    }
+
+    /**
+     * checks handle methods for type
      *
      * @return if returns null, skips the current class
      */
@@ -139,21 +178,8 @@ public class KInitializer {
         int methodCounter = 0;
         CommandType type = null;
         for (Method method : clazz.getDeclaredMethods()) {
-            if (method.getReturnType() != boolean.class) continue;
-            final Class<?>[] parameters = method.getParameterTypes();
-            if (!parameters[0].getPackage().getName().contains("message")) continue;
-            if (parameters.length <= 3 && method.getName().equals("handle")) {
-                if (parameters.length == 1) {
-                    methodCounter++;
-                    type = CommandType.EVENT;
-                } else if (parameters.length == 2 && parameters[1].isArray()) { // ??
-                    methodCounter++;
-                    type = CommandType.ARGNEVENT;
-                } else if (parameters.length == 3 && parameters[2] == String.class) {
-                    methodCounter++;
-                    type = CommandType.PREFIXED;
-                }
-            }
+            type = internalMethodCheck(method, true);
+            if (type != null) methodCounter++;
         }
 
         if (methodCounter != 1) {
@@ -164,14 +190,26 @@ public class KInitializer {
     }
 
     /**
-     * creates info and pushes to cargo
-     *
-     * @param ant the command annotation
+     * checks the argument methods
+     * @return argument-MethodToRun objects
      */
-    public void infoGenerator(Commando ant) {
-        CommandInfo tempinfo = new CommandInfo();
-        tempinfo.initialize(ant);
-        CargoTruck.setCargo(tempinfo);
+    public HashMap<String, CommandToRun.MethodToRun> argRegisterer(final Class<? extends Command> clazz) {
+        HashMap<String, CommandToRun.MethodToRun> argumentMethods = new HashMap<>();
+        Method[] methods = clazz.getDeclaredMethods();
+        for (Method method : methods) {
+            Argument argm = method.getAnnotation(Argument.class);
+            if (argm != null) {
+                String[] argStr = argm.arg();
+                CommandType type = internalMethodCheck(method, false);
+                if (type != null) {
+                    CommandToRun.MethodToRun mtr = new CommandToRun.MethodToRun(method, type);
+                    for (String s : argStr) {
+                        argumentMethods.put(s, mtr);
+                    }
+                }
+            }
+        }
+        return argumentMethods;
     }
 
     public void registerCommand(final Class<? extends Command> clazz, final HashMap<String, CommandToRun> commandMethods) {
@@ -190,15 +228,16 @@ public class KInitializer {
         try {
             infoGenerator(commandAnnotation);
 
+            HashMap<String, CommandToRun.MethodToRun> argumentMethods = argRegisterer(clazz);
+
             final Command commandInstance = clazz.getDeclaredConstructor().newInstance();
-            final CommandToRun ctr = new CommandToRun(commandInstance, groupName, type);
+            final CommandToRun ctr = new CommandToRun(commandInstance, groupName, type, argumentMethods);
 
             for (final String s : commandAnnotation.aliases()) {
                 final String name = params.getCaseSensitivity().map(s::toLowerCase).orElse(s);
                 commandMethods.put(name, ctr);
             }
             classCounter++;
-
         } catch (Throwable t) {
             KCommando.logger.warning("Something went wrong.");
         } finally {
