@@ -1,7 +1,6 @@
 package me.koply.kcommando;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -9,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 public final class CronService {
 
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-    private final ArrayList<Runnable> runnables = new ArrayList<>();
+    private final ArrayList<CronJob> jobs = new ArrayList<>();
 
     private static CronService instance;
     public static CronService getInstance() {
@@ -27,12 +26,35 @@ public final class CronService {
     }
 
     protected final void task() {
-        for (Runnable r : runnables) {
-            r.run();
+        for (CronJob job : jobs) {
+            Runnable r = job.getToRun();
+            if (r != null) r.run();
         }
     }
 
-    public final void addRunnable(Runnable...r) {
-        runnables.addAll(Arrays.asList(r));
+    public final void addRunnable(Runnable r, int timeAsMinutes) {
+        jobs.add(new CronJob(r, timeAsMinutes));
+    }
+
+    private static class CronJob {
+        private final Runnable runnable;
+        private final int timeAsMinutes;
+        private int minutesLeft;
+
+        CronJob(Runnable runnable, int timeAsMinutes) {
+            this.runnable = runnable;
+            this.timeAsMinutes = timeAsMinutes;
+            minutesLeft = timeAsMinutes;
+        }
+
+        Runnable getToRun() {
+            minutesLeft -= 1;
+            if (minutesLeft == 0) {
+                minutesLeft = timeAsMinutes;
+                return runnable;
+            } else {
+                return null;
+            }
+        }
     }
 }

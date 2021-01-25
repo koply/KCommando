@@ -37,7 +37,7 @@ public class CommandHandler {
             }
             if (i == 0) return;
             KCommando.logger.info("CooldownList cleaned. " + i + " entries deleted.");
-        });
+        }, 5);
 
         KCommando.logger.info("initialized.");
     }
