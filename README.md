@@ -269,7 +269,6 @@ Integration#removeAllCustomPrefixes(long guildID)
 If a guild has a custom prefix, the normal prefix will be unavailable on that guild but will be able to use more than one prefixes at the same time. You can remove and disable custom prefixes for the single guild.
 
 
-
 ## How To Use Blacklist
 
 I prefer to use a static instance of a subclass of Integration. You can see tests of jda and javacord integrations.
