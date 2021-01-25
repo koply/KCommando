@@ -214,11 +214,8 @@ public class CommandHandler {
         try {
             HashMap<String, CommandToRun.MethodToRun> argumentMethods = ctr.getArgumentMethods();
             if (args.length > 1) {
-                CommandToRun.MethodToRun mtr = argumentMethods.get(args[1]);
-                boolean contains = mtr.isCaseSensitivity()
-                        ? argumentMethods.containsKey(args[1])
-                        : argumentMethods.containsKey(args[1].toLowerCase(Locale.ROOT));
-                if (contains) {
+                if (argumentMethods.containsKey(args[1])) {
+                    CommandToRun.MethodToRun mtr = argumentMethods.get(args[1]);
                     argWrapper(mtr.getType(), mtr.getMethod(), ctr.getClazz(), event, onFalse, args, prefix);
                 } else if (info.isOnlyArguments()) {
                     if (onFalse != null) onFalse.run(event);

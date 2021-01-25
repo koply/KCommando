@@ -9,5 +9,4 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Argument {
     String[] arg();
-    boolean caseSensitivity() default false;
 }

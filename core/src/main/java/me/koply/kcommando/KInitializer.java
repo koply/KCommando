@@ -195,18 +195,12 @@ public class KInitializer {
             if ((method.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) continue;
             Argument argm = method.getAnnotation(Argument.class);
             if (argm == null) continue;
-
             String[] argStr = argm.arg();
             CommandType type = internalMethodCheck(method, false);
             if (type == null) continue;
-
-            CommandToRun.MethodToRun mtr = new CommandToRun.MethodToRun(method, type, argm.caseSensitivity());
+            CommandToRun.MethodToRun mtr = new CommandToRun.MethodToRun(method, type);
             for (String s : argStr) {
-                if (argm.caseSensitivity()) {
-                    argumentMethods.put(s.toLowerCase(Locale.ROOT), mtr);
-                } else {
-                    argumentMethods.put(s, mtr);
-                }
+                argumentMethods.put(s, mtr);
             }
         }
         return argumentMethods;

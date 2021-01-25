@@ -37,15 +37,13 @@ public final class CommandToRun {
     }
 
     public static final class MethodToRun {
-        public MethodToRun(Method method, CommandType type, boolean caseSensitivity) {
+        public MethodToRun(Method method, CommandType type) {
             this.method = method;
             this.type = type;
-            this.caseSensitivity = caseSensitivity;
         }
 
         private final Method method;
         private final CommandType type;
-        private final boolean caseSensitivity;
 
         public Method getMethod() {
             return method;
@@ -53,10 +51,6 @@ public final class CommandToRun {
 
         public CommandType getType() {
             return type;
-        }
-
-        public boolean isCaseSensitivity() {
-            return caseSensitivity;
         }
     }
 }
