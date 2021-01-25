@@ -121,7 +121,7 @@ public class Main extends JavacordIntegration {
 ### How To Create A Command For Javacord
 ```java
 @Commando(name = "Ping!",
-          aliases = "ping")
+          aliases = {"ping", "pong"}) /* aliases are can be multiple */
 public class BasicCommand extends JavacordCommand {
     
     public BasicCommand() {
