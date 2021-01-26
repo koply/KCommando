@@ -3,24 +3,23 @@ package me.koply.kcommando;
 import me.koply.kcommando.internal.CommandType;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.util.Map;
 
-@SuppressWarnings("rawtypes")
-public final class CommandToRun {
+public final class CommandToRun<T> {
 
-    public CommandToRun(Command clazz, String groupName, CommandType type, HashMap<String, MethodToRun> argumentMethods) {
+    public CommandToRun(Command<T> clazz, String groupName, CommandType type, Map<String, MethodToRun> argumentMethods) {
         this.clazz = clazz;
         this.groupName = groupName;
         this.type = type;
         this.argumentMethods = argumentMethods;
     }
 
-    private final Command clazz;
+    private final Command<T> clazz;
     private final String groupName;
     private final CommandType type;
-    private final HashMap<String, MethodToRun> argumentMethods;
+    private final Map<String, MethodToRun> argumentMethods;
 
-    public final Command getClazz() {
+    public final Command<T> getClazz() {
         return clazz;
     }
 
@@ -32,7 +31,7 @@ public final class CommandToRun {
         return type;
     }
 
-    public HashMap<String, MethodToRun> getArgumentMethods() {
+    public Map<String, MethodToRun> getArgumentMethods() {
         return argumentMethods;
     }
 

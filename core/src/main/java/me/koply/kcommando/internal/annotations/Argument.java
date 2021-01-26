@@ -1,4 +1,4 @@
-package me.koply.kcommando.internal;
+package me.koply.kcommando.internal.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

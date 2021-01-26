@@ -5,22 +5,29 @@ import me.koply.kcommando.integration.Integration;
 import java.io.File;
 import java.util.*;
 
-public final class Parameters {
-    private Integration integration;
-    private String packagePath, prefix;
-    private long cooldown = 0L;
-    private Map<String, String> groupLocales;
-    private final Set<String> owners = new HashSet<>();
-    private Map<String, CommandToRun> commandMethods;
-    private boolean readBotMessages;
-    private Optional<Locale> caseSensitivity = Optional.empty();
-    private Optional<DataManager> dataManager = Optional.empty();
+public final class Parameters<T> {
+    private Integration<T> integration;
 
-    public final Integration getIntegration() {
+    private String packagePath, prefix;
+
+    private long cooldown = 0L;
+
+    private Map<String, String> groupLocales;
+
+    private final Set<String> owners = new HashSet<>();
+
+    private Map<String, CommandToRun<T>> commandMethods;
+
+    private boolean readBotMessages;
+
+    private Optional<Locale> caseSensitivity = Optional.empty();
+    private Optional<DataManager<T>> dataManager = Optional.empty();
+
+    public final Integration<T> getIntegration() {
         return integration;
     }
 
-    public final Parameters setIntegration(Integration integration) {
+    public final Parameters<T> setIntegration(Integration<T> integration) {
         this.integration = integration;
         return this;
     }
@@ -29,7 +36,7 @@ public final class Parameters {
         return packagePath;
     }
 
-    public final Parameters setPackagePath(String packagePath) {
+    public final Parameters<T> setPackagePath(String packagePath) {
         this.packagePath = packagePath;
         return this;
     }
@@ -38,7 +45,7 @@ public final class Parameters {
         return prefix;
     }
 
-    public final Parameters setPrefix(String prefix) {
+    public final Parameters<T> setPrefix(String prefix) {
         this.prefix = prefix;
         return this;
     }
@@ -47,7 +54,7 @@ public final class Parameters {
         return cooldown;
     }
 
-    public final Parameters setCooldown(long cooldown) {
+    public final Parameters<T> setCooldown(long cooldown) {
         this.cooldown = cooldown;
         return this;
     }
@@ -56,12 +63,12 @@ public final class Parameters {
         return groupLocales;
     }
 
-    public final Parameters setGroupLocales(Map<String, String> groupLocales) {
+    public final Parameters<T> setGroupLocales(Map<String, String> groupLocales) {
         this.groupLocales = groupLocales;
         return this;
     }
 
-    public final Parameters setOwners(String...owners) {
+    public final Parameters<T> setOwners(String...owners) {
         this.owners.addAll(Arrays.asList(owners));
         return this;
     }
@@ -70,11 +77,11 @@ public final class Parameters {
         return owners;
     }
 
-    public final Map<String, CommandToRun> getCommandMethods() {
+    public final Map<String, CommandToRun<T>> getCommandMethods() {
         return commandMethods;
     }
 
-    public final Parameters setCommandMethods(Map<String, CommandToRun> commandMethods) {
+    public final Parameters<T> setCommandMethods(Map<String, CommandToRun<T>> commandMethods) {
         this.commandMethods = commandMethods;
         return this;
     }
@@ -83,7 +90,7 @@ public final class Parameters {
         return readBotMessages;
     }
 
-    public final Parameters setReadBotMessages(boolean readBotMessages) {
+    public final Parameters<T> setReadBotMessages(boolean readBotMessages) {
         this.readBotMessages = readBotMessages;
         return this;
     }
@@ -92,26 +99,26 @@ public final class Parameters {
         return caseSensitivity;
     }
 
-    public final Parameters setCaseSensitivity(Locale caseSensitivity) {
+    public final Parameters<T> setCaseSensitivity(Locale caseSensitivity) {
         this.caseSensitivity = Optional.of(caseSensitivity);
         return this;
     }
 
-    public final Optional<DataManager> getDataManager() {
+    public final Optional<DataManager<T>> getDataManager() {
         return dataManager;
     }
 
-    public final Parameters setDataManager(Optional<DataManager> dataManager) {
+    public final Parameters<T> setDataManager(Optional<DataManager<T>> dataManager) {
         this.dataManager = dataManager;
         return this;
     }
 
-    public final Parameters setDataFile(File dataFile) {
-        this.dataManager = Optional.of(new DataManager(dataFile, this));
+    public final Parameters<T> setDataFile(File dataFile) {
+        this.dataManager = Optional.of(new DataManager<>(dataFile, this));
         return this;
     }
 
-    public final Parameters setDataManager(DataManager dataManager) {
+    public final Parameters<T> setDataManager(DataManager<T> dataManager) {
         this.dataManager = Optional.of(dataManager);
         return this;
     }

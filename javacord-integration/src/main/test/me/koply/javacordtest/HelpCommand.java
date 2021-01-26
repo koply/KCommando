@@ -1,7 +1,7 @@
 package me.koply.javacordtest;
 
 import me.koply.kcommando.integration.impl.javacord.JavacordCommand;
-import me.koply.kcommando.internal.Commando;
+import me.koply.kcommando.internal.annotations.Commando;
 import org.javacord.api.event.message.MessageCreateEvent;
 
 import java.awt.*;

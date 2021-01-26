@@ -10,7 +10,7 @@ import org.javacord.api.event.message.MessageCreateEvent;
 
 import java.util.Optional;
 
-public class JavacordIntegration extends Integration {
+public class JavacordIntegration extends Integration<MessageCreateEvent> {
 
     private final DiscordApi discordApi;
 
@@ -20,9 +20,9 @@ public class JavacordIntegration extends Integration {
     }
 
     @Override
-    public void register(CommandHandler commandHandler) {
+    public void register(CommandHandler<MessageCreateEvent> commandHandler) {
         discordApi.addMessageCreateListener(e ->
-            commandHandler.processCommand(new CProcessParameters(new CProcessParameters.Author(e.getMessageAuthor()
+            commandHandler.processCommand(new CProcessParameters<>(new CProcessParameters.Author(e.getMessageAuthor()
                 .getDiscriminatedName(),
                 e.getMessageAuthor().getId(),
                 e.getMessageAuthor().isBotUser()),

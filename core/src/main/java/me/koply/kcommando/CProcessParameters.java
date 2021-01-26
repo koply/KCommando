@@ -1,13 +1,13 @@
 package me.koply.kcommando;
 
-public class CProcessParameters {
+public class CProcessParameters<T> {
 
     private final Author author;
     private final boolean webhookMessage;
     private final String rawCommand;
     private final String guildName;
     private final long guildID;
-    private final Object event;
+    private final T event;
     private final long channelID;
 
     /**
@@ -18,7 +18,7 @@ public class CProcessParameters {
      * @param guildID Guild id. if command from private this field is must be -1
      * @param event Event object like MessageReceivedEvent
      */
-    public CProcessParameters(Author author, boolean webhookMessage, String rawCommand, String guildName, long guildID, final Object event, long channelID) {
+    public CProcessParameters(Author author, boolean webhookMessage, String rawCommand, String guildName, long guildID, final T event, long channelID) {
         this.author = author;
         this.webhookMessage = webhookMessage;
         this.rawCommand = rawCommand;
@@ -48,7 +48,7 @@ public class CProcessParameters {
         return guildID;
     }
 
-    public Object getEvent() {
+    public T getEvent() {
         return event;
     }
 

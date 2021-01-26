@@ -1,16 +1,15 @@
 package me.koply.jdatest;
 
 import me.koply.kcommando.integration.impl.jda.JDACommand;
-import me.koply.kcommando.internal.Argument;
-import me.koply.kcommando.internal.Commando;
-import me.koply.kcommando.internal.KRunnable;
+import me.koply.kcommando.internal.annotations.Argument;
+import me.koply.kcommando.internal.annotations.Commando;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 @Commando(name = "Ping",
     aliases = "ping")
 public class PingCommand extends JDACommand {
     public PingCommand() {
-        getInfo().setOnFalseCallback((KRunnable<MessageReceivedEvent>) e -> e.getMessage().addReaction("⛔").queue());
+        getInfo().setOnFalseCallback(e -> e.getMessage().addReaction("⛔").queue());
     }
 
     @Override

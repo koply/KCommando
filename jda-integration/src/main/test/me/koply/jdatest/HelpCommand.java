@@ -1,7 +1,7 @@
 package me.koply.jdatest;
 
 import me.koply.kcommando.integration.impl.jda.JDACommand;
-import me.koply.kcommando.internal.Commando;
+import me.koply.kcommando.internal.annotations.Commando;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.*;

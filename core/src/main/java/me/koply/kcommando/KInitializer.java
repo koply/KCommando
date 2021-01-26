@@ -1,9 +1,9 @@
 package me.koply.kcommando;
 
-import me.koply.kcommando.internal.Argument;
 import me.koply.kcommando.internal.CargoTruck;
 import me.koply.kcommando.internal.CommandType;
-import me.koply.kcommando.internal.Commando;
+import me.koply.kcommando.internal.annotations.Argument;
+import me.koply.kcommando.internal.annotations.Commando;
 import org.reflections8.Reflections;
 
 import java.lang.reflect.Method;
@@ -12,20 +12,20 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
-@SuppressWarnings("rawtypes") // raw use of parameterized class 'Command'
-public class KInitializer {
+public class KInitializer<T> {
 
-    private final Parameters params;
-    public final Parameters getParams() { return params; }
+    private final Parameters<T> params;
+    public final Parameters<T> getParams() { return params; }
     
     private final Class<? extends CommandHandler> commandHandler;
 
-    public KInitializer(Parameters params) {
+    public KInitializer(Parameters<T> params) {
         this.params = params;
         this.commandHandler = CommandHandler.class;
         setupLogger();
@@ -37,7 +37,7 @@ public class KInitializer {
      * @param params parameters for the runs bot
      * @param commandHandler custom commandHandler *class* for the kcommando
      */
-    public KInitializer(Parameters params, Class<? extends CommandHandler> commandHandler) {
+    public KInitializer(Parameters<T> params, Class<? extends CommandHandler> commandHandler) {
         this.params = params;
         this.commandHandler = commandHandler;
         setupLogger();
@@ -52,6 +52,7 @@ public class KInitializer {
         ConsoleHandler consoleHandler = new ConsoleHandler();
         consoleHandler.setFormatter(new Formatter() {
             private final DateFormat formatter = new SimpleDateFormat("HH:mm:ss.SSS");
+
             @Override
             public String format(LogRecord record) {
                 final String[] splitted = record.getSourceClassName().split("\\.");
@@ -59,6 +60,7 @@ public class KInitializer {
                 return String.format("[%s %s] %s -> %s\n", formatter.format(new Date(record.getMillis())), record.getLevel(), name, record.getMessage());
             }
         });
+
         KCommando.logger.addHandler(consoleHandler);
     }
 
@@ -82,16 +84,19 @@ public class KInitializer {
 
         params.getDataManager().ifPresent(DataManager::initDataFile);
 
-        final HashMap<String, CommandToRun> commandMethods = new HashMap<>();
+        final Map<String, CommandToRun<T>> commandMethods = new HashMap<>();
         final Set<Class<? extends Command>> classes = getCommands();
 
         for (Class<? extends Command> clazz : classes) {
             registerCommand(clazz, commandMethods);
         }
+
         CargoTruck.setCargo(null);
         params.setCommandMethods(commandMethods);
+
         try {
             params.getIntegration().register(commandHandler.getDeclaredConstructor(Parameters.class).newInstance(params));
+
         } catch (Exception ex) {
             ex.printStackTrace();
             KCommando.logger.info("An unexpected error caught at initialize the command handler.");
@@ -106,10 +111,12 @@ public class KInitializer {
      */
     private boolean preCheck(Class<? extends Command> clazz) {
         if (clazz.getPackage().getName().contains("me.koply.kcommando.integration.impl")) return true;
+
         if ((clazz.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) {
             KCommando.logger.warning(clazz.getName() + " is not public class. Skipping...");
             return true;
         }
+
         return false;
     }
 
@@ -120,10 +127,13 @@ public class KInitializer {
         if (ant == null) {
             KCommando.logger.warning(clazzName + " is couldn't have Commando annotation. Skipping...");
             return true;
-        } if (ant.guildOnly() && ant.privateOnly()) {
+        }
+
+        if (ant.guildOnly() && ant.privateOnly()) {
             KCommando.logger.warning(clazzName + " has GuildOnly and PrivateOnly at the same time. Skipping...");
             return true;
         }
+
         return false;
     }
 
@@ -133,7 +143,7 @@ public class KInitializer {
      * @param ant the command annotation
      */
     public void infoGenerator(Commando ant) {
-        CommandInfo tempinfo = new CommandInfo();
+        CommandInfo<T> tempinfo = new CommandInfo<>();
         tempinfo.initialize(ant);
         CargoTruck.setCargo(tempinfo);
     }
@@ -147,20 +157,27 @@ public class KInitializer {
      * @param checkHandle check for handle name
      * @return found CommandType
      */
-    protected CommandType internalMethodCheck(Method method, boolean checkHandle) {
+    protected CommandType _internalMethodCheck(Method method, boolean checkHandle) {
         if (method.getReturnType() != boolean.class) return null;
+
         final Class<?>[] parameters = method.getParameterTypes();
         if (!parameters[0].getPackage().getName().contains("message")) return null;
+
         boolean isOk = !checkHandle || method.getName().equals("handle");
+
         if (parameters.length <= 3 && isOk) {
             if (parameters.length == 1) {
                 return CommandType.EVENT;
+
             } else if (parameters.length == 2 && parameters[1].isArray()) { // ??
                 return CommandType.ARGNEVENT;
+
             } else if (parameters.length == 3 && parameters[2] == String.class) {
                 return CommandType.PREFIXED;
+
             }
         }
+
         return null;
     }
 
@@ -171,10 +188,12 @@ public class KInitializer {
      */
     protected CommandType methodCheck(Class<? extends Command> clazz) {
         CommandType type = null;
+
         for (Method method : clazz.getDeclaredMethods()) {
-            type = internalMethodCheck(method, true);
+            type = _internalMethodCheck(method, true);
             if (type != null) break;
         }
+
         return type;
     }
 
@@ -182,16 +201,21 @@ public class KInitializer {
      * checks the argument methods
      * @return argument-MethodToRun objects
      */
-    public HashMap<String, CommandToRun.MethodToRun> argRegisterer(final Class<? extends Command> clazz) {
-        HashMap<String, CommandToRun.MethodToRun> argumentMethods = new HashMap<>();
+    public Map<String, CommandToRun.MethodToRun> argRegisterer(final Class<? extends Command> clazz) {
+        Map<String, CommandToRun.MethodToRun> argumentMethods = new HashMap<>();
+
         Method[] methods = clazz.getDeclaredMethods();
+
         for (Method method : methods) {
             if ((method.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) continue;
+
             Argument argm = method.getAnnotation(Argument.class);
             if (argm == null) continue;
-            String[] argStr = argm.arg();
-            CommandType type = internalMethodCheck(method, false);
+
+            CommandType type = _internalMethodCheck(method, false);
             if (type == null) continue;
+
+            String[] argStr = argm.arg();
             CommandToRun.MethodToRun mtr = new CommandToRun.MethodToRun(method, type);
             for (String s : argStr) {
                 argumentMethods.put(s, mtr);
@@ -200,14 +224,14 @@ public class KInitializer {
         return argumentMethods;
     }
 
-    public void registerCommand(final Class<? extends Command> clazz, final HashMap<String, CommandToRun> commandMethods) {
+    public void registerCommand(final Class<? extends Command> clazz, final Map<String, CommandToRun<T>> commandMethods) {
         // for package and class public modifier
         if (preCheck(clazz)) return;
 
         final Commando commandAnnotation = clazz.getAnnotation(Commando.class);
         if (annotationCheck(commandAnnotation, clazz.getName())) return;
-        final CommandType type = methodCheck(clazz);
 
+        final CommandType type = methodCheck(clazz);
         if (type == null) return;
 
         final String[] packageSplitted = clazz.getPackage().getName().split("\\.");
@@ -215,18 +239,21 @@ public class KInitializer {
 
         try {
             infoGenerator(commandAnnotation);
-            HashMap<String, CommandToRun.MethodToRun> argumentMethods = argRegisterer(clazz);
+            Map<String, CommandToRun.MethodToRun> argumentMethods = argRegisterer(clazz);
 
-            final Command commandInstance = clazz.getDeclaredConstructor().newInstance();
-            final CommandToRun ctr = new CommandToRun(commandInstance, groupName, type, argumentMethods);
+            final Command<T> commandInstance = clazz.getDeclaredConstructor().newInstance();
+            final CommandToRun<T> ctr = new CommandToRun<>(commandInstance, groupName, type, argumentMethods);
 
             for (final String s : commandAnnotation.aliases()) {
                 final String name = params.getCaseSensitivity().map(s::toLowerCase).orElse(s);
                 commandMethods.put(name, ctr);
             }
+
             classCounter++;
+
         } catch (Throwable t) {
             KCommando.logger.warning("Something went wrong.");
+
         } finally {
             KCommando.logger.info(clazz.getName() + " is have command method");
         }

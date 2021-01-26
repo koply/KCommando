@@ -1,46 +1,15 @@
-package me.koply.kcommando;
+package me.koply.kcommando.util;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-class Util {
-
-    public static String readFile(File file) {
-        final StringBuilder sb = new StringBuilder();
-        try {
-            final FileInputStream fs = new FileInputStream(file);
-            final InputStreamReader isr = new InputStreamReader(fs, StandardCharsets.UTF_8);
-            final BufferedReader br = new BufferedReader(isr);
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                sb.append(line).append("\n");
-            }
-            fs.close();
-            isr.close();
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            return sb.toString();
-        }
-    }
-
-    public static void writeFile(File file, String str) {
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(file), StandardCharsets.UTF_8))) {
-            writer.write(str);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
+public class StringUtil {
 
     /**
      * JaroWinklerDistance
      * Copied from https://commons.apache.org/sandbox/commons-text/jacoco/org.apache.commons.text.similarity/JaroWinklerDistance.java.html
      * apply method changed to similarity
      */
-    static double similarity(final CharSequence left, final CharSequence right) {
+    public static double similarity(final CharSequence left, final CharSequence right) {
         final double defaultScalingFactor = 0.1;
         final double percentageRoundValue = 100.0;
 
@@ -113,4 +82,5 @@ class Util {
         }
         return new int[] { matches, transpositions / 2, prefix, max.length() };
     }
+
 }
