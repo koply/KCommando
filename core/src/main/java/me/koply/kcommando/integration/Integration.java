@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public abstract class Integration {
 
@@ -18,11 +19,11 @@ public abstract class Integration {
     }
 
     // registers the handler for this instegration
-    public abstract void register(CommandHandler commandHandler);
+    public abstract void register(CommandHandler<?> commandHandler);
 
     // for set the custom guild prefixes
-    final ConcurrentHashMap<Long, HashSet<String>> customGuildPrefixes = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<Long, HashSet<String>> getCustomGuildPrefixes() { return customGuildPrefixes; }
+    final ConcurrentMap<Long, Set<String>> customGuildPrefixes = new ConcurrentHashMap<>();
+    public final ConcurrentMap<Long, Set<String>> getCustomGuildPrefixes() { return customGuildPrefixes; }
 
     /**
      * Adds a custom prefix to the server, but the existing prefix causes it to lose functionality on that server.
@@ -41,7 +42,7 @@ public abstract class Integration {
      */
     public void removeCustomPrefix(long guildID, String prefix) {
         customGuildPrefixes.computeIfPresent(guildID, (aLong, strings) -> {
-            final HashSet<String> temp = new HashSet<>(strings);
+            final Set<String> temp = new HashSet<>(strings);
             temp.remove(prefix);
             return temp;
         });
@@ -62,12 +63,12 @@ public abstract class Integration {
 
     // blacklist in single guild
     // guild id, blacklisted user id
-    final ConcurrentHashMap<Long, HashSet<Long>> blacklistedMembers = new ConcurrentHashMap<>();
+    final ConcurrentMap<Long, Set<Long>> blacklistedMembers = new ConcurrentHashMap<>();
 
     /**
      * @return all blacklisted members as map (guildID, set of the member ids)
      */
-    public ConcurrentHashMap<Long, HashSet<Long>> getBlacklistedMembers() {
+    public ConcurrentMap<Long, Set<Long>> getBlacklistedMembers() {
         return blacklistedMembers;
     }
 
@@ -75,18 +76,18 @@ public abstract class Integration {
      * @param guildID to get blacklisted members on the guild
      * @return all blacklisted members on the selected guild
      */
-    public HashSet<Long> getBlacklistedMembers(long guildID) {
+    public Set<Long> getBlacklistedMembers(long guildID) {
         blacklistedMembers.computeIfAbsent(guildID, aLong -> new HashSet<>());
         return blacklistedMembers.get(guildID);
     }
 
     // blacklist for guild channels
-    final ConcurrentHashMap<Long, HashSet<Long>> blacklistedChannels = new ConcurrentHashMap<>();
+    final ConcurrentMap<Long, Set<Long>> blacklistedChannels = new ConcurrentHashMap<>();
 
     /**
      * @return all blacklisted channels as map (guildID, set of the channel ids)
      */
-    public ConcurrentHashMap<Long, HashSet<Long>> getBlacklistedChannels() {
+    public ConcurrentMap<Long, Set<Long>> getBlacklistedChannels() {
         return blacklistedChannels;
     }
 
@@ -94,7 +95,7 @@ public abstract class Integration {
      * @param guildID to get blacklisted channels on the guild
      * @return all blacklisted channels on the selected guild
      */
-    public HashSet<Long> getBlacklistedChannels(long guildID) {
+    public Set<Long> getBlacklistedChannels(long guildID) {
         blacklistedChannels.computeIfAbsent(guildID, aLong -> new HashSet<>());
         return blacklistedChannels.get(guildID);
     }

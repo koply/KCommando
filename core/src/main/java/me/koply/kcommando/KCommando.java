@@ -7,9 +7,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class KCommando {
+public class KCommando<T> {
 
-    public Parameters params = new Parameters();
+    public Parameters<T> params = new Parameters<>();
     public static final Logger logger = Logger.getLogger("KCommando");
     public static final String VERSION = "4.2.4";
 
@@ -17,44 +17,44 @@ public class KCommando {
         params.setIntegration(integration);
     }
 
-    private KInitializer initializer;
+    private KInitializer<T> initializer;
 
     /**
      * only advanced using
      */
-    public KCommando(final Integration integration, final KInitializer initializer) {
+    public KCommando(final Integration integration, final KInitializer<T> initializer) {
         params = initializer.getParams();
         params.setIntegration(integration);
         this.initializer = initializer;
     }
 
-    public KCommando build() {
-        if (initializer == null) initializer=new KInitializer(params);
+    public KCommando<T> build() {
+        if (initializer == null) initializer = new KInitializer<>(params);
         initializer.build();
         return this;
     }
 
-    public KCommando setPackage(String path) { params.setPackagePath(path);
+    public KCommando<T> setPackage(String path) { params.setPackagePath(path);
         return this;
     }
 
-    public KCommando setCooldown(long milliseconds) { params.setCooldown(milliseconds);
+    public KCommando<T> setCooldown(long milliseconds) { params.setCooldown(milliseconds);
         return this;
     }
 
-    public KCommando setPrefix(String prefix) { params.setPrefix(prefix);
+    public KCommando<T> setPrefix(String prefix) { params.setPrefix(prefix);
         return this;
     }
 
-    public KCommando setOwners(String...owners) { params.setOwners(owners);
+    public KCommando<T> setOwners(String...owners) { params.setOwners(owners);
         return this;
     }
 
-    public KCommando setReadBotMessages(boolean readBotMessages) { params.setReadBotMessages(readBotMessages);
+    public KCommando<T> setReadBotMessages(boolean readBotMessages) { params.setReadBotMessages(readBotMessages);
         return this;
     }
 
-    public KCommando setDataFile(File dataFile) {
+    public KCommando<T> setDataFile(File dataFile) {
         params.setDataFile(dataFile);
         return this;
     }
@@ -63,21 +63,21 @@ public class KCommando {
      * @param dataManager The DataManager instance to be used by kcommando
      * @return this object
      */
-    public KCommando setDataManager(DataManager dataManager) {
+    public KCommando<T> setDataManager(DataManager<T> dataManager) {
         params.setDataManager(dataManager);
         return this;
     }
 
-    public KCommando useCaseSensitivity() {
+    public KCommando<T> useCaseSensitivity() {
         return useCaseSensitivity(Locale.getDefault());
     }
 
-    public KCommando useCaseSensitivity(Locale locale) {
+    public KCommando<T> useCaseSensitivity(Locale locale) {
         params.setCaseSensitivity(locale);
         return this;
     }
 
-    public Parameters getParameters() {
+    public Parameters<T> getParameters() {
         return params;
     }
 
@@ -86,7 +86,7 @@ public class KCommando {
       key example: info
       value example: Information Commands&&&This group haves information commands.
      */
-    public KCommando setGroupLocales(Map<String, String> groupLocales) { params.setGroupLocales(groupLocales);
+    public KCommando<T> setGroupLocales(Map<String, String> groupLocales) { params.setGroupLocales(groupLocales);
         return this;
         /*
           Still TODO: Pre defined Help command in lib with groupLocales.

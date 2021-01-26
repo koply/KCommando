@@ -1,9 +1,8 @@
 package me.koply.kcommando;
 
-import me.koply.kcommando.internal.Commando;
+import me.koply.kcommando.internal.annotations.Commando;
 import me.koply.kcommando.internal.KRunnable;
 
-@SuppressWarnings("rawtypes")
 public final class CommandInfo {
     private String name;
     private String[] aliases;

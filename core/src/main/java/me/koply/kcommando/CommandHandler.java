@@ -6,22 +6,25 @@ import me.koply.kcommando.util.StringUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class CommandHandler {
+public class CommandHandler<T> {
 
-    private final Parameters params;
+    private final Parameters<T> params;
     private final long selfUserID;
-    private final ConcurrentHashMap<Long, HashSet<String>> customPrefixes;
-    private final Map<String, CommandToRun> commandsMap;
+    private final ConcurrentMap<Long, Set<String>> customPrefixes;
+    private final Map<String, CommandToRun<T>> commandsMap;
     private final ConcurrentMap<Long, Long> cooldownList = new ConcurrentHashMap<>();
     private final ExecutorService executorService = Executors.newCachedThreadPool();
 
-    public CommandHandler(Parameters params) {
+    public CommandHandler(Parameters<T> params) {
         this.params = params;
         commandsMap = params.getCommandMethods();
         customPrefixes = params.getIntegration().getCustomGuildPrefixes();
@@ -50,10 +53,10 @@ public class CommandHandler {
      * @return if command blacklisted returns true.
      */
     protected boolean blacklistCheck(long guildID, long authorID, long channelID) {
-        HashSet<Long> blacklistedMembers = guildID == -1 ? null : params.getIntegration().getBlacklistedMembers().getOrDefault(guildID, null);
+        Set<Long> blacklistedMembers = guildID == -1 ? null : params.getIntegration().getBlacklistedMembers().getOrDefault(guildID, null);
         boolean isBlacklistedMember = blacklistedMembers != null && blacklistedMembers.contains(authorID);
 
-        HashSet<Long> blacklistedChannels = channelID == -1 ? null : params.getIntegration().getBlacklistedChannels().getOrDefault(guildID, null);
+        Set<Long> blacklistedChannels = channelID == -1 ? null : params.getIntegration().getBlacklistedChannels().getOrDefault(guildID, null);
         boolean isBlacklistedChannel = blacklistedChannels != null && blacklistedChannels.contains(channelID);
 
         return params.getIntegration().getBlacklistedUsers().contains(authorID) ||
@@ -67,13 +70,17 @@ public class CommandHandler {
      */
     protected int checkPrefix(String commandRaw, long guildID) {
         if (customPrefixes.containsKey(guildID)) {
+
             for (String prefix : customPrefixes.get(guildID)) {
-                if (commandRaw.startsWith(prefix)) return prefix.length();
+                if (commandRaw.startsWith(prefix))
+                    return prefix.length();
             }
-            return -1;
-        } else {
-            return commandRaw.startsWith(params.getPrefix()) ? params.getPrefix().length() : -1;
+
+        } else if (commandRaw.startsWith(params.getPrefix())) {
+            return  params.getPrefix().length();
         }
+
+        return -1;
     }
 
     /**
@@ -88,99 +95,123 @@ public class CommandHandler {
      * command check for guildOnly, privateOnly, ownerOnly
      *
      * @param info commandInfo object from current command
-     * @param cpp command process parameters for usage
+     * @param params command process parameters for usage
      * @return if command correct, returns false.
      */
-    @SuppressWarnings("unchecked")
-    protected boolean commandCheck(CommandInfo info, CProcessParameters cpp) {
-        if (info.isGuildOnly() && cpp.getGuildID() == -1) {
+    protected boolean commandCheck(CommandInfo info, CProcessParameters<T> params) {
+        if (info.isGuildOnly() && params.getGuildID() == -1) {
             KCommando.logger.info("GuildOnly command used from private channel");
+
             if (info.getGuildOnlyCallback() != null) {
-                executorService.submit(() -> info.getGuildOnlyCallback().run(cpp.getEvent()));
+                executorService.submit(() -> info.getGuildOnlyCallback().run(params.getEvent()));
             }
+
             return true;
         }
-        if (info.isPrivateOnly() && cpp.getGuildID() != -1) {
+
+        if (info.isPrivateOnly() && params.getGuildID() != -1) {
             KCommando.logger.info("PrivateOnly command used from guild channel");
+
             if (info.getPrivateOnlyCallback() != null) {
-                executorService.submit(() -> info.getPrivateOnlyCallback().run(cpp.getEvent()));
+                executorService.submit(() -> info.getPrivateOnlyCallback().run(params.getEvent()));
             }
+
             return true;
         }
-        if (info.isOwnerOnly() && !params.getOwners().contains(cpp.getAuthor().getId() + "")) {
+
+        if (info.isOwnerOnly() && !this.params.getOwners().contains(params.getAuthor().getId() + "")) {
             KCommando.logger.info("OwnerOnly command used by normal user.");
+
             if (info.getOwnerOnlyCallback() != null) {
-                executorService.submit(() -> info.getOwnerOnlyCallback().run(cpp.getEvent()));
+                executorService.submit(() -> info.getOwnerOnlyCallback().run(params.getEvent()));
             }
+
             return true;
         }
+
         return false;
     }
 
     /**
      * @param info current command info
-     * @param cpp command process parameters
+     * @param params command process parameters
      * @param authorID current commands author id
      * @return if cooldown is correct returns false
      */
-    protected boolean cooldownCheck(CommandInfo info, CProcessParameters cpp, long authorID) {
-        if (cooldownMapChecker(authorID, cooldownList, params.getCooldown()) && !params.getOwners().contains(authorID + "")) {
+    protected boolean cooldownCheck(CommandInfo info, CProcessParameters<T> params, long authorID) {
+        if (cooldownMapChecker(authorID, cooldownList, this.params.getCooldown()) && !this.params.getOwners().contains(authorID + "")) {
             KCommando.logger.info("Last command has been declined due to cooldown check");
+
             if (info.getCooldownCallback() != null) {
-                executorService.submit(() -> info.getCooldownCallback().run(cpp.getEvent()));
+                executorService.submit(() -> info.getCooldownCallback().run(params.getEvent()));
             }
+
             return true;
         }
+
         return false;
     }
 
     protected void findSimilars(String command, Object event) {
-        HashSet<CommandInfo> similarCommands = new HashSet<>();
-        for (Map.Entry<String, CommandToRun> entry : commandsMap.entrySet()) {
+        Set<CommandInfo> similarCommands = new HashSet<>();
+
+        for (Map.Entry<String, CommandToRun<T>> entry : commandsMap.entrySet()) {
+
             double similarity = StringUtil.similarity(entry.getKey(), command);
             if (similarity >= 0.5) {
                 similarCommands.add(entry.getValue().getClazz().getInfo());
             }
+
         }
+
         params.getIntegration().getSuggestionsCallback().run(event, similarCommands);
     }
 
-    public void processCommand(final CProcessParameters cpp) {
-        final long authorID = cpp.getAuthor().getId();
-        if (authorID == selfUserID ||
-                (!params.isReadBotMessages() && cpp.getAuthor().isBot()) ||
-                cpp.isWebhookMessage())
-            return;
+    public void processCommand(final CProcessParameters<T> params) {
 
-        if (blacklistCheck(cpp.getGuildID(), authorID, cpp.getChannelID())) {
-            if (params.getIntegration().getBlacklistCallback() != null)
-                params.getIntegration().getBlacklistCallback().run(cpp.getEvent());
+        final long authorID = params.getAuthor().getId();
+        if (authorID == selfUserID) return;
+
+        if (!this.params.isReadBotMessages() && params.getAuthor().isBot()) return;
+
+        if (params.isWebhookMessage()) return;
+
+        if (blacklistCheck(params.getGuildID(), authorID, params.getChannelID())) {
+            KRunnable callback = this.params.getIntegration().getBlacklistCallback();
+
+            if (callback != null) {
+                callback.run(params.getEvent());
+            }
+
             return;
         }
 
-        final String commandRaw = cpp.getRawCommand();
-        final int resultPrefix = checkPrefix(commandRaw, cpp.getGuildID());
+        final String commandRaw = params.getRawCommand();
+        final int resultPrefix = checkPrefix(commandRaw, params.getGuildID());
         if (resultPrefix == -1) return;
         
         final String prefix = commandRaw.substring(0,resultPrefix);
         final String[] cmdArgs = commandRaw.substring(resultPrefix).split(" ");
-        KCommando.logger.info(String.format("Command received | User: %s | Guild: %s | Command: %s", cpp.getAuthor().getName(), cpp.getGuildName(), commandRaw));
-        final String command = params.getCaseSensitivity().isPresent() ? cmdArgs[0] : cmdArgs[0].toLowerCase();
+
+        KCommando.logger.info(String.format("Command received | User: %s | Guild: %s | Command: %s", params.getAuthor().getName(), params.getGuildName(), commandRaw));
+
+        final String command = this.params.getCaseSensitivity().isPresent() ? cmdArgs[0] : cmdArgs[0].toLowerCase();
 
         if (!containsCommand(command)) {
-            if (params.getIntegration().getSuggestionsCallback() != null) {
-                findSimilars(command, cpp.getEvent());
+            if (this.params.getIntegration().getSuggestionsCallback() != null) {
+                findSimilars(command, params.getEvent());
             }
             return;
         }
 
-        final CommandToRun ctr = commandsMap.get(command);
+        final CommandToRun<T> ctr = commandsMap.get(command);
         final CommandInfo info = ctr.getClazz().getInfo();
 
-        if (commandCheck(info, cpp) || cooldownCheck(info, cpp, authorID)) {
+        if (commandCheck(info, params) || cooldownCheck(info, params, authorID)) {
             return;
         }
-        runCommand(info, ctr, cpp, cmdArgs, prefix);
+
+        this.runCommand(info, ctr, params, cmdArgs, prefix);
     }
 
     /**
@@ -188,50 +219,64 @@ public class CommandHandler {
      *
      * @param info CommandInfo object for get some information about the command
      * @param ctr CommandToRun object for run the command
-     * @param cpp Command parameters from api
+     * @param params Command parameters from api
      * @param cmdArgs raw command text splitted by spaces and cutted the prefix.
      * @param prefix the current prefix
      */
-    protected void runCommand(CommandInfo info, CommandToRun ctr, CProcessParameters cpp, String[] cmdArgs, String prefix) {
+    protected void runCommand(CommandInfo info, CommandToRun<T> ctr, CProcessParameters<T> params, String[] cmdArgs, String prefix) {
         // async runner first. because async chance is higher than sync commands
         final long firstTime = System.currentTimeMillis();
-        cooldownList.put(cpp.getAuthor().getId(), firstTime);
+        cooldownList.put(params.getAuthor().getId(), firstTime);
         if (!info.isSync()) {
             try {
                 executorService.submit(() -> {
                     KCommando.logger.info("Last command has been submitted to ExecutorService.");
-                    internalCaller(ctr, cpp.getEvent(), cmdArgs, info, prefix);
+
+                    this._internalCaller(ctr, params.getEvent(), cmdArgs, info, prefix);
+
                     KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
                 });
-            } catch (Throwable t) { t.printStackTrace(); }
+
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+
         } else {
-            internalCaller(ctr, cpp.getEvent(), cmdArgs, info, prefix);
+            this._internalCaller(ctr, params.getEvent(), cmdArgs, info, prefix);
+
             KCommando.logger.info("Last command took " + (System.currentTimeMillis() - firstTime) + "ms to execute.");
         }
     }
 
-    protected void internalCaller(CommandToRun ctr, Object event, String[] args, CommandInfo info, String prefix) {
+    protected void _internalCaller(CommandToRun<T> ctr, T event, String[] args, CommandInfo info, String prefix) {
         final KRunnable onFalse = info.getOnFalseCallback();
+
         try {
-            HashMap<String, CommandToRun.MethodToRun> argumentMethods = ctr.getArgumentMethods();
+            Map<String, CommandToRun.MethodToRun> argumentMethods = ctr.getArgumentMethods();
+
             if (args.length > 1) {
                 if (argumentMethods.containsKey(args[1])) {
                     CommandToRun.MethodToRun mtr = argumentMethods.get(args[1]);
-                    argWrapper(mtr.getType(), mtr.getMethod(), ctr.getClazz(), event, onFalse, args, prefix);
+                    this.argWrapper(mtr.getType(), mtr.getMethod(), ctr.getClazz(), event, onFalse, args, prefix);
+                    return;
+
                 } else if (info.isOnlyArguments()) {
-                    if (onFalse != null) onFalse.run(event);
-                } else {
-                    handleWrapper(ctr.getType(), ctr.getClazz(), event, onFalse, args, prefix);
+                    if (onFalse != null) {
+                        onFalse.run(event);
+                    }
+                    return;
+
                 }
-            } else {
-                handleWrapper(ctr.getType(), ctr.getClazz(), event, onFalse, args, prefix);
             }
-        } catch (Throwable t) { KCommando.logger.info("Command crashed! Message: " + t.getMessage() + "\n" + Arrays.toString(t.getStackTrace())); }
+
+            this.handleWrapper(ctr.getType(), ctr.getClazz(), event, onFalse, args, prefix);
+        } catch (Throwable t) {
+            KCommando.logger.info("Command crashed! Message: " + t.getMessage() + "\n" + Arrays.toString(t.getStackTrace()));
+        }
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private void handleWrapper(CommandType type, Command clazz,
-                               Object event, KRunnable onFalse,
+    private void handleWrapper(CommandType type, Command<T> clazz,
+                               T event, KRunnable onFalse,
                                String[] args, String prefix) {
         switch (type.value) {
             case 0x01:
@@ -239,11 +284,13 @@ public class CommandHandler {
                     onFalse.run(event);
                 }
                 break;
+
             case 0x02:
                 if (!clazz.handle(event, args) && onFalse != null) {
                     onFalse.run(event);
                 }
                 break;
+
             case 0x03:
                 if (!clazz.handle(event, args, prefix) && onFalse != null) {
                     onFalse.run(event);
@@ -252,9 +299,8 @@ public class CommandHandler {
         }
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     private void argWrapper(CommandType type, Method method,
-                            Command clazz, Object event,
+                            Command<T> clazz, T event,
                             KRunnable onFalse, String[] args,
                             String prefix) throws InvocationTargetException, IllegalAccessException {
         switch (type.value) {
@@ -263,11 +309,13 @@ public class CommandHandler {
                     onFalse.run(event);
                 }
                 break;
+
             case 0x02:
                 if (!(boolean)method.invoke(clazz, event, args) && onFalse != null) {
                     onFalse.run(event);
                 }
                 break;
+
             case 0x03:
                 if (!(boolean)method.invoke(clazz, event, args, prefix) && onFalse != null) {
                     onFalse.run(event);

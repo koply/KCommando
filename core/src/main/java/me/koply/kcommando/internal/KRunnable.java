@@ -1,5 +1,5 @@
 package me.koply.kcommando.internal;
 
-public interface KRunnable<T> {
-    void run(T e);
+public interface KRunnable {
+    void run(Object arg);
 }
