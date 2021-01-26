@@ -1,9 +1,8 @@
 package me.koply.javacordtest;
 
 import me.koply.kcommando.integration.impl.javacord.JavacordCommand;
-import me.koply.kcommando.internal.Argument;
-import me.koply.kcommando.internal.Commando;
-import me.koply.kcommando.internal.KRunnable;
+import me.koply.kcommando.internal.annotations.Argument;
+import me.koply.kcommando.internal.annotations.Commando;
 import org.javacord.api.event.message.MessageCreateEvent;
 
 @Commando(name = "Ping",
@@ -11,7 +10,7 @@ import org.javacord.api.event.message.MessageCreateEvent;
 public class PingCommand extends JavacordCommand {
 
     public PingCommand() {
-        getInfo().setOnFalseCallback((KRunnable<MessageCreateEvent>) e -> e.getMessage().addReaction("⛔"));
+        getInfo().setOnFalseCallback(e -> e.getMessage().addReaction("⛔"));
     }
 
     @Override
