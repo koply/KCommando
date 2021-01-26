@@ -1,8 +1,8 @@
 package me.koply.kcommando;
 
-import me.koply.kcommando.internal.annotations.Argument;
 import me.koply.kcommando.internal.CargoTruck;
 import me.koply.kcommando.internal.CommandType;
+import me.koply.kcommando.internal.annotations.Argument;
 import me.koply.kcommando.internal.annotations.Commando;
 import org.reflections8.Reflections;
 
@@ -87,7 +87,7 @@ public class KInitializer<T> {
         final Map<String, CommandToRun<T>> commandMethods = new HashMap<>();
         final Set<Class<? extends Command>> classes = getCommands();
 
-        for (Class<? extends Command<T>> clazz : classes) {
+        for (Class<? extends Command> clazz : classes) {
             registerCommand(clazz, commandMethods);
         }
 
@@ -109,7 +109,7 @@ public class KInitializer<T> {
     /**
      * @return if returns true skips class
      */
-    private boolean preCheck(Class<? extends Command<T>> clazz) {
+    private boolean preCheck(Class<? extends Command> clazz) {
         if (clazz.getPackage().getName().contains("me.koply.kcommando.integration.impl")) return true;
 
         if ((clazz.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) {
@@ -186,7 +186,7 @@ public class KInitializer<T> {
      *
      * @return if returns null, skips the current class
      */
-    protected CommandType methodCheck(Class<? extends Command<T>> clazz) {
+    protected CommandType methodCheck(Class<? extends Command> clazz) {
         CommandType type = null;
 
         for (Method method : clazz.getDeclaredMethods()) {
@@ -201,7 +201,7 @@ public class KInitializer<T> {
      * checks the argument methods
      * @return argument-MethodToRun objects
      */
-    public Map<String, CommandToRun.MethodToRun> argRegisterer(final Class<? extends Command<T>> clazz) {
+    public Map<String, CommandToRun.MethodToRun> argRegisterer(final Class<? extends Command> clazz) {
         Map<String, CommandToRun.MethodToRun> argumentMethods = new HashMap<>();
 
         Method[] methods = clazz.getDeclaredMethods();
@@ -224,7 +224,7 @@ public class KInitializer<T> {
         return argumentMethods;
     }
 
-    public void registerCommand(final Class<? extends Command<T>> clazz, final Map<String, CommandToRun<T>> commandMethods) {
+    public void registerCommand(final Class<? extends Command> clazz, final Map<String, CommandToRun<T>> commandMethods) {
         // for package and class public modifier
         if (preCheck(clazz)) return;
 
