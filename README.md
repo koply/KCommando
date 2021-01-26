@@ -47,7 +47,7 @@ public class Main extends JDAIntegration {
         if (!dataFile.exists())
             dataFile.createNewFile();
 
-        KCommando kcommando = new KCommando(new Main(jda))
+        KCommando<MessageReceivedEvent> kcommando = new KCommando<>(new Main(jda))
               .setCooldown(5000L) // 5 seconds as 5000 ms
               .setOwners("FIRST_OWNER_ID", "SECOND_OWNER_ID") // varargs
               .setPackage("com.example.mybot.commands") // command classes package path
@@ -110,7 +110,7 @@ public class Main extends JavacordIntegration {
         DiscordApi discordApi = new DiscordApiBuilder().setToken(token)
             .login().join();
         
-        KCommando kcommando = new KCommando(new Main(discordApi))
+        KCommando<MessageCreateEvent> kcommando = new KCommando<>(new Main(discordApi))
               .setPackage("com.example.mybot.commands") // command classes package path
               .setPrefix("!")
               .build();
@@ -244,7 +244,7 @@ Integration#setSuggestionsCallback((SuggestionsCallback<**Event**>) (e,suggestio
         return;
     }
     StringBuilder sb = new StringBuilder();
-    for (CommandInfo info : suggestions) {
+    for (CommandInfo<**Event**> info : suggestions) {
         sb.append( Arrays.toString(info.getAliases()) ).append(" - ");
     }
     e.getChannel().sendMessage("Last command is not found. Suggestions: \n"+sb.toString()).queue();
