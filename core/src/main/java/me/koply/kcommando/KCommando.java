@@ -13,7 +13,7 @@ public class KCommando<T> {
     public static final Logger logger = Logger.getLogger("KCommando");
     public static final String VERSION = "4.2.4";
 
-    public KCommando(final Integration integration) {
+    public KCommando(final Integration<T> integration) {
         params.setIntegration(integration);
     }
 
@@ -22,7 +22,7 @@ public class KCommando<T> {
     /**
      * only advanced using
      */
-    public KCommando(final Integration integration, final KInitializer<T> initializer) {
+    public KCommando(final Integration<T> integration, final KInitializer<T> initializer) {
         params = initializer.getParams();
         params.setIntegration(integration);
         this.initializer = initializer;

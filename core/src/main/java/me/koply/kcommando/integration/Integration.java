@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public abstract class Integration {
+public abstract class Integration<T> {
 
     private final long selfID;
     public final long getSelfID() { return selfID; }
@@ -19,7 +19,7 @@ public abstract class Integration {
     }
 
     // registers the handler for this instegration
-    public abstract void register(CommandHandler<?> commandHandler);
+    public abstract void register(CommandHandler<T> commandHandler);
 
     // for set the custom guild prefixes
     final ConcurrentMap<Long, Set<String>> customGuildPrefixes = new ConcurrentHashMap<>();
@@ -100,25 +100,25 @@ public abstract class Integration {
         return blacklistedChannels.get(guildID);
     }
 
-    private KRunnable blacklistCallback;
+    private KRunnable<T> blacklistCallback;
 
     /**
      * When a command declined due to a blacklist, runs this callback.
      * @param callback to run
      * @return this integration
      */
-    public Integration setBlacklistCallback(KRunnable callback) {
+    public Integration<T> setBlacklistCallback(KRunnable<T> callback) {
         blacklistCallback = callback;
         return this;
     }
 
     // internal
-    public KRunnable getBlacklistCallback() {
+    public KRunnable<T> getBlacklistCallback() {
         return blacklistCallback;
     }
 
 
-    private SuggestionsCallback suggestionsCallback;
+    private SuggestionsCallback<T> suggestionsCallback;
 
     /**
      * When a command declined due to wrong usage and the bot has similar commands calls this callback
@@ -127,13 +127,13 @@ public abstract class Integration {
      * @param suggestionsCallback to run
      * @return this integration
      */
-    public Integration setSuggestionsCallback(SuggestionsCallback suggestionsCallback) {
+    public Integration<T> setSuggestionsCallback(SuggestionsCallback<T> suggestionsCallback) {
         this.suggestionsCallback = suggestionsCallback;
         return this;
     }
 
     // internal
-    public SuggestionsCallback getSuggestionsCallback() {
+    public SuggestionsCallback<T> getSuggestionsCallback() {
         return suggestionsCallback;
     }
 }

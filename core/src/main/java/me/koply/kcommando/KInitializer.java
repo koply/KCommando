@@ -143,7 +143,7 @@ public class KInitializer<T> {
      * @param ant the command annotation
      */
     public void infoGenerator(Commando ant) {
-        CommandInfo tempinfo = new CommandInfo();
+        CommandInfo<T> tempinfo = new CommandInfo<>();
         tempinfo.initialize(ant);
         CargoTruck.setCargo(tempinfo);
     }

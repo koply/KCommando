@@ -3,12 +3,12 @@ package me.koply.kcommando;
 import me.koply.kcommando.internal.annotations.Commando;
 import me.koply.kcommando.internal.KRunnable;
 
-public final class CommandInfo {
+public final class CommandInfo<T> {
     private String name;
     private String[] aliases;
     private String description;
     private boolean privateOnly, guildOnly, ownerOnly, sync, onlyArguments;
-    private KRunnable onFalseCallback, privateOnlyCallback, guildOnlyCallback, ownerOnlyCallback, cooldownCallback;
+    private KRunnable<T> onFalseCallback, privateOnlyCallback, guildOnlyCallback, ownerOnlyCallback, cooldownCallback;
 
     protected final void initialize(Commando ant) {
         name = ant.name();
@@ -51,47 +51,47 @@ public final class CommandInfo {
         return onlyArguments;
     }
 
-    public final KRunnable getOnFalseCallback() {
+    public final KRunnable<T> getOnFalseCallback() {
         return onFalseCallback;
     }
 
-    public final CommandInfo setOnFalseCallback(KRunnable onFalseCallback) {
+    public final CommandInfo<T> setOnFalseCallback(KRunnable<T> onFalseCallback) {
         this.onFalseCallback = onFalseCallback;
         return this;
     }
 
-    public final KRunnable getPrivateOnlyCallback() {
+    public final KRunnable<T> getPrivateOnlyCallback() {
         return privateOnlyCallback;
     }
 
-    public final CommandInfo setPrivateOnlyCallback(KRunnable privateOnlyCallback) {
+    public final CommandInfo<T> setPrivateOnlyCallback(KRunnable<T> privateOnlyCallback) {
         this.privateOnlyCallback = privateOnlyCallback;
         return this;
     }
 
-    public final KRunnable getGuildOnlyCallback() {
+    public final KRunnable<T> getGuildOnlyCallback() {
         return guildOnlyCallback;
     }
 
-    public final CommandInfo setGuildOnlyCallback(KRunnable guildOnlyCallback) {
+    public final CommandInfo<T> setGuildOnlyCallback(KRunnable<T> guildOnlyCallback) {
         this.guildOnlyCallback = guildOnlyCallback;
         return this;
     }
 
-    public final KRunnable getOwnerOnlyCallback() {
+    public final KRunnable<T> getOwnerOnlyCallback() {
         return ownerOnlyCallback;
     }
 
-    public final CommandInfo setOwnerOnlyCallback(KRunnable ownerOnlyCallback) {
+    public final CommandInfo<T> setOwnerOnlyCallback(KRunnable<T> ownerOnlyCallback) {
         this.ownerOnlyCallback = ownerOnlyCallback;
         return this;
     }
 
-    public KRunnable getCooldownCallback() {
+    public KRunnable<T> getCooldownCallback() {
         return cooldownCallback;
     }
 
-    public CommandInfo setCooldownCallback(KRunnable cooldownCallback) {
+    public CommandInfo<T> setCooldownCallback(KRunnable<T> cooldownCallback) {
         this.cooldownCallback = cooldownCallback;
         return this;
     }

@@ -6,21 +6,28 @@ import java.io.File;
 import java.util.*;
 
 public final class Parameters<T> {
-    private Integration integration;
+    private Integration<T> integration;
+
     private String packagePath, prefix;
+
     private long cooldown = 0L;
+
     private Map<String, String> groupLocales;
+
     private final Set<String> owners = new HashSet<>();
+
     private Map<String, CommandToRun<T>> commandMethods;
+
     private boolean readBotMessages;
+
     private Optional<Locale> caseSensitivity = Optional.empty();
     private Optional<DataManager<T>> dataManager = Optional.empty();
 
-    public final Integration getIntegration() {
+    public final Integration<T> getIntegration() {
         return integration;
     }
 
-    public final Parameters<T> setIntegration(Integration integration) {
+    public final Parameters<T> setIntegration(Integration<T> integration) {
         this.integration = integration;
         return this;
     }

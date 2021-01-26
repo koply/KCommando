@@ -98,7 +98,7 @@ public class CommandHandler<T> {
      * @param params command process parameters for usage
      * @return if command correct, returns false.
      */
-    protected boolean commandCheck(CommandInfo info, CProcessParameters<T> params) {
+    protected boolean commandCheck(CommandInfo<T> info, CProcessParameters<T> params) {
         if (info.isGuildOnly() && params.getGuildID() == -1) {
             KCommando.logger.info("GuildOnly command used from private channel");
 
@@ -138,7 +138,7 @@ public class CommandHandler<T> {
      * @param authorID current commands author id
      * @return if cooldown is correct returns false
      */
-    protected boolean cooldownCheck(CommandInfo info, CProcessParameters<T> params, long authorID) {
+    protected boolean cooldownCheck(CommandInfo<T> info, CProcessParameters<T> params, long authorID) {
         if (cooldownMapChecker(authorID, cooldownList, this.params.getCooldown()) && !this.params.getOwners().contains(authorID + "")) {
             KCommando.logger.info("Last command has been declined due to cooldown check");
 
@@ -152,8 +152,8 @@ public class CommandHandler<T> {
         return false;
     }
 
-    protected void findSimilars(String command, Object event) {
-        Set<CommandInfo> similarCommands = new HashSet<>();
+    protected void findSimilars(String command, T event) {
+        Set<CommandInfo<T>> similarCommands = new HashSet<>();
 
         for (Map.Entry<String, CommandToRun<T>> entry : commandsMap.entrySet()) {
 
@@ -177,7 +177,7 @@ public class CommandHandler<T> {
         if (params.isWebhookMessage()) return;
 
         if (blacklistCheck(params.getGuildID(), authorID, params.getChannelID())) {
-            KRunnable callback = this.params.getIntegration().getBlacklistCallback();
+            KRunnable<T> callback = this.params.getIntegration().getBlacklistCallback();
 
             if (callback != null) {
                 callback.run(params.getEvent());
@@ -205,7 +205,7 @@ public class CommandHandler<T> {
         }
 
         final CommandToRun<T> ctr = commandsMap.get(command);
-        final CommandInfo info = ctr.getClazz().getInfo();
+        final CommandInfo<T> info = ctr.getClazz().getInfo();
 
         if (commandCheck(info, params) || cooldownCheck(info, params, authorID)) {
             return;
@@ -223,7 +223,7 @@ public class CommandHandler<T> {
      * @param cmdArgs raw command text splitted by spaces and cutted the prefix.
      * @param prefix the current prefix
      */
-    protected void runCommand(CommandInfo info, CommandToRun<T> ctr, CProcessParameters<T> params, String[] cmdArgs, String prefix) {
+    protected void runCommand(CommandInfo<T> info, CommandToRun<T> ctr, CProcessParameters<T> params, String[] cmdArgs, String prefix) {
         // async runner first. because async chance is higher than sync commands
         final long firstTime = System.currentTimeMillis();
         cooldownList.put(params.getAuthor().getId(), firstTime);
@@ -248,8 +248,8 @@ public class CommandHandler<T> {
         }
     }
 
-    protected void _internalCaller(CommandToRun<T> ctr, T event, String[] args, CommandInfo info, String prefix) {
-        final KRunnable onFalse = info.getOnFalseCallback();
+    protected void _internalCaller(CommandToRun<T> ctr, T event, String[] args, CommandInfo<T> info, String prefix) {
+        final KRunnable<T> onFalse = info.getOnFalseCallback();
 
         try {
             Map<String, CommandToRun.MethodToRun> argumentMethods = ctr.getArgumentMethods();
@@ -276,7 +276,7 @@ public class CommandHandler<T> {
     }
 
     private void handleWrapper(CommandType type, Command<T> clazz,
-                               T event, KRunnable onFalse,
+                               T event, KRunnable<T> onFalse,
                                String[] args, String prefix) {
         switch (type.value) {
             case 0x01:
@@ -301,7 +301,7 @@ public class CommandHandler<T> {
 
     private void argWrapper(CommandType type, Method method,
                             Command<T> clazz, T event,
-                            KRunnable onFalse, String[] args,
+                            KRunnable<T> onFalse, String[] args,
                             String prefix) throws InvocationTargetException, IllegalAccessException {
         switch (type.value) {
             case 0x01:

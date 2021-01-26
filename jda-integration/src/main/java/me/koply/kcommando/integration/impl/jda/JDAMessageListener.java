@@ -8,15 +8,15 @@ import org.jetbrains.annotations.NotNull;
 
 public class JDAMessageListener extends ListenerAdapter {
 
-    private final CommandHandler commandHandler;
+    private final CommandHandler<MessageReceivedEvent> commandHandler;
 
-    public JDAMessageListener(CommandHandler commandHandler) {
+    public JDAMessageListener(CommandHandler<MessageReceivedEvent> commandHandler) {
         this.commandHandler = commandHandler;
     }
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent e) {
-        commandHandler.processCommand(new CProcessParameters(
+        commandHandler.processCommand(new CProcessParameters<>(
                 new CProcessParameters.Author(e.getAuthor().getName() +"#"+ e.getAuthor().getDiscriminator(),
                         e.getAuthor().getIdLong(),
                         e.getAuthor().isBot()),
