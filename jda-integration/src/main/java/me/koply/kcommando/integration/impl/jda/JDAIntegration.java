@@ -49,5 +49,16 @@ public class JDAIntegration extends Integration<MessageReceivedEvent> {
         return null;
     }
 
+    @Override
+    public void registerListeners() {
+        if (pluginManager == null) return;
+
+        ArrayList<PluginFile<ListenerAdapter, JDACommand>> plugins = pluginManager.getPlugins();
+        for (PluginFile<ListenerAdapter, JDACommand> plugin : plugins) {
+            for (ListenerAdapter listener : plugin.getInstance().getListeners()) {
+                jda.addEventListener(listener);
+            }
+        }
+    }
 
 }

@@ -24,6 +24,7 @@ public abstract class Integration<T> {
     public abstract void registerCommandHandler(CommandHandler<T> commandHandler);
     public abstract void detectAndEnablePlugins(Parameters<T> params);
     public abstract Set<Class<? extends Command>> getPluginCommands();
+    public abstract void registerListeners();
 
     // for set the custom guild prefixes
     final ConcurrentMap<Long, Set<String>> customGuildPrefixes = new ConcurrentHashMap<>();

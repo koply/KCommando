@@ -98,6 +98,7 @@ public class PluginManager<E, T> {
 
                 logger.info(pluginName + "'s constructor calling...");
                 // sorry for this line because we have to do this
+                @SuppressWarnings("unchecked")
                 JavaPlugin<E, T> instance = (JavaPlugin<E, T>) plugin.getMainClass().getDeclaredConstructor().newInstance();
                 logger.info(pluginName + " enabling...");
                 instance.onEnable();

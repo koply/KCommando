@@ -55,12 +55,23 @@ public class JavacordIntegration extends Integration<MessageCreateEvent> {
         if (pluginManager == null) return null;
 
         Set<Class<? extends Command>> set = new HashSet<>();
-
         ArrayList<PluginFile<GloballyAttachableListener, JavacordCommand>> plugins = pluginManager.getPlugins();
         for (PluginFile<GloballyAttachableListener, JavacordCommand> plugin : plugins) {
             set.addAll(plugin.getInstance().getCommands());
         }
         return set;
+    }
+
+    @Override
+    public void registerListeners() {
+        if (pluginManager == null) return;
+
+        ArrayList<PluginFile<GloballyAttachableListener, JavacordCommand>> plugins = pluginManager.getPlugins();
+        for (PluginFile<GloballyAttachableListener, JavacordCommand> plugin : plugins) {
+            for (GloballyAttachableListener listener : plugin.getInstance().getListeners()) {
+                discordApi.addListener(listener);
+            }
+        }
     }
 
     private String channelName(final MessageCreateEvent event) {

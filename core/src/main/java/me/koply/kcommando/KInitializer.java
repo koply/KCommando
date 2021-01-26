@@ -69,7 +69,7 @@ public class KInitializer<T> {
         return reflections.getSubTypesOf(Command.class);
     }
 
-    public Set<Class<? extends Command>> registerAndGetPluginCommands() {
+    public Set<Class<? extends Command>> enableAndGetCommands() {
         params.getIntegration().detectAndEnablePlugins(params);
         return params.getIntegration().getPluginCommands();
     }
@@ -89,8 +89,10 @@ public class KInitializer<T> {
         final Map<String, CommandToRun<T>> commandMethods = new HashMap<>();
         final Set<Class<? extends Command>> classes = getCommands();
 
-        if (params.getPluginsPath() != null) {
-            Set<Class<? extends Command>> pluginClasses = registerAndGetPluginCommands();
+        boolean pluginSystem = params.getPluginsPath() != null;
+
+        if (pluginSystem) {
+            Set<Class<? extends Command>> pluginClasses = enableAndGetCommands();
             KCommando.logger.info(pluginClasses + " command found from plugins.");
             classes.addAll(pluginClasses);
         }
@@ -105,6 +107,7 @@ public class KInitializer<T> {
         try {
             params.getIntegration().registerCommandHandler(commandHandler.getDeclaredConstructor(Parameters.class).newInstance(params));
 
+            if (pluginSystem) params.getIntegration().registerListeners();
         } catch (Exception ex) {
             ex.printStackTrace();
             KCommando.logger.info("An unexpected error caught at initialize the command handler.");
@@ -249,6 +252,7 @@ public class KInitializer<T> {
             infoGenerator(commandAnnotation);
             Map<String, CommandToRun.MethodToRun> argumentMethods = argRegisterer(clazz);
 
+            @SuppressWarnings("unchecked")
             final Command<T> commandInstance = clazz.getDeclaredConstructor().newInstance();
             final CommandToRun<T> ctr = new CommandToRun<>(commandInstance, groupName, type, argumentMethods);
 
