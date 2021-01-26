@@ -94,9 +94,9 @@ public class BasicCommand extends JDACommand {
 }
 ```
 
-_Optionally you can use final class and final handle method for decrease init time._
+_Optionally you can use the class and handle method as *final* to reduce compile time._
 
-Aliases field is can be an array: `aliases = {"ping", "pingu"}`
+Aliases field can be an array: `aliases = {"ping", "pingu"}`
 
 ## Javacord Section
 
@@ -121,11 +121,11 @@ public class Main extends JavacordIntegration {
 ### How To Create A Command For Javacord
 ```java
 @Commando(name = "Ping!",
-          aliases = {"ping", "pong"}) /* aliases are can be multiple */
+          aliases = {"ping", "pong"}) /* aliases can be an array as stated above */
 public class BasicCommand extends JavacordCommand {
     
     public BasicCommand() {
-        // when handle method returns false, runs the declared callback like this
+        // if handle method returns false, this callback will be called
         getInfo().setOnFalseCallback( (JRunnable) e -> e.getMessage().addReaction("⛔") );
     }
 
@@ -133,12 +133,12 @@ public class BasicCommand extends JavacordCommand {
     public boolean handle(MessageCreateEvent e /* optionally String[] args*/ ) {
         e.getChannel().sendMessage( "Pong!" );
         return true;
-        // if your command is completed successfully, you must return "true"
+        // if your command has been completed successfully, you must return "true"
     }
     
     @Argument(arg = "test")
     public boolean test(MessageCreateEvent e) {
-       e.getChannel.sendMessage( "Test!" );
+       e.getChannel().sendMessage( "Test!" );
        return true;
     }
 }
@@ -148,7 +148,7 @@ public class BasicCommand extends JavacordCommand {
 
 ## Possible Handle Methods
 
-You can use just one in your command class. Parameters cannot be empty. You don't need to null check.
+You can use just one of these in your command class. Parameters will never be null. You don't need null checks.
 
 ```java
 boolean handle(<Event> e) // CommandType.EVENT -> 0x01
@@ -156,8 +156,8 @@ boolean handle(<Event> e, String[] args)  // CommandType.ARGNEVENT -> 0x02
 boolean handle(<Event> e, String[] args, String prefix)  // CommandType.PREFIXED -> 0x03
 ```
 
-### Properties of the args and prefix parameters
-Args are splitted by the "space" chars. The 0. index is command text for args parameter but doesn't have the prefix.
+### Properties of the *args* and *prefix* parameters
+Args are splitted by the "space" characters. The 0. index is the command text itself (without the prefix).
 ```
 Entered Command: "!ping test 123"
 args[0]: "ping"
@@ -168,9 +168,9 @@ prefix: "!"
 ```
 
 ## Argument Methods
-Argument methods must be public and boolean. If argument method returns false, the `onFalse` callback is run. Names are not important for argument methods. 
+Argument methods must be public and boolean. If the argument method returns false, the `onFalse` callback will be run. Method names are not important. 
 
-If the Commando annotation of command has `onlyArguments = true` the command is only available for pure usage and use with arguments.
+If the Commando annotation of the command has `onlyArguments = true` option, the command is only available for pure usage and use with arguments.
 There is no limit to using arguments, you can use as many arguments as you want. Arguments __has__ case sensitivity.
 
 The parameters you can use are:
@@ -199,35 +199,35 @@ public boolean anotherArgumentMethod(<Event> e){
 ```
 
 ## Command Callbacks
-**Note:** All lines must be inside the constructor of your command.
+**Note:** These lines should be inside the constructor of your command.
 
 #### On False Callback: 
 ```java
-// This callback is run when the command returns false.
+// This callback is called when the command handle method returns false.
 getInfo().setOnFalseCallback( (JRunnable) e -> e.getMessage().addReaction("⛔") );
 ```
 
 #### Owner Only Callback: 
 ```java
-// This callback is run when the command for the bot owner is used by a normal user.
+// This callback is called when the command for the bot owner is used by a normal user.
 getInfo().setOwnerOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
 
 #### Guild Only Callback: 
 ```java
-// This callback is run when the command for guild in the private message is used.
+// This callback is called when the command for guilds is used in the private message.
 getInfo().setGuildOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
 
 #### Private Only Callback:
 ```java
-// This callback is run when the command for private conversations in the guild is used.
+// This callback is called when the command for private conversations is used in the guild.
 getInfo().setPrivateOnlyCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
 
 #### Cooldown Callback:
 ```java
-// This callback is run when the command declined due to cooldown.
+// This callback is called when the command is rejected due to cooldown.
 getInfo().setCooldownCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔") );
 ```
 
@@ -235,19 +235,22 @@ getInfo().setCooldownCallback( (JRunnable) e ->  e.getMessage().addReaction("⛔
 
 ## How To Use Suggested Commands
 
-Runs this callback with the similar commands list and the event object when an incorrect command is used. You must change the `**event**` part according to the API you use.
+This callback will be called with the suggestions list and the event object when an incorrect command is used.
+Currently, the suggestions are based on the JaroWrinklerDistance algorithm.
+You must change the `**event**` part according to the API you use.
 
 ```java
 Integration#setSuggestionsCallback((SuggestionsCallback<**Event**>) (e,suggestions) -> {
     if (suggestions.isEmpty()) {
-        // no commands found
+        // no suggestions found
         return;
     }
+    
     StringBuilder sb = new StringBuilder();
     for (CommandInfo<**Event**> info : suggestions) {
         sb.append( Arrays.toString(info.getAliases()) ).append(" - ");
     }
-    e.getChannel().sendMessage("Last command is not found. Suggestions: \n"+sb.toString()).queue();
+    e.getChannel().sendMessage("Last command could not be recognized. Suggestions: \n"+sb.toString()).queue();
 });
 ```
 
@@ -266,46 +269,46 @@ Integration#removeCustomPrefix(long guildID, String prefix)
 Integration#removeAllCustomPrefixes(long guildID) 
 ```
 
-If a guild has a custom prefix, the normal prefix will be unavailable on that guild but will be able to use more than one prefixes at the same time. You can remove and disable custom prefixes for the single guild.
+If a guild has a custom prefix, the normal prefix will be overridden for that guild but it is possible to use more than one prefix at the same time. You can remove and disable custom prefixes for the single guild.
 
 
 ## How To Use Blacklist
 
-I prefer to use a static instance of a subclass of Integration. You can see tests of jda and javacord integrations.
+We prefer using a singleton of a subclass of Integration. You can look at the tests of jda and javacord integrations for reference.
 
 ### Blacklist User
 ```java
-// blocks selected user from all commands in the bot.
+// blocks the specified user from using all commands in the bot.
 Integration#getBlacklistedUsers().add(long userID) 
 
-// unblocks selected user.
+// unblocks the specified user.
 Integration#getBlacklistedUsers().remove(long userID) 
 ```
 
 ### Blacklist Member
 ```java
-// returns all blacklisted members with guilds. (guildID, the set of the blacklisted members)
+// returns all blacklisted members with guilds. (a map as `guildID -> the set of the blacklisted members`)
 Integration#getBlacklistedMembers() 
 
-// returns all blacklisted members in the selected guild.
+// returns all blacklisted members in the specified guild.
 Integration#getBlacklistedMembers(long guildID) 
 ```
 
 ### Blacklist Channel
 ```java
-// returns all blacklisted channels with guilds. (guildID, the set of the blacklisted channels)
+// returns all blacklisted channels with guilds. (a map as `guildID -> the set of the blacklisted channels`)
 Integration#getBlacklistedChannels()
 
-// returns all blacklisted channels in the selected guild.
+// returns all blacklisted channels in the specified guild.
 Integration#getBlacklistedChannels(long guildID)
 ```
 
 ### Data Preservence
-Your blacklist and prefix data are automatically saved by KCommando to the file you predetermined. KCommando couldn't have an autosave system **yet**. If you need to use your own database system, you can write your own [DataManager](https://github.com/MusaBrt/KCommando/blob/master/core/src/main/java/me/koply/kcommando/DataManager.java) class and set your own DataManager class to KCommando with `KCommando#setDataManager(DataManager)`. If you use your own DataManager instance, you don't need to use `KCommando#setDataFile(File)`. Because this is ignored while defined the custom DataManager.
+Your blacklist and prefix data are automatically saved by KCommando to the file you predetermined. KCommando doesn't have an autosave system ***yet***. If you want to use your own database system, you can write your own [DataManager](https://github.com/MusaBrt/KCommando/blob/master/core/src/main/java/me/koply/kcommando/DataManager.java) class and give your own DataManager class to KCommando with `KCommando#setDataManager(DataManager)`. If you use your own DataManager instance, you don't need to use `KCommando#setDataFile(File)`. Because this method sets the data manager to a new data manager that uses the given file as its database.
 
-Pure data preservence usage isn't recommended on advanced bots. You should to create and use another class that implements DataManager. That's why the modular design.
+Pure data preservence usage isn't recommended on advanced bots. You should create your own DataManager class. That's the reason for the modular design.
 
-Data File Struct:
+Data File Structure:
 ```json
 {
   "guildDatas": [
@@ -320,26 +323,26 @@ Data File Struct:
 }
 ```
 
-All this blacklist and prefix things are concurrent for thread safety.
+All these blacklist and prefix callbacks are concurrent for thread safety.
 
 ### Callback For Blacklisted Usages
 
-When a command declined due to a blacklist, runs this callback.
+When a command is rejected due to a blacklist, this callback is called.
 ```java
 Integration#setBlacklistCallback( (JRunnable) e -> e.getMessage().addReaction("⛔") )
 ```
 
 ## Cron Service
-KCommando has a minute based async CronService and you can use this service.
+KCommando has a minute-based async CronService and you can use it.
 ```java
 CronService.getInstance().addRunnable(() -> {
-	// somethings
+	// do stuff
 }, 5); /* every 5 minutes */
 ```
 
 ## How To Install
 
-To always use the latest version, you can write '-SNAPSHOT' in the version field. This use is not recommended.
+To always use the latest version, you can write '-SNAPSHOT' in the version field. This use is not recommended because new versions may not always be fully backwards compatible.
 
 ### With Maven:
 ```xml
@@ -388,3 +391,5 @@ Github packages are ignored. Please use jitpack repositories.
  | [Rae Discord Bot](https://github.com/MusaBrt/Rae)
 
 Tests are includes help and prefix usage. [JDA Test Area](https://github.com/MusaBrt/KCommando/tree/master/jda-integration/src/main/test/me/koply/jdatest) - [Javacord Test Area](https://github.com/MusaBrt/KCommando/tree/master/javacord-integration/src/main/test/me/koply/javacordtest)
+
+# Don't be afraid to contribute!
