@@ -1,5 +1,6 @@
 package me.koply.kcommando;
 
+import me.koply.kcommando.util.FileUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -21,8 +22,8 @@ public class DataManager {
         // TODO auto backup
 
         // windows and linux shutdown hook
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> Util.writeFile(dataFile, pushToJson().toString()), "TerminateProcess"));
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> Util.writeFile(dataFile, pushToJson().toString()), "Shutdown-thread"));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> FileUtil.writeFile(dataFile, pushToJson().toString()), "TerminateProcess"));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> FileUtil.writeFile(dataFile, pushToJson().toString()), "Shutdown-thread"));
     }
 
     /*
@@ -42,7 +43,7 @@ public class DataManager {
 
     protected String dataFileString;
     protected void readDataFile() {
-        dataFileString = Util.readFile(dataFile);
+        dataFileString = FileUtil.readFile(dataFile);
     }
 
     /**

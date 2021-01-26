@@ -2,6 +2,7 @@ package me.koply.kcommando;
 
 import me.koply.kcommando.internal.CommandType;
 import me.koply.kcommando.internal.KRunnable;
+import me.koply.kcommando.util.StringUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -136,7 +137,7 @@ public class CommandHandler {
     protected void findSimilars(String command, Object event) {
         HashSet<CommandInfo> similarCommands = new HashSet<>();
         for (Map.Entry<String, CommandToRun> entry : commandsMap.entrySet()) {
-            double similarity = Util.similarity(entry.getKey(), command);
+            double similarity = StringUtil.similarity(entry.getKey(), command);
             if (similarity >= 0.5) {
                 similarCommands.add(entry.getValue().getClazz().getInfo());
             }
