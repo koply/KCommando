@@ -19,7 +19,6 @@ public class PluginFile<E, T> {
     private Class<?> mainClass;
     private JavaPlugin<E, T> instance;
 
-
     public File getFile() {
         return file;
     }

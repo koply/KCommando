@@ -59,6 +59,11 @@ public class KCommando<T> {
         return this;
     }
 
+    public KCommando<T> setPluginsPath(File pluginsPath) {
+        params.setPluginsPath(pluginsPath);
+        return this;
+    }
+
     /**
      * @param dataManager The DataManager instance to be used by kcommando
      * @return this object

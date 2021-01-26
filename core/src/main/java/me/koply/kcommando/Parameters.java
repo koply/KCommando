@@ -23,6 +23,8 @@ public final class Parameters<T> {
     private Optional<Locale> caseSensitivity = Optional.empty();
     private Optional<DataManager<T>> dataManager = Optional.empty();
 
+    private File pluginsPath;
+
     public final Integration<T> getIntegration() {
         return integration;
     }
@@ -120,6 +122,15 @@ public final class Parameters<T> {
 
     public final Parameters<T> setDataManager(DataManager<T> dataManager) {
         this.dataManager = Optional.of(dataManager);
+        return this;
+    }
+
+    public final File getPluginsPath() {
+        return pluginsPath;
+    }
+
+    public final Parameters<T> setPluginsPath(File pluginsPath) {
+        this.pluginsPath = pluginsPath;
         return this;
     }
 }
