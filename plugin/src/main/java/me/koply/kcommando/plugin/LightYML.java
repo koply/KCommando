@@ -36,4 +36,12 @@ public class LightYML {
     public final boolean isOk() {
         return Ok && attributes.containsKey("main");
     }
+
+    /* Example plugin.yml
+        author: Koply
+        main: me.koply.kcommandoplugin.Main
+        version: 1.0
+        name: FirstPlugin
+        description: this plugin is so wonderful
+     */
 }

@@ -22,14 +22,20 @@ public abstract class JavaPlugin<E, T> {
     }
 
     private final ArrayList<E> listeners = new ArrayList<>();
-    public final ArrayList<E> getListeners() { return listeners; }
+    public final ArrayList<E> getListeners() {
+        return listeners;
+    }
     public final void addListener(E...adapters) {
         listeners.addAll(Arrays.asList(adapters));
     }
 
-    private final ArrayList<T> commands = new ArrayList<>();
-    public final ArrayList<T> getCommands() { return commands; }
-    public final void addCommand(T...coms) { commands.addAll(Arrays.asList(coms)); }
+    private final ArrayList<Class<T>> commands = new ArrayList<>();
+    public final ArrayList<Class<T>> getCommands() {
+        return commands;
+    }
+    public final void addCommand(Class<T>...coms) {
+        commands.addAll(Arrays.asList(coms));
+    }
 
     public abstract void onEnable();
     public abstract void onDisable();

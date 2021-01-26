@@ -1,6 +1,8 @@
 package me.koply.kcommando.integration;
 
+import me.koply.kcommando.Command;
 import me.koply.kcommando.CommandHandler;
+import me.koply.kcommando.Parameters;
 import me.koply.kcommando.internal.KRunnable;
 import me.koply.kcommando.internal.SuggestionsCallback;
 
@@ -19,7 +21,9 @@ public abstract class Integration<T> {
     }
 
     // registers the handler for this instegration
-    public abstract void register(CommandHandler<T> commandHandler);
+    public abstract void registerCommandHandler(CommandHandler<T> commandHandler);
+    public abstract void detectAndEnablePlugins(Parameters<T> params);
+    public abstract Set<Class<? extends Command>> getPluginCommands();
 
     // for set the custom guild prefixes
     final ConcurrentMap<Long, Set<String>> customGuildPrefixes = new ConcurrentHashMap<>();

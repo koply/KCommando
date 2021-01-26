@@ -59,8 +59,9 @@ public class KCommando<T> {
         return this;
     }
 
-    public KCommando<T> setPluginsPath(File pluginsPath) {
-        params.setPluginsPath(pluginsPath);
+    public KCommando<T> setPluginsPath(File folder) {
+        folder.mkdir();
+        params.setPluginsPath(folder);
         return this;
     }
 

@@ -1,7 +1,5 @@
 package me.koply.kcommando.plugin;
 
-import me.koply.kcommando.KCommando;
-
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -27,12 +25,16 @@ public class PluginManager<E, T> {
     public PluginManager(File folder) {
         // kcommando checks the parameter is valid
         this.folder = folder;
-        this.logger = KCommando.logger;
+        this.logger = getLogger("KCommando Plugin Service");
     }
 
-    public ArrayList<PluginFile<E, T>> detectPlugins() {
+    private final ArrayList<PluginFile<E, T>> plugins = new ArrayList<>();
+    public final ArrayList<PluginFile<E, T>> getPlugins() {
+        return plugins;
+    }
+
+    public void detectPlugins() {
         logger.info("Bionics are detecting...");
-        final ArrayList<PluginFile<E, T>> detectedPlugins = new ArrayList<>();
         final ArrayList<URL> urlArray = new ArrayList<>();
 
         for (File file : folder.listFiles()) {
@@ -51,7 +53,7 @@ public class PluginManager<E, T> {
                     logger.warning(file.getName() + "'s plugin.yml file contains syntax errors.");
                     continue;
                 }
-                detectedPlugins.add(new PluginFile<>(file, jar, jarEntry, yml));
+                plugins.add(new PluginFile<>(file, jar, jarEntry, yml));
                 urlArray.add(file.toURI().toURL());
             } catch (Exception ex) {
                 logger.warning("An error occurred while loading the " + file.getName());
@@ -65,7 +67,7 @@ public class PluginManager<E, T> {
         }
         final URLClassLoader loader = new URLClassLoader(urls, this.getClass().getClassLoader());
 
-        for (PluginFile<E, T> plugin : detectedPlugins) {
+        for (PluginFile<E, T> plugin : plugins) {
             try {
                 final Class<?> clazz = Class.forName(plugin.getYml().getAttributes().get("main"), true, loader);
                 logger.info("Main class successfully found at " + plugin.getYml().getAttributes().get("name"));
@@ -74,11 +76,9 @@ public class PluginManager<E, T> {
                 logger.warning("Main class named as " + plugin.getYml().getAttributes().get("main") + " is not found in the " + plugin.getFile().getName());
             }
         }
-
-        return detectedPlugins;
     }
 
-    public void enablePlugins(ArrayList<PluginFile<E, T>> plugins) {
+    public void enablePlugins() {
         logger.info("Detected plugins are enabling...");
         final ArrayList<PluginFile<E, T>> toremove = new ArrayList<>();
         for (PluginFile<E, T> plugin : plugins) {

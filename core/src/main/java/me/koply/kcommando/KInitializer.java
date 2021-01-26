@@ -10,10 +10,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
@@ -72,6 +69,11 @@ public class KInitializer<T> {
         return reflections.getSubTypesOf(Command.class);
     }
 
+    public Set<Class<? extends Command>> registerAndGetPluginCommands() {
+        params.getIntegration().detectAndEnablePlugins(params);
+        return params.getIntegration().getPluginCommands();
+    }
+
     private int classCounter = 0;
     /**
      * Classic build pattern. Register's CommandHandler and uses reflections from getCommands method.
@@ -87,6 +89,12 @@ public class KInitializer<T> {
         final Map<String, CommandToRun<T>> commandMethods = new HashMap<>();
         final Set<Class<? extends Command>> classes = getCommands();
 
+        if (params.getPluginsPath() != null) {
+            Set<Class<? extends Command>> pluginClasses = registerAndGetPluginCommands();
+            KCommando.logger.info(pluginClasses + " command found from plugins.");
+            classes.addAll(pluginClasses);
+        }
+
         for (Class<? extends Command> clazz : classes) {
             registerCommand(clazz, commandMethods);
         }
@@ -95,7 +103,7 @@ public class KInitializer<T> {
         params.setCommandMethods(commandMethods);
 
         try {
-            params.getIntegration().register(commandHandler.getDeclaredConstructor(Parameters.class).newInstance(params));
+            params.getIntegration().registerCommandHandler(commandHandler.getDeclaredConstructor(Parameters.class).newInstance(params));
 
         } catch (Exception ex) {
             ex.printStackTrace();
