@@ -356,7 +356,7 @@ You can visit the references below for examples.
 
 Plugins must have a `plugin.yml` file. This file contains some critical information.
 
-A example `plugin.yml` file:
+An example `plugin.yml` file:
 ```yml
 author: Koply
 main: me.koply.plugin.Main
@@ -365,7 +365,7 @@ name: AmazingPlugin
 description: I'm Thor's Mjöllnir.
 ```
 
-A example Main class for JDA:
+An example Main class for JDA:
 ```java
 public class Main extends JDAPlugin {
 
