@@ -5,7 +5,7 @@
 [![jitpack-version](https://jitpack.io/v/MusaBrt/KCommando.svg)](https://jitpack.io/#MusaBrt/KCommando)
 ![LICENSE](https://img.shields.io/github/license/MusaBrt/KCommando?style=flat)
 
-Annotation-based multifunctional command handler framework for JDA & Javacord.
+Annotation-based multifunctional command handler framework for JDA & Javacord. KCommando has a external plugin system.
 
 ## Features
 All these features have a modular structure and you can edit all of these modules and integrate them for your projects.
@@ -13,7 +13,7 @@ All these features have a modular structure and you can edit all of these module
 2. [JDA Section](#integration-usage-for-jda)
 3. [Javacord Section](#javacord-section)
 4. [Command Features](#command-features)
-    - [Argument Methods](#argument-methods)
+	- [Argument Methods](#argument-methods)
 	- [Possible Handle Methods](#possible-handle-methods)
 	- [Command Callbacks](#command-callbacks) *(onFalse, ownerOnly, guildOnly, privateOnly, cooldown)*
 5. [Cool Features](#cool-features)
@@ -24,11 +24,14 @@ All these features have a modular structure and you can edit all of these module
 	- [Blacklist Channel](#blacklist-channel)
 	- [Data Preservence (Blacklist-Prefix)](#data-preservence)
 	- [Callback For Blacklisted Usage](#callback-for-blacklisted-usages)
-6. [CRON Service](#cron-service)
-7. [Install](#how-to-install)
+6. [Plugin System](#plugin-system)
+	- [How To Use Plugins](#how-to-use-plugins)
+	- [How To Create A Plugin](#how-to-create-plugins)
+7. [CRON Service](#cron-service)
+8. [Install](#how-to-install)
 	- [Maven](#with-maven)
 	- [Gradle](#with-gradle)
-8. [Example Repositories](#example-repositories)
+9. [Example Repositories](#example-repositories)
 	
 # KCommando Integrations
 
@@ -55,6 +58,7 @@ public class Main extends JDAIntegration {
               .setReadBotMessages(false) // default false
               .setCaseSensivity(Locale.getDefault()) // Locale to use case sensivity
               .setDataFile(dataFile) // data file for blacklist and prefix preservence
+              .setPluginsPath(new File("./plugins/")) // plugins folder for external plugins
               .build();
     }
 }
@@ -332,6 +336,87 @@ When a command is rejected due to a blacklist, this callback is called.
 Integration#setBlacklistCallback( (JRunnable) e -> e.getMessage().addReaction("⛔") )
 ```
 
+## Plugin System
+
+### How To Use Plugins
+
+KCommando has a plugin system to make it easier for everyone to use and make bots.
+
+If the plugin folder isn't exists, KCommando will create it. Plugin folder selection:
+```java
+KCommando#setPluginsFolder(File folder)
+```
+
+### How To Create A Plugin
+You can visit the references below for examples.
+
+[Sample JDA Plugin](https://github.com/MusaBrt/KCommando/tree/master/sample-plugin-jda) - [Sample Javacord Plugin](https://github.com/MusaBrt/KCommando/tree/master/sample-plugin-javacord)
+
+[Sample JDA Plugin's pom.xml](https://github.com/MusaBrt/KCommando/blob/master/sample-plugin-jda/pom.xml) - [Sample Javacord Plugin's pom.xml](https://github.com/MusaBrt/KCommando/blob/master/sample-plugin-javacord/pom.xml)
+
+Plugins must have a `plugin.yml` file. This file contains some critical information.
+
+A example `plugin.yml` file:
+```yml
+author: Koply
+main: me.koply.plugin.Main
+version: 1.0
+name: AmazingPlugin
+description: I'm Thor's Mjöllnir.
+```
+
+A example Main class for JDA:
+```java
+public class Main extends JDAPlugin {
+
+    public Main() {
+        getLogger().info("Hello from a plugin's constructor.");
+    }
+
+    @Override
+    public void onEnable() {
+        getLogger().info("Hello from a plugin's onEnable.");
+
+        addCommand(PluginCommand.class); // not instance
+        addListener(new MyListener());
+    }
+
+    @Override
+    public void onDisable() { 
+        // ignored for temporarily
+    }
+}
+```
+
+An example command class for JDA:
+```java
+@Commando(name = "Plugin Command",
+          aliases = "plugincommand")
+public class PluginCommand extends JDACommand {
+
+    @Override
+    public boolean handle(MessageReceivedEvent e, String[] args, String prefix) {
+        e.getChannel().sendMessage("Hello from plugin!").queue();
+        return true;
+    }
+
+    @Argument(arg = "test")
+    public boolean test(MessageReceivedEvent e) {
+        e.getChannel().sendMessage("Test!").queue();
+        return true;
+    }
+}
+```
+
+An example listener class for JDA:
+```java
+public class MyListener extends ListenerAdapter {
+    // somethings
+}
+```
+
+That's it.
+
 ## Cron Service
 KCommando has a minute-based async CronService and you can use it.
 ```java
@@ -391,5 +476,7 @@ Github packages are ignored. Please use jitpack repositories.
  | [Rae Discord Bot](https://github.com/MusaBrt/Rae)
 
 Tests are includes help and prefix usage. [JDA Test Area](https://github.com/MusaBrt/KCommando/tree/master/jda-integration/src/main/test/me/koply/jdatest) - [Javacord Test Area](https://github.com/MusaBrt/KCommando/tree/master/javacord-integration/src/main/test/me/koply/javacordtest)
+
+[Sample JDA Plugin](https://github.com/MusaBrt/KCommando/tree/master/sample-plugin-jda) - [Sample Javacord Plugin](https://github.com/MusaBrt/KCommando/tree/master/sample-plugin-javacord)
 
 # Don't be afraid to contribute!
