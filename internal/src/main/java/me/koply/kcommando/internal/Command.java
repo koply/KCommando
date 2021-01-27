@@ -1,4 +1,4 @@
-package me.koply.kcommando;
+package me.koply.kcommando.internal;
 
 import me.koply.kcommando.internal.CargoTruck;
 import me.koply.kcommando.internal.ICommand;

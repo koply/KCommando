@@ -1,5 +1,6 @@
 package me.koply.kcommando;
 
+import me.koply.kcommando.internal.Command;
 import me.koply.kcommando.internal.CommandType;
 
 import java.lang.reflect.Method;

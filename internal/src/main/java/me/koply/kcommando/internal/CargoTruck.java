@@ -1,7 +1,5 @@
 package me.koply.kcommando.internal;
 
-import me.koply.kcommando.CommandInfo;
-
 public class CargoTruck {
 
     private static CommandInfo cargo;

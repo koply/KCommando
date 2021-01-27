@@ -1,7 +1,6 @@
-package me.koply.kcommando;
+package me.koply.kcommando.internal;
 
 import me.koply.kcommando.internal.annotations.Commando;
-import me.koply.kcommando.internal.KRunnable;
 
 public final class CommandInfo<T> {
     private String name;
@@ -10,7 +9,7 @@ public final class CommandInfo<T> {
     private boolean privateOnly, guildOnly, ownerOnly, sync, onlyArguments;
     private KRunnable<T> onFalseCallback, privateOnlyCallback, guildOnlyCallback, ownerOnlyCallback, cooldownCallback;
 
-    protected final void initialize(Commando ant) {
+    public final void initialize(Commando ant) {
         name = ant.name();
         aliases = ant.aliases();
         description = ant.description();

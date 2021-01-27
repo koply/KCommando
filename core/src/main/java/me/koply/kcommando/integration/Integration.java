@@ -1,6 +1,6 @@
 package me.koply.kcommando.integration;
 
-import me.koply.kcommando.Command;
+import me.koply.kcommando.internal.Command;
 import me.koply.kcommando.CommandHandler;
 import me.koply.kcommando.Parameters;
 import me.koply.kcommando.internal.KRunnable;

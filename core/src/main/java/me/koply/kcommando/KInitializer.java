@@ -1,6 +1,8 @@
 package me.koply.kcommando;
 
 import me.koply.kcommando.internal.CargoTruck;
+import me.koply.kcommando.internal.Command;
+import me.koply.kcommando.internal.CommandInfo;
 import me.koply.kcommando.internal.CommandType;
 import me.koply.kcommando.internal.annotations.Argument;
 import me.koply.kcommando.internal.annotations.Commando;
@@ -93,8 +95,10 @@ public class KInitializer<T> {
 
         if (pluginSystem) {
             Set<Class<? extends Command>> pluginClasses = enableAndGetCommands();
-            KCommando.logger.info(pluginClasses + " command found from plugins.");
-            classes.addAll(pluginClasses);
+            if (!pluginClasses.isEmpty()) {
+                KCommando.logger.info(pluginClasses.size() + " command found from plugins.");
+                classes.addAll(pluginClasses);
+            }
         }
 
         for (Class<? extends Command> clazz : classes) {

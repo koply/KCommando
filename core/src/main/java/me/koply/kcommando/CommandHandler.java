@@ -1,5 +1,7 @@
 package me.koply.kcommando;
 
+import me.koply.kcommando.internal.Command;
+import me.koply.kcommando.internal.CommandInfo;
 import me.koply.kcommando.internal.CommandType;
 import me.koply.kcommando.internal.KRunnable;
 import me.koply.kcommando.util.StringUtil;
