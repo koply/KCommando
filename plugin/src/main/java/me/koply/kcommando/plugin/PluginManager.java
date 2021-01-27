@@ -48,7 +48,7 @@ public class PluginManager<E> {
 
                 LightYML yml = new LightYML(jar.getInputStream(jarEntry));
                 if (!yml.isOk()) {
-                    logger.warning(file.getName() + "'s plugin.yml file contains syntax errors.");
+                    logger.warning(file.getName() + "'s plugin.yml file has syntax errors.");
                     continue;
                 }
                 plugins.add(new PluginFile<>(file, jar, jarEntry, yml));
@@ -98,11 +98,9 @@ public class PluginManager<E> {
                 final PluginInfo info = new PluginInfo(dataFolder, pluginName, getLogger(pluginName));
                 PluginCargo.setDelivery(info);
 
-                logger.info(pluginName + "'s constructor calling...");
                 // sorry for this line because we have to do this
                 @SuppressWarnings("unchecked")
                 JavaPlugin<E> instance = (JavaPlugin<E>) plugin.getMainClass().getDeclaredConstructor().newInstance();
-                logger.info(pluginName + " enabling...");
                 instance.onEnable();
                 logger.info(pluginName + " is enabled!");
                 plugin.setInstance(instance);
