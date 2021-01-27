@@ -1,0 +1,5 @@
+author: Koply
+main: me.koply.jcordplugin.JcordPluginMain
+version: 1.0
+name: JavacordPlugin
+description: this plugin is so wonderful
