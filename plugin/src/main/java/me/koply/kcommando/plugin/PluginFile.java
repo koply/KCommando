@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-public class PluginFile<E, T> {
+public class PluginFile<E> {
     public PluginFile(File file, JarFile jarFile, JarEntry pluginEntry, LightYML yml) {
         this.file = file;
         this.jarFile = jarFile;
@@ -17,7 +17,7 @@ public class PluginFile<E, T> {
     private final JarEntry pluginEntry;
     private final LightYML yml;
     private Class<?> mainClass;
-    private JavaPlugin<E, T> instance;
+    private JavaPlugin<E> instance;
 
     public File getFile() {
         return file;
@@ -35,7 +35,7 @@ public class PluginFile<E, T> {
         return yml;
     }
 
-    public PluginFile<E, T> setMainClass(Class<?> mainClass) {
+    public PluginFile<E> setMainClass(Class<?> mainClass) {
         this.mainClass = mainClass;
         return this;
     }
@@ -44,12 +44,12 @@ public class PluginFile<E, T> {
         return mainClass;
     }
 
-    public PluginFile<E, T> setInstance(JavaPlugin<E, T> instance) {
+    public PluginFile<E> setInstance(JavaPlugin<E> instance) {
         this.instance = instance;
         return this;
     }
 
-    public JavaPlugin<E, T> getInstance() {
+    public JavaPlugin<E> getInstance() {
         return instance;
     }
 }

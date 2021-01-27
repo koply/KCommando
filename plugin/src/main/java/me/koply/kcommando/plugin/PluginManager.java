@@ -16,9 +16,8 @@ import java.util.logging.Logger;
 
 /**
  * @param <E> Listener for JavaPlugin
- * @param <T> Command for JavaPlugin
  */
-public class PluginManager<E, T> {
+public class PluginManager<E> {
 
     private final File folder;
     private final Logger logger;
@@ -28,13 +27,12 @@ public class PluginManager<E, T> {
         this.logger = getLogger("KCommando Plugin Service");
     }
 
-    private final ArrayList<PluginFile<E, T>> plugins = new ArrayList<>();
-    public final ArrayList<PluginFile<E, T>> getPlugins() {
+    private final ArrayList<PluginFile<E>> plugins = new ArrayList<>();
+    public final ArrayList<PluginFile<E>> getPlugins() {
         return plugins;
     }
 
     public void detectPlugins() {
-        logger.info("Bionics are detecting...");
         final ArrayList<URL> urlArray = new ArrayList<>();
 
         for (File file : folder.listFiles()) {
@@ -67,7 +65,7 @@ public class PluginManager<E, T> {
         }
         final URLClassLoader loader = new URLClassLoader(urls, this.getClass().getClassLoader());
 
-        for (PluginFile<E, T> plugin : plugins) {
+        for (PluginFile<E> plugin : plugins) {
             try {
                 final Class<?> clazz = Class.forName(plugin.getYml().getAttributes().get("main"), true, loader);
                 logger.info("Main class successfully found at " + plugin.getYml().getAttributes().get("name"));
@@ -79,11 +77,15 @@ public class PluginManager<E, T> {
     }
 
     public void enablePlugins() {
-        logger.info("Detected plugins are enabling...");
-        final ArrayList<PluginFile<E, T>> toremove = new ArrayList<>();
-        for (PluginFile<E, T> plugin : plugins) {
+        final ArrayList<PluginFile<E>> toremove = new ArrayList<>();
+        for (PluginFile<E> plugin : plugins) {
             final String pluginName = plugin.getYml().getAttributes().get("name");
-            if (plugin.getMainClass().getSuperclass() != JavaPlugin.class) {
+
+            Class<?> firstSuperClass = plugin.getMainClass().getSuperclass(); // like JDAPlugin and JavacordPlugin
+            Class<?> secondSuperClass = firstSuperClass.getSuperclass(); // for JavaPlugin from JDAPlugin
+            boolean isOkey = firstSuperClass == JavaPlugin.class || secondSuperClass == JavaPlugin.class;
+
+            if (!isOkey) {
                 logger.warning(pluginName + " could not be enabled. Main class is not extends JavaPlugin.");
                 toremove.add(plugin);
                 continue;
@@ -99,7 +101,7 @@ public class PluginManager<E, T> {
                 logger.info(pluginName + "'s constructor calling...");
                 // sorry for this line because we have to do this
                 @SuppressWarnings("unchecked")
-                JavaPlugin<E, T> instance = (JavaPlugin<E, T>) plugin.getMainClass().getDeclaredConstructor().newInstance();
+                JavaPlugin<E> instance = (JavaPlugin<E>) plugin.getMainClass().getDeclaredConstructor().newInstance();
                 logger.info(pluginName + " enabling...");
                 instance.onEnable();
                 logger.info(pluginName + " is enabled!");
@@ -112,7 +114,7 @@ public class PluginManager<E, T> {
 
         PluginCargo.setDelivery(null);
 
-        for (PluginFile<E, T> b : toremove) {
+        for (PluginFile<E> b : toremove) {
             plugins.remove(b);
         }
     }

@@ -1,10 +1,10 @@
 package me.koply.javacordtest;
 
-import me.koply.kcommando.CommandInfo;
 import me.koply.kcommando.CommandToRun;
 import me.koply.kcommando.KCommando;
 import me.koply.kcommando.Parameters;
 import me.koply.kcommando.integration.impl.javacord.JavacordIntegration;
+import me.koply.kcommando.internal.CommandInfo;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
@@ -54,6 +54,7 @@ public class Test extends JavacordIntegration {
                 .setPackage(Test.class.getPackage().getName())
                 .setPrefix(".")
                 .setDataFile(dataFile)
+                .setPluginsPath(new File("javacordplugins/"))
                 .build();
         instance.initHelpEmbed(kcm.getParameters());
 

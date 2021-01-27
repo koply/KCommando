@@ -1,5 +1,6 @@
 target/
 .idea/
 *.iml
-/src/me/koply/kcommando/me.koply.test.Test.java
 *.json
+jdaplugins/
+javacordplugins/

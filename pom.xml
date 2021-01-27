@@ -20,6 +20,7 @@
         <module>jda-integration</module>
         <module>javacord-integration</module>
         <module>plugin</module>
+        <module>internal</module>
     </modules>
 
     <name>KCommando</name>

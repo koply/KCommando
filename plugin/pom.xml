@@ -11,4 +11,12 @@
     </parent>
 
     <artifactId>plugin</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>me.koply</groupId>
+            <artifactId>internal</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

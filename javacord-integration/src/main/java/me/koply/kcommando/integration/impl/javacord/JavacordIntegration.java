@@ -1,7 +1,7 @@
 package me.koply.kcommando.integration.impl.javacord;
 
 import me.koply.kcommando.CProcessParameters;
-import me.koply.kcommando.Command;
+import me.koply.kcommando.internal.Command;
 import me.koply.kcommando.CommandHandler;
 import me.koply.kcommando.Parameters;
 import me.koply.kcommando.integration.Integration;
@@ -41,7 +41,7 @@ public class JavacordIntegration extends Integration<MessageCreateEvent> {
                 e, e.getChannel().getId())));
     }
 
-    private PluginManager<GloballyAttachableListener, JavacordCommand> pluginManager;
+    private PluginManager<GloballyAttachableListener> pluginManager;
 
     @Override
     public void detectAndEnablePlugins(Parameters<MessageCreateEvent> params) {
@@ -55,8 +55,8 @@ public class JavacordIntegration extends Integration<MessageCreateEvent> {
         if (pluginManager == null) return null;
 
         Set<Class<? extends Command>> set = new HashSet<>();
-        ArrayList<PluginFile<GloballyAttachableListener, JavacordCommand>> plugins = pluginManager.getPlugins();
-        for (PluginFile<GloballyAttachableListener, JavacordCommand> plugin : plugins) {
+        ArrayList<PluginFile<GloballyAttachableListener>> plugins = pluginManager.getPlugins();
+        for (PluginFile<GloballyAttachableListener> plugin : plugins) {
             set.addAll(plugin.getInstance().getCommands());
         }
         return set;
@@ -66,8 +66,8 @@ public class JavacordIntegration extends Integration<MessageCreateEvent> {
     public void registerListeners() {
         if (pluginManager == null) return;
 
-        ArrayList<PluginFile<GloballyAttachableListener, JavacordCommand>> plugins = pluginManager.getPlugins();
-        for (PluginFile<GloballyAttachableListener, JavacordCommand> plugin : plugins) {
+        ArrayList<PluginFile<GloballyAttachableListener>> plugins = pluginManager.getPlugins();
+        for (PluginFile<GloballyAttachableListener> plugin : plugins) {
             for (GloballyAttachableListener listener : plugin.getInstance().getListeners()) {
                 discordApi.addListener(listener);
             }

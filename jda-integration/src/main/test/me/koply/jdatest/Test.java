@@ -1,10 +1,10 @@
 package me.koply.jdatest;
 
-import me.koply.kcommando.CommandInfo;
 import me.koply.kcommando.CommandToRun;
 import me.koply.kcommando.KCommando;
 import me.koply.kcommando.Parameters;
 import me.koply.kcommando.integration.impl.jda.JDAIntegration;
+import me.koply.kcommando.internal.CommandInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -52,6 +52,7 @@ public class Test extends JDAIntegration {
                 .setPackage(Test.class.getPackage().getName())
                 .setPrefix(".")
                 .setDataFile(dataFile)
+                .setPluginsPath(new File("jdaplugins/"))
                 .build();
 
         instance.initHelpEmbed(kcm.getParameters());

@@ -1,6 +1,6 @@
 package me.koply.kcommando.integration.impl.jda;
 
-import me.koply.kcommando.Command;
+import me.koply.kcommando.internal.Command;
 import me.koply.kcommando.CommandHandler;
 import me.koply.kcommando.Parameters;
 import me.koply.kcommando.integration.Integration;
@@ -28,7 +28,7 @@ public class JDAIntegration extends Integration<MessageReceivedEvent> {
         jda.addEventListener(new JDAMessageListener(commandHandler));
     }
 
-    private PluginManager<ListenerAdapter, JDACommand> pluginManager;
+    private PluginManager<ListenerAdapter> pluginManager;
 
     @Override
     public void detectAndEnablePlugins(Parameters<MessageReceivedEvent> params) {
@@ -42,19 +42,19 @@ public class JDAIntegration extends Integration<MessageReceivedEvent> {
         if (pluginManager == null) return null;
 
         Set<Class<? extends Command>> set = new HashSet<>();
-        ArrayList<PluginFile<ListenerAdapter, JDACommand>> plugins = pluginManager.getPlugins();
-        for (PluginFile<ListenerAdapter, JDACommand> plugin : plugins) {
+        ArrayList<PluginFile<ListenerAdapter>> plugins = pluginManager.getPlugins();
+        for (PluginFile<ListenerAdapter> plugin : plugins) {
             set.addAll(plugin.getInstance().getCommands());
         }
-        return null;
+        return set;
     }
 
     @Override
     public void registerListeners() {
         if (pluginManager == null) return;
 
-        ArrayList<PluginFile<ListenerAdapter, JDACommand>> plugins = pluginManager.getPlugins();
-        for (PluginFile<ListenerAdapter, JDACommand> plugin : plugins) {
+        ArrayList<PluginFile<ListenerAdapter>> plugins = pluginManager.getPlugins();
+        for (PluginFile<ListenerAdapter> plugin : plugins) {
             for (ListenerAdapter listener : plugin.getInstance().getListeners()) {
                 jda.addEventListener(listener);
             }

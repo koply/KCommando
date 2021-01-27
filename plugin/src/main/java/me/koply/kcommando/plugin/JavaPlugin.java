@@ -1,15 +1,17 @@
 package me.koply.kcommando.plugin;
 
+import me.koply.kcommando.internal.Command;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
  * @param <E> Listener like ListenerAdapter or GloballyAttachableListener
- * @param <T> Command like JDACommand or JavacordCommand
  */
-public abstract class JavaPlugin<E, T> {
+public abstract class JavaPlugin<E> {
     protected final PluginInfo info;
     public final PluginInfo getInfo() { return info; }
 
@@ -21,19 +23,21 @@ public abstract class JavaPlugin<E, T> {
         info = PluginCargo.getDelivery();
     }
 
-    private final ArrayList<E> listeners = new ArrayList<>();
-    public final ArrayList<E> getListeners() {
+    private final List<E> listeners = new ArrayList<>();
+    public final List<E> getListeners() {
         return listeners;
     }
+    @SafeVarargs
     public final void addListener(E...adapters) {
         listeners.addAll(Arrays.asList(adapters));
     }
 
-    private final ArrayList<Class<T>> commands = new ArrayList<>();
-    public final ArrayList<Class<T>> getCommands() {
+    private final List<Class<? extends Command>> commands = new ArrayList<>();
+    public final List<Class<? extends Command>> getCommands() {
         return commands;
     }
-    public final void addCommand(Class<T>...coms) {
+    @SafeVarargs
+    public final void addCommand(Class<? extends Command>...coms) {
         commands.addAll(Arrays.asList(coms));
     }
 
