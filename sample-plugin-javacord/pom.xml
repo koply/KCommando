@@ -9,7 +9,7 @@
     <version>1.0</version>
 
     <properties>
-        <kcommando.version>4.2.5</kcommando.version>
+        <kcommando.version>4.2.6</kcommando.version>
         <javacord.version>3.1.1</javacord.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>

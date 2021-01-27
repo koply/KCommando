@@ -11,7 +11,7 @@ public class KCommando<T> {
 
     public Parameters<T> params = new Parameters<>();
     public static final Logger logger = Logger.getLogger("KCommando");
-    public static final String VERSION = "4.2.5";
+    public static final String VERSION = "4.2.6";
 
     public KCommando(final Integration<T> integration) {
         params.setIntegration(integration);
