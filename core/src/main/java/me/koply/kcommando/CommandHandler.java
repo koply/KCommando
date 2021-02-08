@@ -8,10 +8,7 @@ import me.koply.kcommando.util.StringUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
@@ -197,7 +194,7 @@ public class CommandHandler<T> {
 
         KCommando.logger.info(String.format("Command received | User: %s | Guild: %s | Command: %s", params.getAuthor().getName(), params.getGuildName(), commandRaw));
 
-        final String command = this.params.getCaseSensitivity().isPresent() ? cmdArgs[0] : cmdArgs[0].toLowerCase();
+        final String command = this.params.isCaseSensitivity() ? cmdArgs[0] : cmdArgs[0].toLowerCase(Locale.ROOT);
 
         if (!containsCommand(command)) {
             if (this.params.getIntegration().getSuggestionsCallback() != null) {
@@ -257,8 +254,9 @@ public class CommandHandler<T> {
             Map<String, CommandToRun.MethodToRun> argumentMethods = ctr.getArgumentMethods();
 
             if (args.length > 1) {
-                if (argumentMethods.containsKey(args[1])) {
-                    CommandToRun.MethodToRun mtr = argumentMethods.get(args[1]);
+                String argument = this.params.isCaseSensitivity() ? args[1] : args[1].toLowerCase(Locale.ROOT);
+                if (argumentMethods.containsKey(argument)) {
+                    CommandToRun.MethodToRun mtr = argumentMethods.get(argument);
                     this.argWrapper(mtr.getType(), mtr.getMethod(), ctr.getClazz(), event, onFalse, args, prefix);
                     return;
 

@@ -11,7 +11,7 @@ public class KCommando<T> {
 
     public Parameters<T> params = new Parameters<>();
     public static final Logger logger = Logger.getLogger("KCommando");
-    public static final String VERSION = "4.2.6";
+    public static final String VERSION = "4.2.7";
 
     public KCommando(final Integration<T> integration) {
         params.setIntegration(integration);
@@ -75,11 +75,7 @@ public class KCommando<T> {
     }
 
     public KCommando<T> useCaseSensitivity() {
-        return useCaseSensitivity(Locale.getDefault());
-    }
-
-    public KCommando<T> useCaseSensitivity(Locale locale) {
-        params.setCaseSensitivity(locale);
+        params.useCaseSensitivity();
         return this;
     }
 

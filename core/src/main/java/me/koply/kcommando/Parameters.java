@@ -20,7 +20,7 @@ public final class Parameters<T> {
 
     private boolean readBotMessages;
 
-    private Optional<Locale> caseSensitivity = Optional.empty();
+    private boolean useCaseSensitivity = false;
     private Optional<DataManager<T>> dataManager = Optional.empty();
 
     private File pluginsPath;
@@ -97,12 +97,12 @@ public final class Parameters<T> {
         return this;
     }
 
-    public final Optional<Locale> getCaseSensitivity() {
-        return caseSensitivity;
+    public final boolean isCaseSensitivity() {
+        return useCaseSensitivity;
     }
 
-    public final Parameters<T> setCaseSensitivity(Locale caseSensitivity) {
-        this.caseSensitivity = Optional.of(caseSensitivity);
+    public final Parameters<T> useCaseSensitivity() {
+        this.useCaseSensitivity = true;
         return this;
     }
 

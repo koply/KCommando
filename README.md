@@ -56,7 +56,7 @@ public class Main extends JDAIntegration {
               .setPackage("com.example.mybot.commands") // command classes package path
               .setPrefix("!")
               .setReadBotMessages(false) // default false
-              .setCaseSensivity(Locale.getDefault()) // Locale to use case sensivity
+              .useCaseSensitivity() // case sensitivity in all commands
               .setDataFile(dataFile) // data file for blacklist and prefix preservence
               .setPluginsPath(new File("./plugins/")) // plugins folder for external plugins
               .build();
