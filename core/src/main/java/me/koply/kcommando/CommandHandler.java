@@ -254,8 +254,9 @@ public class CommandHandler<T> {
             Map<String, CommandToRun.MethodToRun> argumentMethods = ctr.getArgumentMethods();
 
             if (args.length > 1) {
-                if (argumentMethods.containsKey(args[1])) {
-                    CommandToRun.MethodToRun mtr = argumentMethods.get(args[1]);
+                String argument = this.params.isCaseSensitivity() ? args[1] : args[1].toLowerCase(Locale.ROOT);
+                if (argumentMethods.containsKey(argument)) {
+                    CommandToRun.MethodToRun mtr = argumentMethods.get(argument);
                     this.argWrapper(mtr.getType(), mtr.getMethod(), ctr.getClazz(), event, onFalse, args, prefix);
                     return;
 
