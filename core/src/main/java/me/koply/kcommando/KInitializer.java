@@ -261,7 +261,7 @@ public class KInitializer<T> {
             final CommandToRun<T> ctr = new CommandToRun<>(commandInstance, groupName, type, argumentMethods);
 
             for (final String s : commandAnnotation.aliases()) {
-                final String name = params.getCaseSensitivity().map(s::toLowerCase).orElse(s);
+                final String name = params.isCaseSensitivity() ? s : s.toLowerCase(Locale.ROOT);
                 commandMethods.put(name, ctr);
             }
 
