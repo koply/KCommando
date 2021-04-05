@@ -9,8 +9,8 @@
     <version>1.0</version>
 
     <properties>
-        <jda.version>4.2.0_222</jda.version>
-        <kcommando.version>4.2.6</kcommando.version>
+        <jda.version>4.2.1_253</jda.version>
+        <kcommando.version>4.2.7</kcommando.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -18,9 +18,9 @@
 
     <repositories>
         <repository>
-            <id>jcenter</id>
-            <name>jcenter-bintray</name>
-            <url>https://jcenter.bintray.com</url>
+            <id>dv8tion</id>
+            <name>m2-dv8tion</name>
+            <url>https://m2.dv8tion.net/releases</url>
         </repository>
     </repositories>
 
