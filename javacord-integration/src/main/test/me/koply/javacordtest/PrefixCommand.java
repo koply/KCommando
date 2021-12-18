@@ -48,7 +48,7 @@ public class PrefixCommand extends JavacordCommand {
                 sb.append("`").append(s).append("` - ");
             }
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setDescription("The prefixes are: " + sb.toString()));
+                    .setDescription("The prefixes are: " + sb));
         } else e.getChannel().sendMessage(new EmbedBuilder()
                 .setDescription("This guild doesn't have any custom prefixes."));
         return true;

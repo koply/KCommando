@@ -20,15 +20,15 @@ public final class CommandToRun<T> {
     private final CommandType type;
     private final Map<String, MethodToRun> argumentMethods;
 
-    public final Command<T> getClazz() {
+    public Command<T> getClazz() {
         return clazz;
     }
 
-    public final String getGroupName() {
+    public String getGroupName() {
         return groupName;
     }
 
-    public final CommandType getType() {
+    public CommandType getType() {
         return type;
     }
 

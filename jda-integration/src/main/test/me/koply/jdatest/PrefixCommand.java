@@ -48,7 +48,7 @@ public class PrefixCommand extends JDACommand {
                 sb.append("`").append(s).append("` - ");
             }
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setDescription("The prefixes are: " + sb.toString()).build()).queue();
+                    .setDescription("The prefixes are: " + sb).build()).queue();
         } else e.getChannel().sendMessage(new EmbedBuilder()
                 .setDescription("This guild doesn't have any custom prefixes.").build()).queue();
         return true;

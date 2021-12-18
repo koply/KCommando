@@ -5,7 +5,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public final class CronService {
+public class CronService {
 
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
     private final ArrayList<CronJob> jobs = new ArrayList<>();
@@ -20,19 +20,19 @@ public final class CronService {
         asyncInitializer();
     }
 
-    protected final void asyncInitializer() {
+    protected void asyncInitializer() {
         final Runnable task = this::task;
         scheduledExecutorService.scheduleAtFixedRate(task, 1L, 1L, TimeUnit.MINUTES);
     }
 
-    protected final void task() {
+    protected void task() {
         for (CronJob job : jobs) {
             Runnable r = job.getToRun();
             if (r != null) r.run();
         }
     }
 
-    public final void addRunnable(Runnable r, int timeAsMinutes) {
+    public void addRunnable(Runnable r, int timeAsMinutes) {
         jobs.add(new CronJob(r, timeAsMinutes));
     }
 

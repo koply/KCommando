@@ -4,6 +4,7 @@ import me.koply.kcommando.internal.annotations.Commando;
 
 import java.util.function.Consumer;
 
+@SuppressWarnings("ALL")
 public final class CommandInfo<T> {
     private String name;
     private String[] aliases;
@@ -11,7 +12,7 @@ public final class CommandInfo<T> {
     private boolean privateOnly, guildOnly, ownerOnly, sync, onlyArguments;
     private Consumer<T> onFalseCallback, privateOnlyCallback, guildOnlyCallback, ownerOnlyCallback, cooldownCallback;
 
-    public final void initialize(Commando ant) {
+    public void initialize(Commando ant) {
         name = ant.name();
         aliases = ant.aliases();
         description = ant.description();
@@ -22,68 +23,68 @@ public final class CommandInfo<T> {
         onlyArguments = ant.onlyArguments();
     }
 
-    public final String getName() { return name; }
+    public String getName() { return name; }
 
-    public final String[] getAliases() {
+    public String[] getAliases() {
         return aliases;
     }
 
-    public final String getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    public final boolean isPrivateOnly() {
+    public boolean isPrivateOnly() {
         return privateOnly;
     }
 
-    public final boolean isGuildOnly() {
+    public boolean isGuildOnly() {
         return guildOnly;
     }
 
-    public final boolean isOwnerOnly() {
+    public boolean isOwnerOnly() {
         return ownerOnly;
     }
 
-    public final boolean isSync() {
+    public boolean isSync() {
         return sync;
     }
 
-    public final boolean isOnlyArguments() {
+    public boolean isOnlyArguments() {
         return onlyArguments;
     }
 
-    public final Consumer<T> getOnFalseCallback() {
+    public Consumer<T> getOnFalseCallback() {
         return onFalseCallback;
     }
 
-    public final CommandInfo<T> setOnFalseCallback(Consumer<T> onFalseCallback) {
+    public CommandInfo<T> setOnFalseCallback(Consumer<T> onFalseCallback) {
         this.onFalseCallback = onFalseCallback;
         return this;
     }
 
-    public final Consumer<T> getPrivateOnlyCallback() {
+    public Consumer<T> getPrivateOnlyCallback() {
         return privateOnlyCallback;
     }
 
-    public final CommandInfo<T> setPrivateOnlyCallback(Consumer<T> privateOnlyCallback) {
+    public CommandInfo<T> setPrivateOnlyCallback(Consumer<T> privateOnlyCallback) {
         this.privateOnlyCallback = privateOnlyCallback;
         return this;
     }
 
-    public final Consumer<T> getGuildOnlyCallback() {
+    public Consumer<T> getGuildOnlyCallback() {
         return guildOnlyCallback;
     }
 
-    public final CommandInfo<T> setGuildOnlyCallback(Consumer<T> guildOnlyCallback) {
+    public CommandInfo<T> setGuildOnlyCallback(Consumer<T> guildOnlyCallback) {
         this.guildOnlyCallback = guildOnlyCallback;
         return this;
     }
 
-    public final Consumer<T> getOwnerOnlyCallback() {
+    public Consumer<T> getOwnerOnlyCallback() {
         return ownerOnlyCallback;
     }
 
-    public final CommandInfo<T> setOwnerOnlyCallback(Consumer<T> ownerOnlyCallback) {
+    public CommandInfo<T> setOwnerOnlyCallback(Consumer<T> ownerOnlyCallback) {
         this.ownerOnlyCallback = ownerOnlyCallback;
         return this;
     }

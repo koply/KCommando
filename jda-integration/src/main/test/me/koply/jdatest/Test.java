@@ -42,7 +42,7 @@ public class Test extends JDAIntegration {
             for (CommandInfo<MessageReceivedEvent> info : list) {
                 sb.append(Arrays.toString(info.getAliases())).append(" - ");
             }
-            e.getChannel().sendMessage("Last command is not found. Suggestions: \n"+sb.toString()).queue();
+            e.getChannel().sendMessage("Last command is not found. Suggestions: \n"+ sb).queue();
         });
 
         File dataFile = new File("data.json");
