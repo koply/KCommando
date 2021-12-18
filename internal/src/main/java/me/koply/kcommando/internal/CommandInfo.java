@@ -2,12 +2,14 @@ package me.koply.kcommando.internal;
 
 import me.koply.kcommando.internal.annotations.Commando;
 
+import java.util.function.Consumer;
+
 public final class CommandInfo<T> {
     private String name;
     private String[] aliases;
     private String description;
     private boolean privateOnly, guildOnly, ownerOnly, sync, onlyArguments;
-    private KRunnable<T> onFalseCallback, privateOnlyCallback, guildOnlyCallback, ownerOnlyCallback, cooldownCallback;
+    private Consumer<T> onFalseCallback, privateOnlyCallback, guildOnlyCallback, ownerOnlyCallback, cooldownCallback;
 
     public final void initialize(Commando ant) {
         name = ant.name();
@@ -50,47 +52,47 @@ public final class CommandInfo<T> {
         return onlyArguments;
     }
 
-    public final KRunnable<T> getOnFalseCallback() {
+    public final Consumer<T> getOnFalseCallback() {
         return onFalseCallback;
     }
 
-    public final CommandInfo<T> setOnFalseCallback(KRunnable<T> onFalseCallback) {
+    public final CommandInfo<T> setOnFalseCallback(Consumer<T> onFalseCallback) {
         this.onFalseCallback = onFalseCallback;
         return this;
     }
 
-    public final KRunnable<T> getPrivateOnlyCallback() {
+    public final Consumer<T> getPrivateOnlyCallback() {
         return privateOnlyCallback;
     }
 
-    public final CommandInfo<T> setPrivateOnlyCallback(KRunnable<T> privateOnlyCallback) {
+    public final CommandInfo<T> setPrivateOnlyCallback(Consumer<T> privateOnlyCallback) {
         this.privateOnlyCallback = privateOnlyCallback;
         return this;
     }
 
-    public final KRunnable<T> getGuildOnlyCallback() {
+    public final Consumer<T> getGuildOnlyCallback() {
         return guildOnlyCallback;
     }
 
-    public final CommandInfo<T> setGuildOnlyCallback(KRunnable<T> guildOnlyCallback) {
+    public final CommandInfo<T> setGuildOnlyCallback(Consumer<T> guildOnlyCallback) {
         this.guildOnlyCallback = guildOnlyCallback;
         return this;
     }
 
-    public final KRunnable<T> getOwnerOnlyCallback() {
+    public final Consumer<T> getOwnerOnlyCallback() {
         return ownerOnlyCallback;
     }
 
-    public final CommandInfo<T> setOwnerOnlyCallback(KRunnable<T> ownerOnlyCallback) {
+    public final CommandInfo<T> setOwnerOnlyCallback(Consumer<T> ownerOnlyCallback) {
         this.ownerOnlyCallback = ownerOnlyCallback;
         return this;
     }
 
-    public KRunnable<T> getCooldownCallback() {
+    public Consumer<T> getCooldownCallback() {
         return cooldownCallback;
     }
 
-    public CommandInfo<T> setCooldownCallback(KRunnable<T> cooldownCallback) {
+    public CommandInfo<T> setCooldownCallback(Consumer<T> cooldownCallback) {
         this.cooldownCallback = cooldownCallback;
         return this;
     }

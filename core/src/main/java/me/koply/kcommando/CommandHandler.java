@@ -3,7 +3,6 @@ package me.koply.kcommando;
 import me.koply.kcommando.internal.Command;
 import me.koply.kcommando.internal.CommandInfo;
 import me.koply.kcommando.internal.CommandType;
-import me.koply.kcommando.internal.KRunnable;
 import me.koply.kcommando.util.StringUtil;
 
 import java.lang.reflect.InvocationTargetException;
@@ -13,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 public class CommandHandler<T> {
 
@@ -102,7 +102,7 @@ public class CommandHandler<T> {
             KCommando.logger.info("GuildOnly command used from private channel");
 
             if (info.getGuildOnlyCallback() != null) {
-                executorService.submit(() -> info.getGuildOnlyCallback().run(params.getEvent()));
+                executorService.submit(() -> info.getGuildOnlyCallback().accept(params.getEvent()));
             }
 
             return true;
@@ -112,7 +112,7 @@ public class CommandHandler<T> {
             KCommando.logger.info("PrivateOnly command used from guild channel");
 
             if (info.getPrivateOnlyCallback() != null) {
-                executorService.submit(() -> info.getPrivateOnlyCallback().run(params.getEvent()));
+                executorService.submit(() -> info.getPrivateOnlyCallback().accept(params.getEvent()));
             }
 
             return true;
@@ -122,7 +122,7 @@ public class CommandHandler<T> {
             KCommando.logger.info("OwnerOnly command used by normal user.");
 
             if (info.getOwnerOnlyCallback() != null) {
-                executorService.submit(() -> info.getOwnerOnlyCallback().run(params.getEvent()));
+                executorService.submit(() -> info.getOwnerOnlyCallback().accept(params.getEvent()));
             }
 
             return true;
@@ -142,7 +142,7 @@ public class CommandHandler<T> {
             KCommando.logger.info("Last command has been declined due to cooldown check");
 
             if (info.getCooldownCallback() != null) {
-                executorService.submit(() -> info.getCooldownCallback().run(params.getEvent()));
+                executorService.submit(() -> info.getCooldownCallback().accept(params.getEvent()));
             }
 
             return true;
@@ -163,7 +163,7 @@ public class CommandHandler<T> {
 
         }
 
-        params.getIntegration().getSuggestionsCallback().run(event, similarCommands);
+        params.getIntegration().getSuggestionsCallback().accept(event, similarCommands);
     }
 
     public void processCommand(final CProcessParameters<T> params) {
@@ -176,10 +176,10 @@ public class CommandHandler<T> {
         if (params.isWebhookMessage()) return;
 
         if (blacklistCheck(params.getGuildID(), authorID, params.getChannelID())) {
-            KRunnable<T> callback = this.params.getIntegration().getBlacklistCallback();
+            Consumer<T> callback = this.params.getIntegration().getBlacklistCallback();
 
             if (callback != null) {
-                callback.run(params.getEvent());
+                callback.accept(params.getEvent());
             }
 
             return;
@@ -248,7 +248,7 @@ public class CommandHandler<T> {
     }
 
     protected void _internalCaller(CommandToRun<T> ctr, T event, String[] args, CommandInfo<T> info, String prefix) {
-        final KRunnable<T> onFalse = info.getOnFalseCallback();
+        final Consumer<T> onFalse = info.getOnFalseCallback();
 
         try {
             Map<String, CommandToRun.MethodToRun> argumentMethods = ctr.getArgumentMethods();
@@ -262,7 +262,7 @@ public class CommandHandler<T> {
 
                 } else if (info.isOnlyArguments()) {
                     if (onFalse != null) {
-                        onFalse.run(event);
+                        onFalse.accept(event);
                     }
                     return;
 
@@ -276,24 +276,24 @@ public class CommandHandler<T> {
     }
 
     private void handleWrapper(CommandType type, Command<T> clazz,
-                               T event, KRunnable<T> onFalse,
+                               T event, Consumer<T> onFalse,
                                String[] args, String prefix) {
         switch (type.value) {
             case 0x01:
                 if (!clazz.handle(event) && onFalse != null) {
-                    onFalse.run(event);
+                    onFalse.accept(event);
                 }
                 break;
 
             case 0x02:
                 if (!clazz.handle(event, args) && onFalse != null) {
-                    onFalse.run(event);
+                    onFalse.accept(event);
                 }
                 break;
 
             case 0x03:
                 if (!clazz.handle(event, args, prefix) && onFalse != null) {
-                    onFalse.run(event);
+                    onFalse.accept(event);
                 }
                 break;
         }
@@ -301,24 +301,24 @@ public class CommandHandler<T> {
 
     private void argWrapper(CommandType type, Method method,
                             Command<T> clazz, T event,
-                            KRunnable<T> onFalse, String[] args,
+                            Consumer<T> onFalse, String[] args,
                             String prefix) throws InvocationTargetException, IllegalAccessException {
         switch (type.value) {
             case 0x01:
                 if (!(boolean)method.invoke(clazz, event) && onFalse != null) {
-                    onFalse.run(event);
+                    onFalse.accept(event);
                 }
                 break;
 
             case 0x02:
                 if (!(boolean)method.invoke(clazz, event, args) && onFalse != null) {
-                    onFalse.run(event);
+                    onFalse.accept(event);
                 }
                 break;
 
             case 0x03:
                 if (!(boolean)method.invoke(clazz, event, args, prefix) && onFalse != null) {
-                    onFalse.run(event);
+                    onFalse.accept(event);
                 }
                 break;
         }

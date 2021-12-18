@@ -1,7 +1,6 @@
 package me.koply.jdatest;
 
 import me.koply.kcommando.integration.impl.jda.JDACommand;
-import me.koply.kcommando.integration.impl.jda.JRunnable;
 import me.koply.kcommando.internal.annotations.Argument;
 import me.koply.kcommando.internal.annotations.Commando;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -16,8 +15,8 @@ public class PrefixCommand extends JDACommand {
     private final static Test testInstance = Test.getInstance();
 
     public PrefixCommand() {
-        getInfo().setGuildOnlyCallback((JRunnable) e -> e.getMessage().addReaction("⛔").queue());
-        getInfo().setOnFalseCallback((JRunnable) e -> e.getChannel().sendMessage("Usage: prefix <add|remove|list> <prefix>").queue());
+        getInfo().setGuildOnlyCallback(e -> e.getMessage().addReaction("⛔").queue());
+        getInfo().setOnFalseCallback(e -> e.getChannel().sendMessage("Usage: prefix <add|remove|list> <prefix>").queue());
     }
 
     @Override

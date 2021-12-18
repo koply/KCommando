@@ -1,16 +1,17 @@
 package me.koply.kcommando.integration;
 
-import me.koply.kcommando.internal.Command;
 import me.koply.kcommando.CommandHandler;
 import me.koply.kcommando.Parameters;
-import me.koply.kcommando.internal.KRunnable;
-import me.koply.kcommando.internal.SuggestionsCallback;
+import me.koply.kcommando.internal.Command;
+import me.koply.kcommando.internal.CommandInfo;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public abstract class Integration<T> {
 
@@ -105,25 +106,25 @@ public abstract class Integration<T> {
         return blacklistedChannels.get(guildID);
     }
 
-    private KRunnable<T> blacklistCallback;
+    private Consumer<T> blacklistCallback;
 
     /**
      * When a command declined due to a blacklist, runs this callback.
      * @param callback to run
      * @return this integration
      */
-    public Integration<T> setBlacklistCallback(KRunnable<T> callback) {
+    public Integration<T> setBlacklistCallback(Consumer<T> callback) {
         blacklistCallback = callback;
         return this;
     }
 
     // internal
-    public KRunnable<T> getBlacklistCallback() {
+    public Consumer<T> getBlacklistCallback() {
         return blacklistCallback;
     }
 
 
-    private SuggestionsCallback<T> suggestionsCallback;
+    private BiConsumer<T, Set<CommandInfo<T>>> suggestionsCallback;
 
     /**
      * When a command declined due to wrong usage and the bot has similar commands calls this callback
@@ -132,13 +133,13 @@ public abstract class Integration<T> {
      * @param suggestionsCallback to run
      * @return this integration
      */
-    public Integration<T> setSuggestionsCallback(SuggestionsCallback<T> suggestionsCallback) {
+    public Integration<T> setSuggestionsCallback(BiConsumer<T, Set<CommandInfo<T>>> suggestionsCallback) {
         this.suggestionsCallback = suggestionsCallback;
         return this;
     }
 
     // internal
-    public SuggestionsCallback<T> getSuggestionsCallback() {
+    public BiConsumer<T, Set<CommandInfo<T>>> getSuggestionsCallback() {
         return suggestionsCallback;
     }
 }

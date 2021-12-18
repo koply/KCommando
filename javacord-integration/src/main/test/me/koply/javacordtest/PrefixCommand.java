@@ -1,6 +1,5 @@
 package me.koply.javacordtest;
 
-import me.koply.kcommando.integration.impl.javacord.JRunnable;
 import me.koply.kcommando.integration.impl.javacord.JavacordCommand;
 import me.koply.kcommando.internal.annotations.Argument;
 import me.koply.kcommando.internal.annotations.Commando;
@@ -16,8 +15,8 @@ public class PrefixCommand extends JavacordCommand {
     private final static Test testInstance = Test.getInstance();
 
     public PrefixCommand() {
-        getInfo().setGuildOnlyCallback((JRunnable) e -> e.getMessage().addReaction("⛔"));
-        getInfo().setOnFalseCallback((JRunnable) e -> e.getChannel().sendMessage("Usage: prefix <add|remove|list> <prefix>"));
+        getInfo().setGuildOnlyCallback(e -> e.getMessage().addReaction("⛔"));
+        getInfo().setOnFalseCallback(e -> e.getChannel().sendMessage("Usage: prefix <add|remove|list> <prefix>"));
     }
 
     @Override

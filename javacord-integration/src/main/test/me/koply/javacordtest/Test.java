@@ -44,7 +44,7 @@ public class Test extends JavacordIntegration {
             for (CommandInfo<MessageCreateEvent> info : list) {
                 sb.append(Arrays.toString(info.getAliases())).append(" - ");
             }
-            e.getChannel().sendMessage("Last command is not found. Suggestions: \n"+sb.toString());
+            e.getChannel().sendMessage("Last command is not found. Suggestions: \n"+ sb);
         });
 
         File dataFile = new File("data.json");
