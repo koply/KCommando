@@ -1,9 +1,9 @@
 ![](http://image-write-app.herokuapp.com/?x=880&y=33&size=130&text=koply&url=https%3A%2F%2Fimage-write-app.herokuapp.com%2F%3Fx%3D45%26y%3D25%26size%3D150%26text%3DKCommando%26url%3Dhttps%3A%2F%2Fwww.afcapital.ru%2Fa%2Fpgs%2Fimages%2Fcontent-grid-bg.png)
 
-[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/MusaBrt/KCommando.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/MusaBrt/KCommando/context:java)
-[![Build Status](https://travis-ci.com/musabrt/kcommando.svg?branch=master)](https://travis-ci.com/musabrt/kcommando)
-[![jitpack-version](https://jitpack.io/v/MusaBrt/KCommando.svg)](https://jitpack.io/#MusaBrt/KCommando)
-![LICENSE](https://img.shields.io/github/license/MusaBrt/KCommando?style=flat)
+[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/koply/KCommando.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/koply/KCommando/context:java)
+[![Build Status](https://travis-ci.com/koply/kcommando.svg?branch=master)](https://travis-ci.com/koply/kcommando)
+[![jitpack-version](https://jitpack.io/v/koply/KCommando.svg)](https://jitpack.io/#koply/KCommando)
+![LICENSE](https://img.shields.io/github/license/koply/KCommando?style=flat)
 
 Annotation-based multifunctional command handler framework for JDA & Javacord. KCommando has a external plugin system.
 
@@ -439,14 +439,14 @@ To always use the latest version, you can write '-SNAPSHOT' in the version field
 
 <!-- FOR JDA -->
 <dependency>
-    <groupId>com.github.MusaBrt.KCommando</groupId>
+    <groupId>com.github.koply.KCommando</groupId>
     <artifactId>jda-integration</artifactId>
     <version>JITPACK-VERSION</version>
 </dependency>
 
 <!-- FOR JAVACORD -->
 <dependency>
-    <groupId>com.github.MusaBrt.KCommando</groupId>
+    <groupId>com.github.koply.KCommando</groupId>
     <artifactId>javacord-integration</artifactId>
     <version>JITPACK-VERSION</version>
 </dependency>
@@ -459,12 +459,12 @@ repositories {
 
 // FOR JDA
 dependencies {
-    implementation 'com.github.MusaBrt.KCommando:jda-integration:JITPACK-VERSION'
+    implementation 'com.github.koply.KCommando:jda-integration:JITPACK-VERSION'
 }
 
 // FOR JAVACORD
 dependencies {
-    implementation 'com.github.MusaBrt.KCommando:javacord-integration:JITPACK-VERSION'
+    implementation 'com.github.koply.KCommando:javacord-integration:JITPACK-VERSION'
 }
 ```
 
@@ -473,10 +473,10 @@ dependencies {
 Github packages are ignored. Please use jitpack repositories.
 
 ## Example Repositories
- | [Rae Discord Bot](https://github.com/MusaBrt/Rae)
+ | [Rae Discord Bot](https://github.com/koply/Rae)
 
-Tests are includes help and prefix usage. [JDA Test Area](https://github.com/MusaBrt/KCommando/tree/master/jda-integration/src/main/test/me/koply/jdatest) - [Javacord Test Area](https://github.com/MusaBrt/KCommando/tree/master/javacord-integration/src/main/test/me/koply/javacordtest)
+Tests are includes help and prefix usage. [JDA Test Area](https://github.com/koply/KCommando/tree/master/jda-integration/src/main/test/me/koply/jdatest) - [Javacord Test Area](https://github.com/koply/KCommando/tree/master/javacord-integration/src/main/test/me/koply/javacordtest)
 
-[Sample JDA Plugin](https://github.com/MusaBrt/KCommando/tree/master/sample-plugin-jda) - [Sample Javacord Plugin](https://github.com/MusaBrt/KCommando/tree/master/sample-plugin-javacord)
+[Sample JDA Plugin](https://github.com/koply/KCommando/tree/master/sample-plugin-jda) - [Sample Javacord Plugin](https://github.com/koply/KCommando/tree/master/sample-plugin-javacord)
 
 # Don't be afraid to contribute!
