@@ -1,35 +1,23 @@
 package me.koply.kcommando.integration;
 
-import me.koply.kcommando.CommandHandler;
-import me.koply.kcommando.Parameters;
-import me.koply.kcommando.internal.Command;
-import me.koply.kcommando.internal.CommandInfo;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
-public abstract class Integration<T> {
+public abstract class Integration implements KIntegration {
 
-    private final long selfID;
-    public final long getSelfID() { return selfID; }
-    protected Integration(long selfID) {
-        this.selfID = selfID;
+    public final long selfId;
+    protected Integration(long selfId) {
+        this.selfId = selfId;
     }
-
-    // registers the handler for this instegration
-    public abstract void registerCommandHandler(CommandHandler<T> commandHandler);
-    public abstract void detectAndEnablePlugins(Parameters<T> params);
-    public abstract Set<Class<? extends Command>> getPluginCommands();
-    public abstract void registerListeners();
 
     // for set the custom guild prefixes
     final ConcurrentMap<Long, Set<String>> customGuildPrefixes = new ConcurrentHashMap<>();
-    public final ConcurrentMap<Long, Set<String>> getCustomGuildPrefixes() { return customGuildPrefixes; }
+    public final ConcurrentMap<Long, Set<String>> getCustomGuildPrefixes() {
+        return customGuildPrefixes;
+    }
 
     /**
      * Adds a custom prefix to the server, but the existing prefix causes it to lose functionality on that server.
@@ -58,88 +46,14 @@ public abstract class Integration<T> {
      * Removes guild from the custom prefix map
      * @param guildID id number of the server to disable custom prefix
      */
-    public void removeAllCustomPrefixes(long guildID) {
+    public void clearCustomPrefixes(long guildID) {
         customGuildPrefixes.remove(guildID);
-        // Still maybe TODO: enablable custom prefixes for guilds
     }
 
-    // blacklist user from all commands in the bot
+    // block a user from all commands
     final Set<Long> blacklistedUsers = Collections.synchronizedSet(new HashSet<>());
-    public Set<Long> getBlacklistedUsers() { return blacklistedUsers; }
-
-    // blacklist in single guild
-    // guild id, blacklisted user id
-    final ConcurrentMap<Long, Set<Long>> blacklistedMembers = new ConcurrentHashMap<>();
-
-    /**
-     * @return all blacklisted members as map (guildID, set of the member ids)
-     */
-    public ConcurrentMap<Long, Set<Long>> getBlacklistedMembers() {
-        return blacklistedMembers;
+    public Set<Long> getBlacklistedUsers() {
+        return Collections.unmodifiableSet(blacklistedUsers);
     }
 
-    /**
-     * @param guildID to get blacklisted members on the guild
-     * @return all blacklisted members on the selected guild
-     */
-    public Set<Long> getBlacklistedMembers(long guildID) {
-        blacklistedMembers.computeIfAbsent(guildID, aLong -> new HashSet<>());
-        return blacklistedMembers.get(guildID);
-    }
-
-    // blacklist for guild channels
-    final ConcurrentMap<Long, Set<Long>> blacklistedChannels = new ConcurrentHashMap<>();
-
-    /**
-     * @return all blacklisted channels as map (guildID, set of the channel ids)
-     */
-    public ConcurrentMap<Long, Set<Long>> getBlacklistedChannels() {
-        return blacklistedChannels;
-    }
-
-    /**
-     * @param guildID to get blacklisted channels on the guild
-     * @return all blacklisted channels on the selected guild
-     */
-    public Set<Long> getBlacklistedChannels(long guildID) {
-        blacklistedChannels.computeIfAbsent(guildID, aLong -> new HashSet<>());
-        return blacklistedChannels.get(guildID);
-    }
-
-    private Consumer<T> blacklistCallback;
-
-    /**
-     * When a command declined due to a blacklist, runs this callback.
-     * @param callback to run
-     * @return this integration
-     */
-    public Integration<T> setBlacklistCallback(Consumer<T> callback) {
-        blacklistCallback = callback;
-        return this;
-    }
-
-    // internal
-    public Consumer<T> getBlacklistCallback() {
-        return blacklistCallback;
-    }
-
-
-    private BiConsumer<T, Set<CommandInfo<T>>> suggestionsCallback;
-
-    /**
-     * When a command declined due to wrong usage and the bot has similar commands calls this callback
-     * if it doesn't find similar commands, the HashSet will be empty
-     *
-     * @param suggestionsCallback to run
-     * @return this integration
-     */
-    public Integration<T> setSuggestionsCallback(BiConsumer<T, Set<CommandInfo<T>>> suggestionsCallback) {
-        this.suggestionsCallback = suggestionsCallback;
-        return this;
-    }
-
-    // internal
-    public BiConsumer<T, Set<CommandInfo<T>>> getSuggestionsCallback() {
-        return suggestionsCallback;
-    }
 }

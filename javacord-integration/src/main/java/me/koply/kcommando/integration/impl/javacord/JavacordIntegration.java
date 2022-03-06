@@ -1,82 +1,52 @@
 package me.koply.kcommando.integration.impl.javacord;
 
-import me.koply.kcommando.CProcessParameters;
-import me.koply.kcommando.internal.Command;
-import me.koply.kcommando.CommandHandler;
-import me.koply.kcommando.Parameters;
+import me.koply.kcommando.handler.ButtonClickHandler;
+import me.koply.kcommando.handler.CommandHandler;
+import me.koply.kcommando.handler.SlashCommandHandler;
 import me.koply.kcommando.integration.Integration;
-import me.koply.kcommando.plugin.PluginFile;
-import me.koply.kcommando.plugin.PluginManager;
-import org.javacord.api.DiscordApi;
-import org.javacord.api.entity.channel.GroupChannel;
-import org.javacord.api.entity.message.MessageType;
+import me.koply.kcommando.internal.annotations.HandleSlash;
+import org.javacord.api.event.interaction.ButtonClickEvent;
+import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.event.message.MessageCreateEvent;
-import org.javacord.api.listener.GloballyAttachableListener;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+public class JavacordIntegration extends Integration {
 
-public class JavacordIntegration extends Integration<MessageCreateEvent> {
-
-    private final DiscordApi discordApi;
-
-    public JavacordIntegration(final DiscordApi discordApi) {
-        super(discordApi.getClientId());
-        this.discordApi = discordApi;
+    protected JavacordIntegration(long selfId) {
+        super(selfId);
     }
 
     @Override
-    public void registerCommandHandler(CommandHandler<MessageCreateEvent> commandHandler) {
-        discordApi.addMessageCreateListener(e ->
-            commandHandler.processCommand(new CProcessParameters<>(new CProcessParameters.Author(e.getMessageAuthor()
-                .getDiscriminatedName(),
-                e.getMessageAuthor().getId(),
-                e.getMessageAuthor().isBotUser()),
-                e.getMessage().getType() == MessageType.NORMAL_WEBHOOK,
-                e.getMessage().getContent(),
-                channelName(e),
-                e.getServer().isPresent() ? e.getServer().get().getId() : -1,
-                e, e.getChannel().getId())));
-    }
+    public void registerCommandHandler(CommandHandler handler) {
 
-    private PluginManager<GloballyAttachableListener> pluginManager;
-
-    @Override
-    public void detectAndEnablePlugins(Parameters<MessageCreateEvent> params) {
-        pluginManager = new PluginManager<>(params.getPluginsPath());
-        pluginManager.detectPlugins();
-        pluginManager.enablePlugins();
     }
 
     @Override
-    public Set<Class<? extends Command>> getPluginCommands() {
-        if (pluginManager == null) return null;
+    public void registerSlashCommandHandler(SlashCommandHandler handler) {
 
-        Set<Class<? extends Command>> set = new HashSet<>();
-        ArrayList<PluginFile<GloballyAttachableListener>> plugins = pluginManager.getPlugins();
-        for (PluginFile<GloballyAttachableListener> plugin : plugins) {
-            set.addAll(plugin.getInstance().getCommands());
-        }
-        return set;
     }
 
     @Override
-    public void registerListeners() {
-        if (pluginManager == null) return;
+    public void registerButtonClickHandler(ButtonClickHandler handler) {
 
-        ArrayList<PluginFile<GloballyAttachableListener>> plugins = pluginManager.getPlugins();
-        for (PluginFile<GloballyAttachableListener> plugin : plugins) {
-            for (GloballyAttachableListener listener : plugin.getInstance().getListeners()) {
-                discordApi.addListener(listener);
-            }
-        }
     }
 
-    private String channelName(final MessageCreateEvent event) {
-        if (event.isPrivateMessage())
-            return "(PRIVATE)";
-        return event.getGroupChannel().map(GroupChannel::getName).map(Optional::get).orElse(event.getServer().get().getName());
+    @Override
+    public void registerSlashCommand(HandleSlash commandInfo) {
+
+    }
+
+    @Override
+    public Class<?> getMessageEventType() {
+        return MessageCreateEvent.class;
+    }
+
+    @Override
+    public Class<?> getSlashEventType() {
+        return SlashCommandCreateEvent.class;
+    }
+
+    @Override
+    public Class<?> getButtonEventType() {
+        return ButtonClickEvent.class;
     }
 }

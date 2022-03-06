@@ -1,98 +1,115 @@
 package me.koply.kcommando;
 
 import me.koply.kcommando.integration.Integration;
+import me.koply.kcommando.internal.Kogger;
 
-import java.io.File;
-import java.util.Map;
-import java.util.logging.Logger;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class KCommando<T> {
+public class KCommando {
 
-    public Parameters<T> params = new Parameters<>();
-    public static final Logger logger = Logger.getLogger("KCommando");
-    public static final String VERSION = "4.2.7";
+    public static final String VERSION = "5.0.0";
 
-    public KCommando(final Integration<T> integration) {
-        params.setIntegration(integration);
+    public final Integration integration;
+    private final KInitializer initializer;
+    public KCommando(Integration integration) {
+        this.integration = integration;
+        this.initializer = new KInitializer(this);
     }
 
-    private KInitializer<T> initializer;
+    public KCommando(Integration integration, Class<? extends KInitializer> customInitializer) {
+        KInitializer temp;
+        this.integration = integration;
+        try {
+            Constructor<? extends KInitializer> constructor = customInitializer.getDeclaredConstructor(KCommando.class);
+            temp = constructor.newInstance(this);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            Kogger.warn("Initializer field cannot set to the custom initializer class. KCommando will use the default KInitializer.");
+            temp = new KInitializer(this);
+        }
 
-    /**
-     * only advanced using
-     */
-    public KCommando(final Integration<T> integration, final KInitializer<T> initializer) {
-        params = initializer.getParams();
-        params.setIntegration(integration);
-        this.initializer = initializer;
+        this.initializer = temp;
     }
 
-    public KCommando<T> build() {
-        if (initializer == null) initializer = new KInitializer<>(params);
+    private final List<String> packagePaths = new ArrayList<>();
+    private String prefix;
+    private long cooldown;
+    private boolean useCaseSensitivity;
+    private boolean readBotMessages;
+    public boolean allowSpacesInPrefix = false;
+    public static boolean verbose = false;
+    // TODO: data preservence
+
+    public KCommando build() {
         initializer.build();
         return this;
     }
 
-    public KCommando<T> setPackage(String path) { params.setPackagePath(path);
+    public void registerCommand(Object...customInstances) {
+        for (Object customInstance : customInstances) {
+            if (verbose) Kogger.info("Registering a custom instance named as " + customInstance.getClass().getName());
+            initializer.registerClass(customInstance);
+        }
+    }
+
+    public List<String> getPackagePaths() {
+        return packagePaths;
+    }
+
+    public KCommando addPackagePath(String path) {
+        packagePaths.add(path);
         return this;
     }
 
-    public KCommando<T> setCooldown(long milliseconds) { params.setCooldown(milliseconds);
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public KCommando setPrefix(String prefix) {
+        this.prefix = prefix;
         return this;
     }
 
-    public KCommando<T> setPrefix(String prefix) { params.setPrefix(prefix);
+    public long getCooldown() {
+        return cooldown;
+    }
+
+    public KCommando setCooldown(long cooldown) {
+        this.cooldown = cooldown;
         return this;
     }
 
-    public KCommando<T> setOwners(String...owners) { params.setOwners(owners);
+    public boolean isUseCaseSensitivity() {
+        return useCaseSensitivity;
+    }
+
+    public KCommando setUseCaseSensitivity(boolean useCaseSensitivity) {
+        this.useCaseSensitivity = useCaseSensitivity;
         return this;
     }
 
-    public KCommando<T> setReadBotMessages(boolean readBotMessages) { params.setReadBotMessages(readBotMessages);
+    public boolean isReadBotMessages() {
+        return readBotMessages;
+    }
+
+    public KCommando setReadBotMessages(boolean readBotMessages) {
+        this.readBotMessages = readBotMessages;
         return this;
     }
 
-    public KCommando<T> setDataFile(File dataFile) {
-        params.setDataFile(dataFile);
+    public KCommando setVerbose(boolean verbose) {
+        KCommando.verbose = verbose;
         return this;
     }
 
-    public KCommando<T> setPluginsPath(File folder) {
-        folder.mkdir();
-        params.setPluginsPath(folder);
+    public boolean isAllowSpacesInPrefix() {
+        return allowSpacesInPrefix;
+    }
+
+    public KCommando setAllowSpacesInPrefix(boolean allowSpacesInPrefix) {
+        this.allowSpacesInPrefix = allowSpacesInPrefix;
         return this;
     }
-
-    /**
-     * @param dataManager The DataManager instance to be used by kcommando
-     * @return this object
-     */
-    public KCommando<T> setDataManager(DataManager<T> dataManager) {
-        params.setDataManager(dataManager);
-        return this;
-    }
-
-    public KCommando<T> useCaseSensitivity() {
-        params.useCaseSensitivity();
-        return this;
-    }
-
-    public Parameters<T> getParameters() {
-        return params;
-    }
-
-    /*
-      (k,v): k -> package's name; v -> ${package's display name}&&&${package's description text}
-      key example: info
-      value example: Information Commands&&&This group haves information commands.
-     */
-    public KCommando<T> setGroupLocales(Map<String, String> groupLocales) { params.setGroupLocales(groupLocales);
-        return this;
-        /*
-          Still TODO: Pre defined Help command in lib with groupLocales.
-         */
-    }
-
-
 }

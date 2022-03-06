@@ -1,0 +1,19 @@
+package me.koply.kcommando.internal;
+
+public class ExampleClass {
+
+    @Command(alias, name, desc) // TODO ownerOnly etc
+    boolean handle(event, args, prefix) {}
+
+    @Command(alias, name, desc)
+    void handle(event, args, prefix) {}
+
+    @Slash(name, desc, options={})
+    void isimsiz(event) {}
+
+    @Button(name)
+    void ismi(event) {}
+
+    @SimilarCommands
+    void zırnık(event, setofsimilarcommands)
+}

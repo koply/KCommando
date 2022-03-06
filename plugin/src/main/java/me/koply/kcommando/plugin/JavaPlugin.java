@@ -1,7 +1,5 @@
 package me.koply.kcommando.plugin;
 
-import me.koply.kcommando.internal.Command;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,14 +30,14 @@ public abstract class JavaPlugin<E> {
         listeners.addAll(Arrays.asList(adapters));
     }
 
-    private final List<Class<? extends Command>> commands = new ArrayList<>();
+    /*private final List<Class<? extends Command>> commands = new ArrayList<>();
     public final List<Class<? extends Command>> getCommands() {
         return commands;
     }
     @SafeVarargs
     public final void addCommand(Class<? extends Command>...coms) {
         commands.addAll(Arrays.asList(coms));
-    }
+    }*/
 
     public abstract void onEnable();
     public abstract void onDisable();

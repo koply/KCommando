@@ -7,7 +7,7 @@
     <groupId>me.koply</groupId>
     <artifactId>kcommando-root</artifactId>
     <packaging>pom</packaging>
-    <version>4.2.7</version>
+    <version>5.0.0</version>
 
     <scm>
         <connection>scm:git:git://github.com/MusaBrt/KCommando.git</connection>

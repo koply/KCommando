@@ -7,13 +7,13 @@
     <parent>
         <artifactId>kcommando-root</artifactId>
         <groupId>me.koply</groupId>
-        <version>4.2.7</version>
+        <version>5.0.0</version>
     </parent>
 
     <artifactId>javacord-integration</artifactId>
 
     <properties>
-        <javacord.version>3.1.1</javacord.version>
+        <javacord.version>3.3.2</javacord.version>
     </properties>
 
     <dependencies>

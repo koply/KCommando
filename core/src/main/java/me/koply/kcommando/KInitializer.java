@@ -1,277 +1,351 @@
 package me.koply.kcommando;
 
-import me.koply.kcommando.internal.CargoTruck;
-import me.koply.kcommando.internal.Command;
-import me.koply.kcommando.internal.CommandInfo;
-import me.koply.kcommando.internal.CommandType;
-import me.koply.kcommando.internal.annotations.Argument;
-import me.koply.kcommando.internal.annotations.Commando;
-import org.reflections8.Reflections;
+import me.koply.kcommando.internal.Kogger;
+import me.koply.kcommando.internal.annotations.HandleButton;
+import me.koply.kcommando.internal.annotations.HandleCommand;
+import me.koply.kcommando.internal.annotations.SimilarCallback;
+import me.koply.kcommando.internal.annotations.HandleSlash;
+import me.koply.kcommando.internal.boxes.*;
+import me.koply.kcommando.internal.util.PackageReader;
+import me.koply.kcommando.manager.ButtonManager;
+import me.koply.kcommando.manager.CommandManager;
+import me.koply.kcommando.manager.SlashManager;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-public class KInitializer<T> {
+public class KInitializer {
 
-    private final Parameters<T> params;
-    public final Parameters<T> getParams() { return params; }
-    
-    private final Class<? extends CommandHandler> commandHandler;
+    private final KCommando main;
+    private final SlashManager slashManager;
+    private final CommandManager commandManager;
+    private final ButtonManager buttonManager;
+    public KInitializer(KCommando main) {
+        this.main = main;
+        slashManager = new SlashManager();
+        commandManager = new CommandManager(main);
+        buttonManager = new ButtonManager();
+    }
 
-    public KInitializer(Parameters<T> params) {
-        this.params = params;
-        this.commandHandler = CommandHandler.class;
-        setupLogger();
+    private static class AnnotationBox {
+        public final BoxType type;
+        public final Annotation annotation;
+        public final Method method;
+        public final Class<?> clazz;
+        public AnnotationBox(BoxType type, Annotation annotation, Method method, Class<?> clazz) {
+            this.type = type;
+            this.annotation = annotation;
+            this.method = method;
+            this.clazz = clazz;
+        }
     }
 
     /**
-     * this constructor for advanced usage
-     *
-     * @param params parameters for the runs bot
-     * @param commandHandler custom commandHandler *class* for the kcommando
-     */
-    public KInitializer(Parameters<T> params, Class<? extends CommandHandler> commandHandler) {
-        this.params = params;
-        this.commandHandler = commandHandler;
-        setupLogger();
-    }
-
-    /**
-     * initializes the logger
-     */
-    public void setupLogger() {
-        KCommando.logger.setUseParentHandlers(false);
-
-        ConsoleHandler consoleHandler = new ConsoleHandler();
-        consoleHandler.setFormatter(new Formatter() {
-            private final DateFormat formatter = new SimpleDateFormat("HH:mm:ss.SSS");
-
-            @Override
-            public String format(LogRecord record) {
-                final String[] splitted = record.getSourceClassName().split("\\.");
-                final String name = splitted[splitted.length-1];
-                return String.format("[%s %s] %s -> %s\n", formatter.format(new Date(record.getMillis())), record.getLevel(), name, record.getMessage());
-            }
-        });
-
-        KCommando.logger.addHandler(consoleHandler);
-    }
-
-    /**
-     * @return command classes
-     */
-    public Set<Class<? extends Command>> getCommands() {
-        final Reflections reflections = new Reflections(params.getPackagePath());
-        return reflections.getSubTypesOf(Command.class);
-    }
-
-    public Set<Class<? extends Command>> enableAndGetCommands() {
-        params.getIntegration().detectAndEnablePlugins(params);
-        return params.getIntegration().getPluginCommands();
-    }
-
-    private int classCounter = 0;
-    /**
-     * Classic build pattern. Register's CommandHandler and uses reflections from getCommands method.
+     * Registers everything.
      */
     public void build() {
-        KCommando.logger.info("KCommando launching!");
-        if (params.getIntegration() == null || params.getPackagePath() == null) {
-            throw new IllegalArgumentException("We couldn't found integration or commands package path :(");
+        Kogger.info("Build start...");
+        if (main.getPackagePaths().isEmpty()) {
+            throw new IllegalArgumentException("Please add package path for search.");
         }
 
-        params.getDataManager().ifPresent(DataManager::initDataFile);
+        Set<Class<?>> classes = getClasses();
+        List<AnnotationBox> methods = getSuitableMethods(classes);
 
-        final Map<String, CommandToRun<T>> commandMethods = new HashMap<>();
-        final Set<Class<? extends Command>> classes = getCommands();
+        // registers all boxes to handlers
+        methods.forEach(this::registerBox);
 
-        boolean pluginSystem = params.getPluginsPath() != null;
+        buttonManager.registerManager(main.integration);
+        commandManager.registerManager(main.integration);
+        slashManager.registerManager(main.integration);
+        Kogger.info("Build done!");
+    }
 
-        if (pluginSystem) {
-            Set<Class<? extends Command>> pluginClasses = enableAndGetCommands();
-            if (!pluginClasses.isEmpty()) {
-                KCommando.logger.info(pluginClasses.size() + " command found from plugins.");
-                classes.addAll(pluginClasses);
-            }
+    /**
+     * @param instance an instance of a class that includes (command-slash-button)
+     */
+    public void registerClass(Object instance) {
+        Class<?> clazz = instance.getClass();
+        List<AnnotationBox> methods = analyzeClass(clazz);
+        if (methods == null || methods.isEmpty()) return;
+        methods.forEach(box -> registerBoxWithInstance(instance, box));
+    }
+
+    // private api --------------------------------------
+
+    // internal
+    private void registerSlashBox(Object instance, AnnotationBox box) {
+        HandleSlash ann = (HandleSlash) box.annotation;
+        SlashBox slashBox = new SlashBox(instance, box.method, box.clazz, ann);
+
+        main.integration.registerSlashCommand(ann);
+        slashManager.commands.put(ann.name(), slashBox);
+    }
+
+    // internal
+    private void registerCommandBox(Object instance, AnnotationBox box) {
+        HandleCommand ann = (HandleCommand) box.annotation;
+
+        int type = box.type.value;
+        boolean isboolean = type > 3;
+        CommandBox commandBox = new CommandBox(instance, box.method, box.clazz,
+                CommandBox.CommandType.fromBoxType(type),
+                isboolean ? CommandBox.ReturnType.BOOLEAN : CommandBox.ReturnType.VOID);
+
+        for (String alias : ann.aliases()) {
+            commandManager.commands.put(alias, commandBox);
         }
+    }
 
-        for (Class<? extends Command> clazz : classes) {
-            registerCommand(clazz, commandMethods);
+    // internal
+    private void registerButtonBox(Object instance, AnnotationBox box) {
+        HandleButton ann = (HandleButton) box.annotation;
+
+        ButtonBox buttonBox = new ButtonBox(instance, box.method, box.clazz, ann.value());
+        buttonManager.buttons.put(ann.value(), buttonBox);
+    }
+
+    // internal
+    private void registerSimilarBox(Object instance, AnnotationBox box) {
+        // we can get annotation but we don't need that
+        boolean usedCommand = box.type.value > 10;
+        int value = usedCommand ? box.type.value-2 : box.type.value;
+        SimilarBox.SimilarListType type = value == 9 ? SimilarBox.SimilarListType.LIST : SimilarBox.SimilarListType.SET;
+
+        SimilarBox similarBox = new SimilarBox(instance, box.method, box.clazz, type, usedCommand);
+        commandManager.setSimilarCallback(similarBox);
+    }
+
+    // private api
+    private void registerBoxWithInstance(Object instance, AnnotationBox box) {
+        if (box.type == BoxType.SLASH) {
+            registerSlashBox(instance, box);
+        } else if (box.type.value > 0 && box.type.value < 7) {
+            registerCommandBox(instance, box);
+        } else if (box.type == BoxType.BUTTON) {
+            registerButtonBox(instance, box);
+        } else if (box.type.value > 8) {
+            registerSimilarBox(instance, box);
         }
+    }
 
-        CargoTruck.setCargo(null);
-        params.setCommandMethods(commandMethods);
-
+    // private api
+    private void registerBox(AnnotationBox box) {
         try {
-            params.getIntegration().registerCommandHandler(commandHandler.getDeclaredConstructor(Parameters.class).newInstance(params));
-
-            if (pluginSystem) params.getIntegration().registerListeners();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            KCommando.logger.info("An unexpected error caught at initialize the command handler.");
-        }
-
-        KCommando.logger.info(classCounter + " commands are initialized.");
-        KCommando.logger.info("KCommando system is ready o7");
-    }
-
-    /**
-     * @return if returns true skips class
-     */
-    private boolean preCheck(Class<? extends Command> clazz) {
-        if (clazz.getPackage().getName().contains("me.koply.kcommando.integration.impl")) return true;
-
-        if ((clazz.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) {
-            KCommando.logger.warning(clazz.getName() + " is not public class. Skipping...");
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @return if returns true skips class
-     */
-    private boolean annotationCheck(Commando ant, String clazzName) {
-        if (ant == null) {
-            KCommando.logger.warning(clazzName + " is couldn't have Commando annotation. Skipping...");
-            return true;
-        }
-
-        if (ant.guildOnly() && ant.privateOnly()) {
-            KCommando.logger.warning(clazzName + " has GuildOnly and PrivateOnly at the same time. Skipping...");
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * creates info and pushes to cargo
-     *
-     * @param ant the command annotation
-     */
-    public void infoGenerator(Commando ant) {
-        CommandInfo<T> tempinfo = new CommandInfo<>();
-        tempinfo.initialize(ant);
-        CargoTruck.setCargo(tempinfo);
-    }
-
-    /**
-     * a bit hardcoded object type checker
-     * org.javacord.api.event.message
-     * net.dv8tion.jda.api.events.message
-     *
-     * @param method Method for check
-     * @param checkHandle check for handle name
-     * @return found CommandType
-     */
-    protected CommandType _internalMethodCheck(Method method, boolean checkHandle) {
-        if (method.getReturnType() != boolean.class) return null;
-
-        final Class<?>[] parameters = method.getParameterTypes();
-        if (!parameters[0].getPackage().getName().contains("message")) return null;
-
-        boolean isOk = !checkHandle || method.getName().equals("handle");
-
-        if (parameters.length <= 3 && isOk) {
-            if (parameters.length == 1) {
-                return CommandType.EVENT;
-
-            } else if (parameters.length == 2 && parameters[1].isArray()) { // ??
-                return CommandType.ARGNEVENT;
-
-            } else if (parameters.length == 3 && parameters[2] == String.class) {
-                return CommandType.PREFIXED;
-
+            Object instance = null;
+            if (!Modifier.isStatic(box.method.getModifiers())) {
+                //noinspection ConfusingArgumentToVarargsMethod
+                Constructor<?> constructor = box.clazz.getDeclaredConstructor(null);
+                instance = constructor.newInstance();
             }
+
+            registerBoxWithInstance(instance, box);
+        } catch (NoSuchMethodException ex) {
+            if (KCommando.verbose) {
+                Kogger.warn(box.clazz.getName() + " doesn't have any parameterless constructor. You can manually register your class with KCommando#registerClass(Object)");
+            }
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            if (KCommando.verbose) {
+                Kogger.warn("An error occur while registering the class named as " + box.clazz.getName());
+            }
+        }
+    }
+
+    /**
+     * internal
+     * @param method the method to be checked
+     * @return if method public returns true
+     */
+    private boolean methodPreCheck(Method method) {
+        method.setAccessible(true);
+        if (!Modifier.isPublic(method.getModifiers())) {
+            if (KCommando.verbose) {
+                Kogger.info(method.getName() + " is not public.");
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * internal
+     * check list: return type, parameters (event, args, prefix)
+     * @param method to be checked
+     * @return if correct e-ea-eap[b] else unknown
+     */
+    private BoxType commandoCheck(Method method) {
+        Class<?> returnType = method.getReturnType();
+        boolean isboolean;
+        boolean isok = (isboolean = returnType == Boolean.TYPE) || returnType == Void.TYPE;
+        if (!isok) return BoxType.UNKNOWN;
+
+        BoxType type = BoxType.UNKNOWN;
+
+        Class<?>[] parameters = method.getParameterTypes();
+        if (parameters.length <= 3) {
+            boolean event = parameters[0].equals(main.integration.getMessageEventType());
+            if (!event) {
+                return BoxType.UNKNOWN;
+            } else if (parameters.length == 1) {
+                type = BoxType.COMMAND_E;
+            } else if (parameters.length == 2 && parameters[1].isArray()) {// args[] ??
+                type = BoxType.COMMAND_EA;
+            } else if (parameters.length == 3 && parameters[1].isArray() && parameters[2] == String.class) {
+                type = BoxType.COMMAND_EAP;
+            }
+        }
+
+        return isboolean && type != BoxType.UNKNOWN ? BoxType.fromValue(type.value+3) : type;
+    }
+
+    /**
+     * internal
+     * @param method to be checked
+     * @return returns true if method had correct parameter
+     */
+    private boolean slashCheck(Method method) {
+        Class<?>[] parameters = method.getParameterTypes();
+        return parameters[0].equals(main.integration.getSlashEventType());
+    }
+
+    /**
+     * internal
+     * @param method to be checked
+     * @return returns true if method had correct parameter
+     */
+    private boolean buttonCheck(Method method) {
+        Class<?>[] parameters = method.getParameterTypes();
+        return parameters[0].equals(main.integration.getButtonEventType());
+    }
+
+    private BoxType similarCallbackCheck(Method method) {
+        // event - Set<String> similars - String usedCommand
+        Parameter[] params = method.getParameters();
+        if (params.length < 2)
+            return null;
+
+        if (!params[0].getType().equals(main.integration.getMessageEventType()))
+            return null;
+
+        String typename = params[1].getParameterizedType().getTypeName();
+
+        boolean islist = typename.equals("java.util.List<java.lang.String>");
+        boolean isset = typename.equals("java.util.Set<java.lang.String>");
+
+        if (!(islist || isset))
+            return null;
+
+        int value = islist ? 9 : 10;
+
+        if (params.length == 3 && params[2].getType() == String.class)
+            value += 2;
+
+        return BoxType.fromValue(value);
+    }
+
+    // internal
+    private AnnotationBox annotationChecks(Method method) {
+        BoxType type = null;
+
+        Annotation commando = method.getAnnotation(HandleCommand.class);
+        Annotation slash = method.getAnnotation(HandleSlash.class);
+        Annotation button = method.getAnnotation(HandleButton.class);
+        Annotation sugg = method.getAnnotation(SimilarCallback.class);
+
+        Annotation ret = null;
+        if (commando != null) {
+            type = commandoCheck(method);
+            ret = commando;
+        } else if (slash != null) {
+            type = slashCheck(method) ? BoxType.SLASH : null;
+            ret = slash;
+        } else if (button != null) {
+            type = buttonCheck(method) ? BoxType.BUTTON : null;
+            ret = button;
+        } else if (sugg != null) {
+            type = similarCallbackCheck(method);
+            ret = sugg;
+        }
+
+        // commando - slash - button
+        return type == null ? null : new AnnotationBox(type, ret, method, method.getDeclaringClass());
+    }
+
+    // internal
+    private List<AnnotationBox> getMethodsFromClazz(Class<?> clazz) {
+        // matching methods
+        List<AnnotationBox> ret = new ArrayList<>();
+
+        Method[] methods = clazz.getMethods();
+        for (Method method : methods) {
+            // checks the modifier is public or not
+            // and gets the AnnotationBox
+            AnnotationBox box;
+            if ((box = annotationChecks(method)) == null || !methodPreCheck(method)) {
+                continue;
+            }
+            ret.add(box);
+        }
+        return ret;
+    }
+
+    // private api method
+    private List<AnnotationBox> analyzeClass(Class<?> clazz) {
+        // class public check
+        if (!Modifier.isPublic(clazz.getModifiers())) {
+            if (KCommando.verbose) {
+                Kogger.info(clazz.getName() + " is not public.");
+            }
+            return null;
+        }
+
+        List<AnnotationBox> methods = getMethodsFromClazz(clazz);
+        if (methods.isEmpty() && KCommando.verbose) {
+            Kogger.info(clazz.getName() + " doesn't have any command/slash/button method.");
+        }
+        return methods;
+    }
+
+    // private api method
+    private List<AnnotationBox> getSuitableMethods(Set<Class<?>> classes) {
+        List<AnnotationBox> ret = new ArrayList<>();
+        for (Class<?> clazz : classes) {
+            List<AnnotationBox> v = analyzeClass(clazz);
+            if (v != null && !v.isEmpty()) ret.addAll(v);
+        }
+        return ret;
+    }
+
+    // private api method
+    private Set<Class<?>> getClasses() {
+        List<String> paths = main.getPackagePaths();
+        Set<Class<?>> classes = new HashSet<>();
+        for (String path : paths) {
+            Set<Class<?>> clazzez = getClassesFromPackage(path);
+            if (clazzez != null) classes.addAll(clazzez);
+        }
+        return classes;
+    }
+
+    // internal
+    private Set<Class<?>> getClassesFromPackage(String path) {
+        try {
+            Set<Class<?>> set = PackageReader.getAllClassesFromPackage(path);
+            if (KCommando.verbose) {
+                Kogger.info(set.size() + " class found from '" + path + "' package.");
+            }
+            return set;
+        } catch (IOException ex) {
+            Kogger.warn("An error occured while reading classes. Stacktrace: ");
+            ex.printStackTrace();
         }
 
         return null;
     }
 
-    /**
-     * checks handle methods for type
-     *
-     * @return if returns null, skips the current class
-     */
-    protected CommandType methodCheck(Class<? extends Command> clazz) {
-        CommandType type = null;
-
-        for (Method method : clazz.getDeclaredMethods()) {
-            type = _internalMethodCheck(method, true);
-            if (type != null) break;
-        }
-
-        return type;
-    }
-
-    /**
-     * checks the argument methods
-     * @return argument-MethodToRun objects
-     */
-    public Map<String, CommandToRun.MethodToRun> argRegisterer(final Class<? extends Command> clazz) {
-        Map<String, CommandToRun.MethodToRun> argumentMethods = new HashMap<>();
-
-        Method[] methods = clazz.getDeclaredMethods();
-
-        for (Method method : methods) {
-            if ((method.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) continue;
-
-            Argument argm = method.getAnnotation(Argument.class);
-            if (argm == null) continue;
-
-            CommandType type = _internalMethodCheck(method, false);
-            if (type == null) continue;
-
-            String[] argStr = argm.arg();
-            CommandToRun.MethodToRun mtr = new CommandToRun.MethodToRun(method, type);
-            for (String s : argStr) {
-                argumentMethods.put(s, mtr);
-            }
-        }
-        return argumentMethods;
-    }
-
-    public void registerCommand(final Class<? extends Command> clazz, final Map<String, CommandToRun<T>> commandMethods) {
-        // for package and class public modifier
-        if (preCheck(clazz)) return;
-
-        final Commando commandAnnotation = clazz.getAnnotation(Commando.class);
-        if (annotationCheck(commandAnnotation, clazz.getName())) return;
-
-        final CommandType type = methodCheck(clazz);
-        if (type == null) return;
-
-        final String[] packageSplitted = clazz.getPackage().getName().split("\\.");
-        final String groupName = packageSplitted[packageSplitted.length-1];
-
-        try {
-            infoGenerator(commandAnnotation);
-            Map<String, CommandToRun.MethodToRun> argumentMethods = argRegisterer(clazz);
-
-            @SuppressWarnings("unchecked")
-            final Command<T> commandInstance = clazz.getDeclaredConstructor().newInstance();
-            final CommandToRun<T> ctr = new CommandToRun<>(commandInstance, groupName, type, argumentMethods);
-
-            for (final String s : commandAnnotation.aliases()) {
-                final String name = params.isCaseSensitivity() ? s : s.toLowerCase(Locale.ROOT);
-                commandMethods.put(name, ctr);
-            }
-
-            classCounter++;
-
-        } catch (Throwable t) {
-            KCommando.logger.warning("Something went wrong.");
-
-        } finally {
-            KCommando.logger.info(clazz.getName() + " is have command method");
-        }
-    }
 }
