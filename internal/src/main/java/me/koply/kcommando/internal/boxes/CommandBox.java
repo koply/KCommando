@@ -1,16 +1,20 @@
 package me.koply.kcommando.internal.boxes;
 
+import me.koply.kcommando.internal.annotations.HandleCommand;
+
 import java.lang.reflect.Method;
 
 public class CommandBox extends Box {
 
     public final CommandType commandType;
     public final ReturnType returnType;
+    public final HandleCommand annotation;
 
-    public CommandBox(Object instance, Method method, Class<?> clazz, CommandType commandType, ReturnType returnType) {
+    public CommandBox(Object instance, Method method, Class<?> clazz, CommandType commandType, ReturnType returnType, HandleCommand annotation) {
         super(instance, method, clazz);
         this.commandType = commandType;
         this.returnType = returnType;
+        this.annotation = annotation;
     }
 
     public enum CommandType {

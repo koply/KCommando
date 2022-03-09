@@ -11,4 +11,5 @@ public @interface HandleCommand {
     String name();
     String[] aliases();
     String description() default "-";
+    boolean guildOnly() default false;
 }

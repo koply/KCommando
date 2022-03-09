@@ -95,7 +95,7 @@ public class KInitializer {
         boolean isboolean = type > 3;
         CommandBox commandBox = new CommandBox(instance, box.method, box.clazz,
                 CommandBox.CommandType.fromBoxType(type),
-                isboolean ? CommandBox.ReturnType.BOOLEAN : CommandBox.ReturnType.VOID);
+                isboolean ? CommandBox.ReturnType.BOOLEAN : CommandBox.ReturnType.VOID, ann);
 
         for (String alias : ann.aliases()) {
             commandManager.commands.put(alias, commandBox);

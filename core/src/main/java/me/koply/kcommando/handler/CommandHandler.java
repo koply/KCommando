@@ -52,17 +52,17 @@ public class CommandHandler {
     public static class Parameters {
         public final Object event;
         public final String userName;
-        public final long userId;
+        public final long userID;
         public final String rawCommand;
         public final String guildName;
         public final long guildID;
 
         public Parameters(Object event, String userName,
-                          long userId, String rawCommand,
+                          long userID, String rawCommand,
                           String guildName, long guildID) {
             this.event = event;
             this.userName = userName;
-            this.userId = userId;
+            this.userID = userID;
             this.rawCommand = rawCommand;
             this.guildName = guildName;
             this.guildID = guildID;
@@ -112,7 +112,7 @@ public class CommandHandler {
     // TODO: ownerOnly, guildOnly, privateOnly, customCooldown
     // TODO: callbacks for wrong usages (with annotation)
     public boolean process(Parameters p) {
-        long authorID = p.userId;
+        long authorID = p.userID;
         if (blacklistedUsers.contains(authorID)) return false;
 
         String rawCommand = p.rawCommand;
@@ -129,6 +129,10 @@ public class CommandHandler {
 
         if (box == null) {
             callSimilarCallback(p.event, similarBox, command);
+            return false;
+        }
+
+        if ((box.annotation.guildOnly() && p.guildID == -1)) {
             return false;
         }
 
