@@ -28,17 +28,14 @@ public class CommandListener extends ListenerAdapter implements AsyncCaller {
 
         long ms = System.currentTimeMillis();
         if (ms - cooldownList.getOrDefault(authorID, 0L) < cooldown) return;
-
-        try {
-            executorService.submit(() -> {
-                boolean result = handler.process(
+        try { executorService.submit(() -> {
+                if (handler.process(
                         new CommandHandler.Parameters(e, e.getAuthor().getName(),
                                 authorID,
                                 e.getMessage().getContentRaw(),
                                 e.isFromGuild() ? e.getGuild().getName() : "(PRIVATE)",
                                 e.isFromGuild() ? e.getGuild().getIdLong() : -1)
-                );
-                if (result) cooldownList.put(authorID, ms);
+                )) cooldownList.put(authorID, ms);
             });
         } catch (Exception ex) {
             Kogger.warn("An error occured while processing a MessageReceivedEvent. Stacktrace:");

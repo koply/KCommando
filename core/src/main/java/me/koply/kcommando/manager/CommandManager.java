@@ -11,22 +11,26 @@ import java.util.Map;
 
 public class CommandManager extends Manager {
 
-    private final CommandHandler handler;
+    private final KCommando main;
     public CommandManager(KCommando main) {
-        CommandHandler.Options options = new CommandHandler.Options(main.integration,
-                main.getPrefix(), main.getCooldown(),
-                main.isUseCaseSensitivity(), main.isReadBotMessages(), main.isAllowSpacesInPrefix());
-        this.handler = new CommandHandler(commands, options);
+        this.main = main;
     }
 
     public final Map<String, CommandBox> commands = new HashMap<>();
+    private SimilarBox similarBox;
 
     public void setSimilarCallback(SimilarBox box) {
-        handler.setSimilarBox(box);
+        this.similarBox = box;
     }
 
     @Override
     public void registerManager(KIntegration integration) {
+        CommandHandler.Options options = new CommandHandler.Options(main.integration,
+                main.getPrefix(), main.getCooldown(),
+                main.isUseCaseSensitivity(), main.isReadBotMessages(), main.isAllowSpacesInPrefix());
+        CommandHandler handler = new CommandHandler(commands, options);
+        handler.setSimilarBox(similarBox);
+
         integration.registerCommandHandler(handler);
     }
 }
