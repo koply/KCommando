@@ -4,7 +4,7 @@ import me.koply.kcommando.KCommando;
 import me.koply.kcommando.handler.ButtonClickHandler;
 import me.koply.kcommando.internal.AsyncCaller;
 import me.koply.kcommando.internal.Kogger;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,8 +19,7 @@ public class ButtonListener extends ListenerAdapter implements AsyncCaller {
      * TODO: enhance this method
      */
     @Override
-    public void onButtonClick(@NotNull ButtonClickEvent event) {
-        if (event.getButton() == null) return;
+    public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         ButtonClickHandler.Parameters par = new ButtonClickHandler.Parameters(event, event.getButton().getId());
 
         try {

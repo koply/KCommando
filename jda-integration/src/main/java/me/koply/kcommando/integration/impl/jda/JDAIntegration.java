@@ -13,8 +13,8 @@ import me.koply.kcommando.internal.annotations.Option;
 import me.koply.kcommando.internal.annotations.HandleSlash;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -82,11 +82,11 @@ public class JDAIntegration extends Integration {
 
     @Override
     public Class<?> getSlashEventType() {
-        return SlashCommandEvent.class;
+        return SlashCommandInteractionEvent.class;
     }
 
     @Override
     public Class<?> getButtonEventType() {
-        return ButtonClickEvent.class;
+        return ButtonInteractionEvent.class;
     }
 }
