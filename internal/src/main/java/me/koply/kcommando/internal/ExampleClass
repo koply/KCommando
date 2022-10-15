@@ -2,18 +2,21 @@ package me.koply.kcommando.internal;
 
 public class ExampleClass {
 
-    @Command(alias, name, desc) // TODO ownerOnly etc
+    @HandleCommand(alias, name, desc)
     boolean handle(event, args, prefix) {}
 
-    @Command(alias, name, desc)
+    @HandleCommand(alias, name, desc)
     void handle(event, args, prefix) {}
 
-    @Slash(name, desc, options={})
+    @HandleSlash(name, desc, options={})
     void isimsiz(event) {}
 
-    @Button(name)
+    @HandleButton(name)
     void ismi(event) {}
 
-    @SimilarCommands
+    @SimilarCallback
     void zırnık(event, setofsimilarcommands)
+
+    @HandleFalse
+    void handleFalse(event, args, prefix)
 }

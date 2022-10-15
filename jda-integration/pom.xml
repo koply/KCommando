@@ -21,7 +21,7 @@
     </repositories>
 
     <properties>
-        <jda.version>5.0.0-alpha.9</jda.version>
+        <jda.version>5.0.0-alpha.21</jda.version>
     </properties>
 
     <dependencies>

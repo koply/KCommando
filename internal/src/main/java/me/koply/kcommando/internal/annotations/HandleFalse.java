@@ -7,12 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface HandleCommand {
-    String name();
-    String[] aliases();
-    String description() default "-";
-    String falseMethod() default "-";
-    boolean guildOnly() default false;
-    boolean ownerOnly() default false;
-    boolean privateOnly() default false;
+public @interface HandleFalse {
+
 }

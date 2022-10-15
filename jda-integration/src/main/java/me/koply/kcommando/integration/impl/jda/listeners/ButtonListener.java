@@ -15,9 +15,6 @@ public class ButtonListener extends ListenerAdapter implements AsyncCaller {
         this.handler = handler;
     }
 
-    /*
-     * TODO: enhance this method
-     */
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         ButtonClickHandler.Parameters par = new ButtonClickHandler.Parameters(event, event.getButton().getId());

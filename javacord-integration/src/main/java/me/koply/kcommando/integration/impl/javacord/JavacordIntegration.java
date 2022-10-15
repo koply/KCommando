@@ -58,11 +58,9 @@ public class JavacordIntegration extends Integration {
             boolean req = option.required();
 
             SlashCommandOptionType type = SlashCommandOptionType.fromValue(option.type().value);
+            SlashCommandOption javacordOption = SlashCommandOption.createWithChoices(type, optionName, optionDesc, req);
 
-            //optionList.add(SlashCommandOption.createWithChoices())
-            // TODO :: Javacord
-
-
+            optionList.add(javacordOption);
         }
 
         if (isglobal) {

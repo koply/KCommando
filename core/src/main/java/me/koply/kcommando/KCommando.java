@@ -1,12 +1,15 @@
 package me.koply.kcommando;
 
+import me.koply.kcommando.boot.KInitializer;
 import me.koply.kcommando.integration.Integration;
 import me.koply.kcommando.internal.Kogger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class KCommando {
 
@@ -34,13 +37,14 @@ public class KCommando {
     }
 
     private final List<String> packagePaths = new ArrayList<>();
+    private final Set<Long> ownerIds = new HashSet<>();
     private String prefix;
     private long cooldown;
     private boolean useCaseSensitivity;
     private boolean readBotMessages;
     public boolean allowSpacesInPrefix = false;
     public static boolean verbose = false;
-    // TODO: data preservence
+    private String defaultFalseMethodName = "-";
 
     public KCommando build() {
         initializer.build();
@@ -60,6 +64,22 @@ public class KCommando {
 
     public KCommando addPackagePath(String path) {
         packagePaths.add(path);
+        return this;
+    }
+
+    public Set<Long> getOwnerIds() {
+        return ownerIds;
+    }
+
+    public KCommando setOwners(long...ids) {
+        for (long id : ids) {
+            ownerIds.add(id);
+        }
+        return this;
+    }
+
+    public KCommando clearOwners() {
+        ownerIds.clear();
         return this;
     }
 
@@ -85,8 +105,8 @@ public class KCommando {
         return useCaseSensitivity;
     }
 
-    public KCommando setUseCaseSensitivity(boolean useCaseSensitivity) {
-        this.useCaseSensitivity = useCaseSensitivity;
+    public KCommando toggleCaseSensitivity() {
+        this.useCaseSensitivity = !this.useCaseSensitivity;
         return this;
     }
 
@@ -110,6 +130,15 @@ public class KCommando {
 
     public KCommando setAllowSpacesInPrefix(boolean allowSpacesInPrefix) {
         this.allowSpacesInPrefix = allowSpacesInPrefix;
+        return this;
+    }
+
+    public String getDefaultFalseMethodName() {
+        return defaultFalseMethodName;
+    }
+
+    public KCommando setDefaultFalseMethodName(String defaultFalseMethodName) {
+        this.defaultFalseMethodName = defaultFalseMethodName;
         return this;
     }
 }

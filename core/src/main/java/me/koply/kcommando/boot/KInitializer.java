@@ -1,21 +1,21 @@
-package me.koply.kcommando;
+package me.koply.kcommando.boot;
 
+import me.koply.kcommando.KCommando;
 import me.koply.kcommando.internal.Kogger;
 import me.koply.kcommando.internal.annotations.HandleButton;
 import me.koply.kcommando.internal.annotations.HandleCommand;
-import me.koply.kcommando.internal.annotations.SimilarCallback;
 import me.koply.kcommando.internal.annotations.HandleSlash;
 import me.koply.kcommando.internal.boxes.*;
-import me.koply.kcommando.internal.util.PackageReader;
 import me.koply.kcommando.manager.ButtonManager;
 import me.koply.kcommando.manager.CommandManager;
 import me.koply.kcommando.manager.SlashManager;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,24 +25,15 @@ public class KInitializer {
     private final SlashManager slashManager;
     private final CommandManager commandManager;
     private final ButtonManager buttonManager;
+
+    private final AnnotationChecks annotationChecks;
+
     public KInitializer(KCommando main) {
         this.main = main;
         slashManager = new SlashManager();
         commandManager = new CommandManager(main);
         buttonManager = new ButtonManager();
-    }
-
-    private static class AnnotationBox {
-        public final BoxType type;
-        public final Annotation annotation;
-        public final Method method;
-        public final Class<?> clazz;
-        public AnnotationBox(BoxType type, Annotation annotation, Method method, Class<?> clazz) {
-            this.type = type;
-            this.annotation = annotation;
-            this.method = method;
-            this.clazz = clazz;
-        }
+        annotationChecks = new AnnotationChecks(main.integration);
     }
 
     /**
@@ -54,7 +45,7 @@ public class KInitializer {
             throw new IllegalArgumentException("Please add package path for search.");
         }
 
-        Set<Class<?>> classes = getClasses();
+        Set<Class<?>> classes = ClassLooter.getClasses(main.getPackagePaths());
         List<AnnotationBox> methods = getSuitableMethods(classes);
 
         // registers all boxes to handlers
@@ -121,6 +112,12 @@ public class KInitializer {
         commandManager.setSimilarCallback(similarBox);
     }
 
+    // internal
+    private void registerHandleFalseBox(Object instance, AnnotationBox box) {
+        FalseBox falseBox = new FalseBox(instance, box.method, box.clazz, box.type);
+        commandManager.falseBoxMap.put(box.method.getName(), falseBox);
+    }
+
     // private api
     private void registerBoxWithInstance(Object instance, AnnotationBox box) {
         if (box.type == BoxType.SLASH) {
@@ -129,8 +126,10 @@ public class KInitializer {
             registerCommandBox(instance, box);
         } else if (box.type == BoxType.BUTTON) {
             registerButtonBox(instance, box);
-        } else if (box.type.value > 8) {
+        } else if (box.type.value > 8 && box.type.value < 13) {
             registerSimilarBox(instance, box);
+        } else if (box.type.value >= 13) {
+            registerHandleFalseBox(instance, box);
         }
     }
 
@@ -172,110 +171,6 @@ public class KInitializer {
         return true;
     }
 
-    /**
-     * internal
-     * check list: return type, parameters (event, args, prefix)
-     * @param method to be checked
-     * @return if correct e-ea-eap[b] else unknown
-     */
-    private BoxType commandoCheck(Method method) {
-        Class<?> returnType = method.getReturnType();
-        boolean isboolean;
-        boolean isok = (isboolean = returnType == Boolean.TYPE) || returnType == Void.TYPE;
-        if (!isok) return BoxType.UNKNOWN;
-
-        BoxType type = BoxType.UNKNOWN;
-
-        Class<?>[] parameters = method.getParameterTypes();
-        if (parameters.length <= 3) {
-            boolean event = parameters[0].equals(main.integration.getMessageEventType());
-            if (!event) {
-                return BoxType.UNKNOWN;
-            } else if (parameters.length == 1) {
-                type = BoxType.COMMAND_E;
-            } else if (parameters.length == 2 && parameters[1].isArray()) {// args[] ??
-                type = BoxType.COMMAND_EA;
-            } else if (parameters.length == 3 && parameters[1].isArray() && parameters[2] == String.class) {
-                type = BoxType.COMMAND_EAP;
-            }
-        }
-
-        return isboolean && type != BoxType.UNKNOWN ? BoxType.fromValue(type.value+3) : type;
-    }
-
-    /**
-     * internal
-     * @param method to be checked
-     * @return returns true if method had correct parameter
-     */
-    private boolean slashCheck(Method method) {
-        Class<?>[] parameters = method.getParameterTypes();
-        return parameters[0].equals(main.integration.getSlashEventType());
-    }
-
-    /**
-     * internal
-     * @param method to be checked
-     * @return returns true if method had correct parameter
-     */
-    private boolean buttonCheck(Method method) {
-        Class<?>[] parameters = method.getParameterTypes();
-        return parameters[0].equals(main.integration.getButtonEventType());
-    }
-
-    private BoxType similarCallbackCheck(Method method) {
-        // event - Set<String> similars - String usedCommand
-        Parameter[] params = method.getParameters();
-        if (params.length < 2)
-            return null;
-
-        if (!params[0].getType().equals(main.integration.getMessageEventType()))
-            return null;
-
-        String typename = params[1].getParameterizedType().getTypeName();
-
-        boolean islist = typename.equals("java.util.List<java.lang.String>");
-        boolean isset = typename.equals("java.util.Set<java.lang.String>");
-
-        if (!(islist || isset))
-            return null;
-
-        int value = islist ? 9 : 10;
-
-        if (params.length == 3 && params[2].getType() == String.class)
-            value += 2;
-
-        return BoxType.fromValue(value);
-    }
-
-    // internal
-    private AnnotationBox annotationChecks(Method method) {
-        BoxType type = null;
-
-        Annotation commando = method.getAnnotation(HandleCommand.class);
-        Annotation slash = method.getAnnotation(HandleSlash.class);
-        Annotation button = method.getAnnotation(HandleButton.class);
-        Annotation sugg = method.getAnnotation(SimilarCallback.class);
-
-        Annotation ret = null;
-        if (commando != null) {
-            type = commandoCheck(method);
-            ret = commando;
-        } else if (slash != null) {
-            type = slashCheck(method) ? BoxType.SLASH : null;
-            ret = slash;
-        } else if (button != null) {
-            type = buttonCheck(method) ? BoxType.BUTTON : null;
-            ret = button;
-        } else if (sugg != null) {
-            type = similarCallbackCheck(method);
-            ret = sugg;
-        }
-
-        // commando - slash - button
-        return type == null ? null : new AnnotationBox(type, ret, method, method.getDeclaringClass());
-    }
-
     // internal
     private List<AnnotationBox> getMethodsFromClazz(Class<?> clazz) {
         // matching methods
@@ -283,10 +178,23 @@ public class KInitializer {
 
         Method[] methods = clazz.getMethods();
         for (Method method : methods) {
+            // we need at least 1 annotation to process method, if not we can continue
+            Annotation[] annotations = method.getDeclaredAnnotations();
+            if (annotations.length == 0) continue;
+
+            Class<? extends Annotation> annotationType = null;
+            for (Annotation ant : annotations) {
+                if (annotationChecks.list.containsKey(ant.annotationType())) {
+                    annotationType = ant.annotationType();
+                }
+            }
+
+            if (annotationType == null) continue;
+
             // checks the modifier is public or not
             // and gets the AnnotationBox
             AnnotationBox box;
-            if ((box = annotationChecks(method)) == null || !methodPreCheck(method)) {
+            if ((box = annotationChecks.check(method, annotationType)) == null || !methodPreCheck(method)) {
                 continue;
             }
             ret.add(box);
@@ -321,31 +229,6 @@ public class KInitializer {
         return ret;
     }
 
-    // private api method
-    private Set<Class<?>> getClasses() {
-        List<String> paths = main.getPackagePaths();
-        Set<Class<?>> classes = new HashSet<>();
-        for (String path : paths) {
-            Set<Class<?>> clazzez = getClassesFromPackage(path);
-            if (clazzez != null) classes.addAll(clazzez);
-        }
-        return classes;
-    }
 
-    // internal
-    private Set<Class<?>> getClassesFromPackage(String path) {
-        try {
-            Set<Class<?>> set = PackageReader.getAllClassesFromPackage(path);
-            if (KCommando.verbose) {
-                Kogger.info(set.size() + " class found from '" + path + "' package.");
-            }
-            return set;
-        } catch (IOException ex) {
-            Kogger.warn("An error occured while reading classes. Stacktrace: ");
-            ex.printStackTrace();
-        }
-
-        return null;
-    }
 
 }
