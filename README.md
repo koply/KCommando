@@ -1,7 +1,7 @@
 ![](http://image-write-app.herokuapp.com/?x=880&y=33&size=130&text=koply&url=https%3A%2F%2Fimage-write-app.herokuapp.com%2F%3Fx%3D45%26y%3D25%26size%3D150%26text%3DKCommando%26url%3Dhttps%3A%2F%2Fwww.afcapital.ru%2Fa%2Fpgs%2Fimages%2Fcontent-grid-bg.png)
 
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/koply/KCommando.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/koply/KCommando/context:java)
-[![Build Status](https://travis-ci.com/koply/kcommando.svg?branch=kcommando5)](https://travis-ci.com/koply/kcommando)
+[![Build Status](https://api.travis-ci.com/koply/KCommando.svg?branch=v5.0.0)](https://travis-ci.com/koply/kcommando)
 [![jitpack-version](https://jitpack.io/v/koply/KCommando.svg)](https://jitpack.io/#koply/KCommando)
 ![LICENSE](https://img.shields.io/github/license/koply/KCommando?style=flat)
 
