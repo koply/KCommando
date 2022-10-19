@@ -21,7 +21,9 @@ All these features have a modular structure and you can edit all of these module
    - [Command Suggestions](#how-to-use-suggested-commands)
    - [Custom Prefixes For Guilds](#how-to-use-custom-prefixes)
    - [CRON Service](#cron-service)
-8. [How To Install KCommando](#how-to-install)
+8. [How To Install](#how-to-install)
+   - [Maven](#with-maven)
+   - [Gradle](#with-gradle)
 9. [Example Projects](#example-repositories)
 	
 # KCommando Integrations
