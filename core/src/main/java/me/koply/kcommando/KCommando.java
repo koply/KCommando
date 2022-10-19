@@ -51,7 +51,7 @@ public class KCommando {
         return this;
     }
 
-    public void registerCommand(Object...customInstances) {
+    public void registerObject(Object...customInstances) {
         for (Object customInstance : customInstances) {
             if (verbose) Kogger.info("Registering a custom instance named as " + customInstance.getClass().getName());
             initializer.registerClass(customInstance);

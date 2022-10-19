@@ -10,6 +10,19 @@ Annotation-based multifunctional command handler framework for JDA & Javacord. K
 ## Features
 All these features have a modular structure and you can edit all of these modules and integrate them for your projects.
 1. [Integrations](#kcommando-integrations)
+2. [Creating Slash Command](#how-to-create-a-slash-command)
+3. [Handling Buttons](#how-to-handle-buttons)
+4. [Creating Classic Commands](#how-to-create-a-classic-command)
+5. [Parameterized Constructors](#how-to-use-parameterized-constructor)
+6. [Command Features](#command-features)
+   - [Command Method Types](#possible-command-methods)
+   - [Args and Prefix Parameters](#properties-of-the-args-and-prefix-parameters)
+7. [Cool Features](#cool-features)
+   - [Command Suggestions](#how-to-use-suggested-commands)
+   - [Custom Prefixes For Guilds](#how-to-use-custom-prefixes)
+   - [CRON Service](#cron-service)
+8. [How To Install KCommando](#how-to-install)
+9. [Example Projects](#example-repositories)
 	
 # KCommando Integrations
 
@@ -42,7 +55,7 @@ public class Main {
 
 That's it. Now, we can create slash commands or classic commands.
 
-### How To Create A Slash Command For JDA
+### How To Create A Slash Command
 You don't have to identify the `guildId`. If you don't, it will be a global command. Also options are optional. It's okay if the method is static. 
 
 ```java
@@ -72,7 +85,7 @@ public class MySlashCommands {
 }
 ```
 
-### How To Handle Buttons With KCommando
+### How To Handle Buttons
 ```java
 package com.example.mybot.buttons;
 
@@ -91,7 +104,7 @@ public class Hello {
 }
 ```
 
-### How To Create A Command For JDA
+### How To Create A Classic Command
 
 ```java
 package com.example.mybot.commands;
@@ -132,16 +145,65 @@ _Optionally you can use the class and handle method as *final* to reduce compile
 
 Aliases field can be an array: `aliases = {"ping", "pingu"}`
 
+## How To Use Parameterized Constructor
+```java
+package com.example.mybot;
+
+public class Example {
+    
+    // kcommando doesn't have a database manager
+    // this is example for how to use parameterized classes with kcommando
+    private final DatabaseManager databaseManager;
+    
+    public Example(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
+    }
+
+    @HandleCommand(name = "ListDatabase", aliases = {"db", "listdb"})
+    public void command(MessageReceivedEvent e) {
+        String example = databaseManager.query("SELECT * FROM logs");
+        // ...
+    } 
+}
+```
+
+```java
+package com.example.mybot;
+
+public class Main {
+    public void main(String[] args) throws Exception {
+        JDA jda = JDABuilder.createDefault("TOKEN").build();
+        jda.awaitReady();
+        
+        JDAIntegration integration = new JDAIntegration(jda);
+        KCommando kcommando = new KCommando(integration)
+                .setPackage("com.example.mybot") // package to analyze
+                .setPrefix("!")
+                .setVerbose(true)
+                .build();
+
+        DatabaseManager databaseManager = new DatabaseManager();
+        
+        // this class includes command
+        // kcommando will use this instance while executing the command
+        Example myObject = new Example(databaseManager);
+
+        // also you can do this before build the kcommando
+        kcommando.registerObject(myObject); // <--------
+    }
+}
+```
+
 # Command Features
 
-## Possible Handle Methods
+## Possible Command Methods
 
 You can use just one of these in your command class. Parameters will never be null. You don't need null checks.
 
 ```java
-<void/boolean> handle(<Event> e)
-<void/boolean> handle(<Event> e, String[] args)
-<void/boolean> handle(<Event> e, String[] args, String prefix)
+<void/boolean> commandMethod(<Event> e)
+<void/boolean> commandMethod(<Event> e, String[] args)
+<void/boolean> commandMethod(<Event> e, String[] args, String prefix)
 ```
 
 ### Properties of the *args* and *prefix* parameters
@@ -160,7 +222,6 @@ prefix: "!"
 
 This callback will be called with the suggestions list and the event object when an incorrect command is used.
 Currently, the suggestions are based on the JaroWrinklerDistance algorithm.
-You must change the `**event**` part according to the API you use.
 
 ```java
 package com.example.mybot;
