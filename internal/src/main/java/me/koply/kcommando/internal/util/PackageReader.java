@@ -16,8 +16,10 @@ public class PackageReader {
 
         Set<Class<?>> classSet = new HashSet<>();
         if (use == null) return classSet;
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(use));
+        
+        InputStreamReader isr = new InputStreamReader(use);
+       
+        BufferedReader reader = new BufferedReader(isr);
         String line;
         while ((line = reader.readLine()) != null) {
             if (line.endsWith(".class")) {
@@ -25,7 +27,8 @@ public class PackageReader {
                 if (clazz != null) classSet.add(clazz);
             }
         }
-
+        isr.close();
+        
         return classSet;
     }
 
