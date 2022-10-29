@@ -31,6 +31,7 @@ public class PackageReader {
                 if (clazz != null) classSet.add(clazz);
             }
         }
+        reader.close();
         isr.close();
         
         return classSet;
