@@ -13,7 +13,7 @@ import java.util.Set;
 
 public class KCommando {
 
-    public static final String VERSION = "5.0.0";
+    public static final String VERSION = "5.0.1";
 
     public final Integration integration;
     private final KInitializer initializer;
@@ -40,8 +40,8 @@ public class KCommando {
     private final Set<Long> ownerIds = new HashSet<>();
     private String prefix;
     private long cooldown;
-    private boolean useCaseSensitivity;
-    private boolean readBotMessages;
+    private boolean useCaseSensitivity = false;
+    private boolean readBotMessages = false;
     public boolean allowSpacesInPrefix = false;
     public static boolean verbose = false;
     private String defaultFalseMethodName = "-";
@@ -58,11 +58,11 @@ public class KCommando {
         }
     }
 
-    public List<String> getPackagePaths() {
+    public List<String> getPackages() {
         return packagePaths;
     }
 
-    public KCommando addPackagePath(String path) {
+    public KCommando addPackage(String path) {
         packagePaths.add(path);
         return this;
     }
@@ -105,8 +105,8 @@ public class KCommando {
         return useCaseSensitivity;
     }
 
-    public KCommando toggleCaseSensitivity() {
-        this.useCaseSensitivity = !this.useCaseSensitivity;
+    public KCommando setUseCaseSensitivity(boolean caseSensitivity) {
+        this.useCaseSensitivity = caseSensitivity;
         return this;
     }
 

@@ -7,7 +7,7 @@
     <parent>
         <artifactId>kcommando-root</artifactId>
         <groupId>me.koply</groupId>
-        <version>5.0.0</version>
+        <version>5.0.1</version>
     </parent>
 
     <artifactId>core</artifactId>
@@ -17,12 +17,6 @@
             <groupId>me.koply</groupId>
             <artifactId>internal</artifactId>
             <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20211205</version>
         </dependency>
     </dependencies>
 

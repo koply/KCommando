@@ -7,6 +7,7 @@ import me.koply.kcommando.integration.Integration;
 import me.koply.kcommando.integration.impl.javacord.listeners.ButtonListener;
 import me.koply.kcommando.integration.impl.javacord.listeners.CommandListener;
 import me.koply.kcommando.integration.impl.javacord.listeners.SlashListener;
+import me.koply.kcommando.internal.OptionType;
 import me.koply.kcommando.internal.annotations.HandleSlash;
 import me.koply.kcommando.internal.annotations.Option;
 import org.javacord.api.DiscordApi;
@@ -53,6 +54,8 @@ public class JavacordIntegration extends Integration {
         List<SlashCommandOption> optionList = new ArrayList<>();
 
         for (Option option : options) {
+            if (option.type() == OptionType.UNKNOWN) continue;
+
             String optionName = option.name();
             String optionDesc = option.desc();
             boolean req = option.required();

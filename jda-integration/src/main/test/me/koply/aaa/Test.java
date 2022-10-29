@@ -18,12 +18,11 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.jetbrains.annotations.NotNull;
 
-import javax.security.auth.login.LoginException;
 import java.util.List;
 
 public class Test extends ListenerAdapter {
 
-    public static void main(String[] args) throws LoginException, InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         String token = System.getenv("TOKEN");
         JDA jda = JDABuilder.createDefault(token)
                 .enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
@@ -37,12 +36,12 @@ public class Test extends ListenerAdapter {
         jda.addEventListener(app);
 
         new KCommando(new JDAIntegration(jda))
-                .addPackagePath(Test.class.getPackage().getName())
+                .addPackage(Test.class.getPackage().getName())
                 .setVerbose(true)
                 .setPrefix(".")
                 .setOwners(269140308208517130L)
                 .setCooldown(2000)
-                .toggleCaseSensitivity()
+                .setUseCaseSensitivity(false)
                 .setReadBotMessages(false)
                 .setAllowSpacesInPrefix(true)
                 .setDefaultFalseMethodName("defaultFalse")

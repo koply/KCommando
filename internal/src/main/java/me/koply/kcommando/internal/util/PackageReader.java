@@ -9,10 +9,14 @@ import java.util.Set;
 
 public class PackageReader {
 
+    // currently unavailable
+    // experimental package reader method (to be developed)
     // inspired from MaeveS2/SnowballNebula
     public static Set<Class<?>> getAllClassesFromPackage(String packagePath) throws IOException {
-        InputStream systemStream = ClassLoader.getSystemClassLoader().getResourceAsStream(packagePath.replaceAll("[.]", "/"));
-        InputStream use = systemStream == null ? PackageReader.class.getClassLoader().getResourceAsStream(packagePath.replaceAll("[.]", "/")) : systemStream;
+        InputStream use;
+        try (InputStream systemStream = ClassLoader.getSystemClassLoader().getResourceAsStream(packagePath.replaceAll("[.]", "/"))) {
+            use = systemStream == null ? PackageReader.class.getClassLoader().getResourceAsStream(packagePath.replaceAll("[.]", "/")) : systemStream;
+        }
 
         Set<Class<?>> classSet = new HashSet<>();
         if (use == null) return classSet;

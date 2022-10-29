@@ -9,8 +9,8 @@ import me.koply.kcommando.integration.impl.jda.listeners.ButtonListener;
 import me.koply.kcommando.integration.impl.jda.listeners.CommandListener;
 import me.koply.kcommando.integration.impl.jda.listeners.SlashListener;
 import me.koply.kcommando.internal.Kogger;
-import me.koply.kcommando.internal.annotations.Option;
 import me.koply.kcommando.internal.annotations.HandleSlash;
+import me.koply.kcommando.internal.annotations.Option;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -50,6 +50,7 @@ public class JDAIntegration extends Integration {
         Option[] options = info.options();
         OptionData[] optionDatas = new OptionData[options.length];
         for (int i = 0; i < options.length; i++) {
+            if (options[i].type() == me.koply.kcommando.internal.OptionType.UNKNOWN) continue;
             OptionType type = OptionType.fromKey(options[i].type().value);
             optionDatas[i] = new OptionData(type, options[i].name(), options[i].desc(), options[i].required());
         }

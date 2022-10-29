@@ -41,11 +41,11 @@ public class KInitializer {
      */
     public void build() {
         Kogger.info("Build start...");
-        if (main.getPackagePaths().isEmpty()) {
+        if (main.getPackages().isEmpty()) {
             throw new IllegalArgumentException("Please add package path for search.");
         }
 
-        Set<Class<?>> classes = ClassLooter.getClasses(main.getPackagePaths());
+        Set<Class<?>> classes = ClassLooter.getClasses(main.getPackages());
         List<AnnotationBox> methods = getSuitableMethods(classes);
 
         // registers all boxes to handlers

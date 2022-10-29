@@ -41,12 +41,12 @@ public class Main {
         JDAIntegration integration = new JDAIntegration(jda);
         
         KCommando kcommando = new KCommando(integration)
-              .setOwners("FIRST_OWNER_ID", "SECOND_OWNER_ID") // varargs
-              .setPackage("com.example.mybot") // package to analyze
+              .setOwners(00000000L, 00000000L) // varargs LONG
+              .addPackage("com.example.mybot") // package to analyze
               .setCooldown(5000L) // 5 seconds as 5000 ms
               .setPrefix("!")
               .setReadBotMessages(false) // default false
-              .toggleCaseSensitivity() // case sensitivity in all commands
+              .setUseCaseSensitivity(false) // default false
               .setAllowSpacesInPrefix(true) // default false
               .setDefaultFalseMethodName("defaultCallback")
               .setVerbose(true) // for logging
