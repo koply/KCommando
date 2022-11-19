@@ -14,6 +14,7 @@ public @interface HandleSlash {
     String name();
     String desc() default "-";
     Option[] options() default @Option(type = OptionType.UNKNOWN, name = "KCommando Default Option");
+    boolean enabledInDms() default false;
     boolean global() default false;
     long[] guildId() default 0;
 

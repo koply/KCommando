@@ -11,13 +11,17 @@ import me.koply.kcommando.integration.impl.jda.listeners.SlashListener;
 import me.koply.kcommando.internal.Kogger;
 import me.koply.kcommando.internal.annotations.HandleSlash;
 import me.koply.kcommando.internal.annotations.Option;
+import me.koply.kcommando.internal.boxes.SlashBox;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 public class JDAIntegration extends Integration {
 
@@ -42,7 +46,9 @@ public class JDAIntegration extends Integration {
     }
 
     @Override
-    public void registerSlashCommand(HandleSlash info) {
+    public void registerSlashCommand(SlashBox box) {
+        HandleSlash info = box.info;
+
         String name = info.name();
         String desc = info.desc();
         boolean isglobal = info.global();
@@ -54,8 +60,17 @@ public class JDAIntegration extends Integration {
             OptionType type = OptionType.fromKey(options[i].type().value);
             optionDatas[i] = new OptionData(type, options[i].name(), options[i].desc(), options[i].required());
         }
+
+        boolean guildOnly = !info.enabledInDms();
+
+        CommandData data = new CommandDataImpl(name, desc)
+                .addOptions(optionDatas)
+                .setGuildOnly(guildOnly);
+
+        box.getPerm().ifPresent(perm -> data.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Util.getPermissions(perm.value()))));
+
         if (isglobal) {
-            api.upsertCommand(name, desc).addOptions(optionDatas).queue();
+            api.upsertCommand(data).queue();
             return;
         }
 
@@ -66,12 +81,10 @@ public class JDAIntegration extends Integration {
             }
         } else for (long guildId : guildIds) {
             Guild guild = api.getGuildById(guildId);
-            if (guild == null) {
-                if (KCommando.verbose) {
-                    Kogger.warn("Guild not found for Slash Command named as " + name);
-                }
-            } else {
-                guild.upsertCommand(name, desc).addOptions(optionDatas).queue();
+            if (guild != null) {
+                guild.upsertCommand(data).queue();
+            } if (KCommando.verbose) {
+                Kogger.warn("Guild not found for Slash Command named as " + name);
             }
         }
     }

@@ -1,6 +1,8 @@
 package me.koply.kcommando.boot;
 
+import me.koply.kcommando.KCommando;
 import me.koply.kcommando.integration.Integration;
+import me.koply.kcommando.internal.Kogger;
 import me.koply.kcommando.internal.annotations.*;
 import me.koply.kcommando.internal.boxes.BoxType;
 
@@ -49,7 +51,12 @@ public class AnnotationChecks {
         Class<?> returnType = method.getReturnType();
         boolean isboolean;
         boolean isok = (isboolean = returnType == Boolean.TYPE) || returnType == Void.TYPE;
-        if (!isok) return BoxType.UNKNOWN;
+        if (!isok) {
+            if (KCommando.verbose) {
+                Kogger.info("The return type of " + method.getName() + " neither Boolean nor Void.");
+            }
+            return BoxType.UNKNOWN;
+        }
 
         BoxType type = BoxType.UNKNOWN;
 

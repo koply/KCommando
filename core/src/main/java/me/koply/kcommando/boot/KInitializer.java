@@ -74,7 +74,7 @@ public class KInitializer {
         HandleSlash ann = (HandleSlash) box.annotation;
         SlashBox slashBox = new SlashBox(instance, box.method, box.clazz, ann);
 
-        main.integration.registerSlashCommand(ann);
+        main.integration.registerSlashCommand(slashBox);
         slashManager.commands.put(ann.name(), slashBox);
     }
 
@@ -176,6 +176,7 @@ public class KInitializer {
         // matching methods
         List<AnnotationBox> ret = new ArrayList<>();
 
+        List<String> skippedMethods = new ArrayList<>();
         Method[] methods = clazz.getMethods();
         for (Method method : methods) {
             // we need at least 1 annotation to process method, if not we can continue
@@ -189,7 +190,12 @@ public class KInitializer {
                 }
             }
 
-            if (annotationType == null) continue;
+            if (annotationType == null) {
+                if (KCommando.verbose) {
+                    skippedMethods.add(method.getName());
+                }
+                continue;
+            }
 
             // checks the modifier is public or not
             // and gets the AnnotationBox
@@ -198,6 +204,10 @@ public class KInitializer {
                 continue;
             }
             ret.add(box);
+        }
+        if (KCommando.verbose) {
+            Kogger.info("The skipped methods at " + clazz.getName() + ": "
+                    + String.join(",", skippedMethods) + " (They don't have any appropriate annotation)");
         }
         return ret;
     }

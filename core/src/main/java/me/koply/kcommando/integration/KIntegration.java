@@ -3,7 +3,7 @@ package me.koply.kcommando.integration;
 import me.koply.kcommando.handler.ButtonClickHandler;
 import me.koply.kcommando.handler.CommandHandler;
 import me.koply.kcommando.handler.SlashCommandHandler;
-import me.koply.kcommando.internal.annotations.HandleSlash;
+import me.koply.kcommando.internal.boxes.SlashBox;
 
 public interface KIntegration {
 
@@ -11,7 +11,7 @@ public interface KIntegration {
     void registerSlashCommandHandler(SlashCommandHandler handler);
     void registerButtonClickHandler(ButtonClickHandler handler);
 
-    void registerSlashCommand(HandleSlash commandInfo);
+    void registerSlashCommand(SlashBox commandInfo);
 
     Class<?> getMessageEventType();
     Class<?> getSlashEventType();
