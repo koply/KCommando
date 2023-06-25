@@ -57,10 +57,10 @@ public class JDAIntegration extends Integration {
         Option[] options = info.options();
         OptionData[] optionDatas = new OptionData[options.length];
         int filledDatas = 0;
-        for (int i = 0; i < options.length; i++) {
-            if (options[i].type() == me.koply.kcommando.internal.OptionType.UNKNOWN) continue;
-            OptionType type = OptionType.fromKey(options[i].type().value);
-            optionDatas[i] = new OptionData(type, options[i].name(), options[i].desc(), options[i].required());
+        for (Option option : options) {
+            if (options[filledDatas].type() == me.koply.kcommando.internal.OptionType.UNKNOWN) continue;
+            OptionType type = OptionType.fromKey(option.type().value);
+            optionDatas[filledDatas] = new OptionData(type, option.name(), option.desc(), option.required());
             filledDatas++;
         }
 
