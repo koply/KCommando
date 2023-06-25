@@ -10,9 +10,9 @@
     <version>5.1.0</version>
 
     <scm>
-        <connection>scm:git:git://github.com/MusaBrt/KCommando.git</connection>
-        <developerConnection>scm:git:ssh://github.com/MusaBrt/KCommando.git</developerConnection>
-        <url>https://github.com/MusaBrt/KCommando</url>
+        <connection>scm:git:git://github.com/koply/KCommando.git</connection>
+        <developerConnection>scm:git:ssh://github.com/koply/KCommando.git</developerConnection>
+        <url>https://github.com/koply/KCommando</url>
     </scm>
     <modules>
         <module>all</module>
@@ -25,7 +25,7 @@
 
     <name>KCommando</name>
     <description>Annotation based command handler wrapper for JDA &amp; Javacord.</description>
-    <url>https://github.com/MusaBrt/KCommando</url>
+    <url>https://github.com/koply/KCommando</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

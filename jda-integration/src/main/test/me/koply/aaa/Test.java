@@ -86,6 +86,11 @@ public class Test extends ListenerAdapter {
         e.getHook().sendMessage("Bu bir cevap mı bilmiyorum. -> " + val).queue();
     }
 
+    @HandleSlash(name = "amogus", desc = "amogus", guildId = 674334330444709904L)
+    public static void nonoptions(SlashCommandInteractionEvent e) {
+        e.reply("yes man u got that").queue();
+    }
+
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         System.out.println("slash command timez " + event.getName() + " - " + event.getCommandId());

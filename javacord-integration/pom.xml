@@ -13,7 +13,7 @@
     <artifactId>javacord-integration</artifactId>
 
     <properties>
-        <javacord.version>3.7.0</javacord.version>
+        <javacord.version>3.8.0</javacord.version>
     </properties>
 
     <dependencies>

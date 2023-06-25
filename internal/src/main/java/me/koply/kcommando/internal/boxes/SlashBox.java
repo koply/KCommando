@@ -16,7 +16,8 @@ public class SlashBox extends Box {
     }
 
     public Optional<Perm> getPerm() {
-        return Optional.of(method.getAnnotation(Perm.class));
+        Perm annotation = method.getAnnotation(Perm.class);
+        return annotation == null ? Optional.empty() : Optional.of(annotation);
     }
 
 }

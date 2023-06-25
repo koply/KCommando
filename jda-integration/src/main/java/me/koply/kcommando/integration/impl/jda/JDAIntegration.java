@@ -31,6 +31,7 @@ public class JDAIntegration extends Integration {
         this.api = api;
     }
 
+    @Override
     public void registerCommandHandler(CommandHandler handler) {
         api.addEventListener(new CommandListener(handler));
     }
@@ -55,17 +56,22 @@ public class JDAIntegration extends Integration {
 
         Option[] options = info.options();
         OptionData[] optionDatas = new OptionData[options.length];
+        int filledDatas = 0;
         for (int i = 0; i < options.length; i++) {
             if (options[i].type() == me.koply.kcommando.internal.OptionType.UNKNOWN) continue;
             OptionType type = OptionType.fromKey(options[i].type().value);
             optionDatas[i] = new OptionData(type, options[i].name(), options[i].desc(), options[i].required());
+            filledDatas++;
         }
+
+        OptionData[] rolledOptionDatas = new OptionData[filledDatas];
+        System.arraycopy(optionDatas, 0, rolledOptionDatas, 0, filledDatas);
 
         boolean guildOnly = !info.enabledInDms();
 
         CommandData data = new CommandDataImpl(name, desc)
-                .addOptions(optionDatas)
-                .setGuildOnly(guildOnly);
+                .setGuildOnly(guildOnly)
+                .addOptions(rolledOptionDatas);
 
         box.getPerm().ifPresent(perm -> data.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Util.getPermissions(perm.value()))));
 
