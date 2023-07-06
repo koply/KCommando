@@ -4,6 +4,8 @@ import java.util.Arrays;
 
 public class StringUtil {
 
+    private StringUtil() {}
+
     /**
      * JaroWinklerDistance
      * Copied from https://commons.apache.org/sandbox/commons-text/jacoco/org.apache.commons.text.similarity/JaroWinklerDistance.java.html

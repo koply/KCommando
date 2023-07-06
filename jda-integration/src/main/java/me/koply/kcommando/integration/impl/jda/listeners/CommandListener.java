@@ -38,7 +38,7 @@ public class CommandListener extends ListenerAdapter implements AsyncCaller {
                 )) cooldownList.put(authorID, ms);
             });
         } catch (Exception ex) {
-            Kogger.warn("An error occured while processing a MessageReceivedEvent. Stacktrace:");
+            Kogger.warn("An error occurred while processing a MessageReceivedEvent. Stacktrace:");
             ex.printStackTrace();
         }
     }

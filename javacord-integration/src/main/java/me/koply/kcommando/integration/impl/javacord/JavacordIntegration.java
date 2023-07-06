@@ -30,6 +30,7 @@ import java.util.Optional;
 public class JavacordIntegration extends Integration {
 
     public final DiscordApi api;
+
     public JavacordIntegration(DiscordApi api) {
         super(api.getClientId());
         this.api = api;
@@ -56,7 +57,6 @@ public class JavacordIntegration extends Integration {
 
         String name = info.name();
         String desc = info.desc();
-        boolean isglobal = info.global();
 
         Option[] options = info.options();
         List<SlashCommandOption> optionList = new ArrayList<>();
@@ -79,7 +79,7 @@ public class JavacordIntegration extends Integration {
 
         box.getPerm().ifPresent(perm -> builder.setDefaultEnabledForPermissions(Util.getPermissions(perm.value())));
 
-        if (isglobal) {
+        if (info.global()) {
             builder.createGlobal(api).join();
             return;
         }

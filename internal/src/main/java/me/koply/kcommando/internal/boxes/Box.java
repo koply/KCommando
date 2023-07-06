@@ -8,7 +8,7 @@ public abstract class Box {
     public final Method method;
     public final Class<?> clazz;
 
-    public Box(Object instance, Method method, Class<?> clazz) {
+    protected Box(Object instance, Method method, Class<?> clazz) {
         this.instance = instance;
         this.method = method;
         this.clazz = clazz;

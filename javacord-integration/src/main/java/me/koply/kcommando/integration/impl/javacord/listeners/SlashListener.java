@@ -18,7 +18,7 @@ public class SlashListener implements SlashCommandCreateListener, AsyncCaller {
         try {
             executorService.submit(() -> handler.process(new SlashCommandHandler.Parameters(event, event.getSlashCommandInteraction().getCommandName())));
         } catch (Exception ex) {
-            Kogger.warn("An error occured while processing a SlashCommandCreateEvent. Stacktrace:");
+            Kogger.warn("An error occurred while processing a SlashCommandCreateEvent. Stacktrace:");
             ex.printStackTrace();
         }
     }

@@ -4,6 +4,8 @@ import org.javacord.api.entity.permission.PermissionType;
 
 public class Util {
 
+    private Util() {}
+
      public static PermissionType[] getPermissions(String[] values) {
         PermissionType[] ret = new PermissionType[values.length];
         PermissionType[] perms = PermissionType.values();

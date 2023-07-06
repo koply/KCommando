@@ -165,7 +165,6 @@ public class CommandHandler {
                 if (methodName == null) return true;
 
                 FalseBox fbox = options.falseBoxMap.get(methodName);
-                System.out.println(methodName);
                 if (fbox != null) {
                     if (KCommando.verbose) Kogger.info("Calling false method: " + methodName);
                     invoke(fbox.type.value, fbox.instance, fbox.method, p.event, cmdArgs, prefix);
@@ -197,7 +196,7 @@ public class CommandHandler {
                 Kogger.warn("An impossible situation happened.");
                 result = null;
         }} catch (InvocationTargetException | IllegalAccessException e) {
-            Kogger.warn("An error occured while handling the command. Stacktrace:");
+            Kogger.warn("An error occurred while handling the command. Stacktrace:");
             e.printStackTrace();
             result = null;
         }
