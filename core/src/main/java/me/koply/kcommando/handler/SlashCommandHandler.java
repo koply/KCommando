@@ -30,7 +30,7 @@ public class SlashCommandHandler {
         try {
             box.method.invoke(box.instance, p.event);
         } catch (InvocationTargetException | IllegalAccessException e) {
-            Kogger.warn("An error occured while handling a slash command. Stacktrace:");
+            Kogger.warn("An error occurred while handling a slash command. Stacktrace:");
             e.printStackTrace();
         }
     }

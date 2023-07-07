@@ -10,6 +10,8 @@ import java.util.*;
 
 public class ClassLooter {
 
+    private ClassLooter() {}
+
     public static Set<Class<?>> getClasses(List<String> paths) {
         Set<Class<?>> classes = new HashSet<>();
         paths.forEach(path -> classes.addAll(getClasses(path)));

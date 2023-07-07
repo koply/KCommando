@@ -40,7 +40,7 @@ public class CommandListener implements MessageCreateListener, AsyncCaller {
                if (result) cooldownList.put(authorID, ms);
             });
         } catch (Exception ex) {
-            Kogger.warn("An error occured while processing a MessageCreateEvent. Stacktrace:");
+            Kogger.warn("An error occurred while processing a MessageCreateEvent. Stacktrace:");
             ex.printStackTrace();
         }
     }

@@ -9,6 +9,8 @@ import java.util.Set;
 
 public class PackageReader {
 
+    private PackageReader() {}
+
     // currently unavailable
     // experimental package reader method (to be developed)
     // inspired from MaeveS2/SnowballNebula

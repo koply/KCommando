@@ -77,17 +77,17 @@ public class PluginManager<E> {
     }
 
     public void enablePlugins() {
-        final ArrayList<PluginFile<E>> toremove = new ArrayList<>();
+        final ArrayList<PluginFile<E>> toRemove = new ArrayList<>();
         for (PluginFile<E> plugin : plugins) {
             final String pluginName = plugin.getYml().getAttributes().get("name");
 
             Class<?> firstSuperClass = plugin.getMainClass().getSuperclass(); // like JDAPlugin and JavacordPlugin
             Class<?> secondSuperClass = firstSuperClass.getSuperclass(); // for JavaPlugin from JDAPlugin
-            boolean isOkey = firstSuperClass == JavaPlugin.class || secondSuperClass == JavaPlugin.class;
+            boolean isOk = firstSuperClass == JavaPlugin.class || secondSuperClass == JavaPlugin.class;
 
-            if (!isOkey) {
+            if (!isOk) {
                 logger.warning(pluginName + " could not be enabled. Main class is not extends JavaPlugin.");
-                toremove.add(plugin);
+                toRemove.add(plugin);
                 continue;
             }
 
@@ -106,13 +106,13 @@ public class PluginManager<E> {
                 plugin.setInstance(instance);
             } catch (Exception e) {
                 logger.warning(pluginName + " could not be enabled.");
-                toremove.add(plugin);
+                toRemove.add(plugin);
             }
         }
 
         PluginCargo.setDelivery(null);
 
-        for (PluginFile<E> b : toremove) {
+        for (PluginFile<E> b : toRemove) {
             plugins.remove(b);
         }
     }

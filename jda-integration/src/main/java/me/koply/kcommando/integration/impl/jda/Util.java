@@ -4,6 +4,8 @@ import net.dv8tion.jda.api.Permission;
 
 public class Util {
 
+    private Util() {}
+
     public static Permission[] getPermissions(String[] values) {
         Permission[] ret = new Permission[values.length];
         Permission[] perms = Permission.values();

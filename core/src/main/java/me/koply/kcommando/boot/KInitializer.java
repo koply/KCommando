@@ -83,10 +83,10 @@ public class KInitializer {
         HandleCommand ann = (HandleCommand) box.annotation;
 
         int type = box.type.value;
-        boolean isboolean = type > 3;
+        boolean isBoolean = type > 3;
         CommandBox commandBox = new CommandBox(instance, box.method, box.clazz,
                 CommandBox.CommandType.fromBoxType(type),
-                isboolean ? CommandBox.ReturnType.BOOLEAN : CommandBox.ReturnType.VOID, ann);
+                isBoolean ? CommandBox.ReturnType.BOOLEAN : CommandBox.ReturnType.VOID, ann);
 
         for (String alias : ann.aliases()) {
             commandManager.commands.put(alias, commandBox);

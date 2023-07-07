@@ -49,9 +49,9 @@ public class AnnotationChecks {
      */
     private BoxType commandoCheck(Method method) {
         Class<?> returnType = method.getReturnType();
-        boolean isboolean;
-        boolean isok = (isboolean = returnType == Boolean.TYPE) || returnType == Void.TYPE;
-        if (!isok) {
+        boolean isBoolean = returnType.equals(Boolean.TYPE);
+        boolean isOk = isBoolean || returnType == Void.TYPE;
+        if (!isOk) {
             if (KCommando.verbose) {
                 Kogger.info("The return type of " + method.getName() + " neither Boolean nor Void.");
             }
@@ -74,7 +74,7 @@ public class AnnotationChecks {
             }
         }
 
-        return isboolean && type != BoxType.UNKNOWN ? BoxType.fromValue(type.value+3) : type;
+        return isBoolean && type != BoxType.UNKNOWN ? BoxType.fromValue(type.value+3) : type;
     }
 
     /**
@@ -108,13 +108,13 @@ public class AnnotationChecks {
 
         String typename = params[1].getParameterizedType().getTypeName();
 
-        boolean islist = typename.equals("java.util.List<java.lang.String>");
-        boolean isset = typename.equals("java.util.Set<java.lang.String>");
+        boolean isList = typename.equals("java.util.List<java.lang.String>");
+        boolean isSet = typename.equals("java.util.Set<java.lang.String>");
 
-        if (!(islist || isset))
+        if (!(isList || isSet))
             return null;
 
-        int value = islist ? 9 : 10;
+        int value = isList ? 9 : 10;
 
         if (params.length == 3 && params[2].getType() == String.class)
             value += 2;

@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 
 public class Kogger {
 
+    private Kogger() {}
+
     private static final Logger LOGGER;
     static {
         LOGGER = Logger.getLogger("KCommando");
@@ -17,8 +19,8 @@ public class Kogger {
         ConsoleHandler consoleHandler = new ConsoleHandler();
         consoleHandler.setFormatter(new Formatter() {
             private final DateFormat formatter = new SimpleDateFormat("HH:mm:ss.SSS");
-            public String format(LogRecord record) {
-                return String.format("[%s %s] %s -> %s\n", formatter.format(new Date(record.getMillis())), record.getLevel(), record.getLoggerName(), record.getMessage());
+            public String format(LogRecord logRecord) {
+                return String.format("[%s %s] %s -> %s%n", formatter.format(new Date(logRecord.getMillis())), logRecord.getLevel(), logRecord.getLoggerName(), logRecord.getMessage());
             }
         });
         LOGGER.addHandler(consoleHandler);

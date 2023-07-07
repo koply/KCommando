@@ -7,13 +7,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LightYML {
-    private boolean Ok = true;
+    private boolean ok = true;
 
     private final Map<String, String> attributes = new HashMap<>();
     public LightYML(final InputStream fileInputStream) {
         try {
-            final InputStreamReader isreader = new InputStreamReader(fileInputStream);
-            final BufferedReader reader = new BufferedReader(isreader);
+            final InputStreamReader isReader = new InputStreamReader(fileInputStream);
+            final BufferedReader reader = new BufferedReader(isReader);
 
             String line;
             while ((line = reader.readLine()) != null) {
@@ -21,11 +21,11 @@ public class LightYML {
                 attributes.put(sided[0].trim(), sided[1].trim());
             }
 
-            isreader.close();
+            isReader.close();
             reader.close();
         } catch (Exception e) {
             e.printStackTrace();
-            Ok = false;
+            ok = false;
         }
     }
 
@@ -34,7 +34,7 @@ public class LightYML {
     }
 
     public final boolean isOk() {
-        return Ok && attributes.containsKey("main");
+        return ok && attributes.containsKey("main");
     }
 
     /* Example plugin.yml

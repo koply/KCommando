@@ -19,7 +19,7 @@ public class SlashListener extends ListenerAdapter implements AsyncCaller {
         try {
             executorService.submit(() -> handler.process(new SlashCommandHandler.Parameters(event, event.getName())));
         } catch (Exception ex) {
-            Kogger.warn("An error occured while processing a SlashCommandEvent. Stacktrace:");
+            Kogger.warn("An error occurred while processing a SlashCommandEvent. Stacktrace:");
             ex.printStackTrace();
         }
     }

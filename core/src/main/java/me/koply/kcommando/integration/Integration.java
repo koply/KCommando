@@ -40,7 +40,7 @@ public abstract class Integration implements KIntegration {
             temp.remove(prefix);
             return temp;
         });
-        if (customGuildPrefixes.get(guildID).size() == 0) customGuildPrefixes.remove(guildID);
+        if (customGuildPrefixes.get(guildID).isEmpty()) customGuildPrefixes.remove(guildID);
     }
     /**
      * Removes guild from the custom prefix map
