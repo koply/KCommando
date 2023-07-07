@@ -89,7 +89,8 @@ public class JDAIntegration extends Integration {
             Guild guild = api.getGuildById(guildId);
             if (guild != null) {
                 guild.upsertCommand(data).queue();
-            } else if (KCommando.verbose) {
+            }
+            if (KCommando.verbose) {
                 Kogger.warn("Guild not found for Slash Command named as " + name);
             }
         }
