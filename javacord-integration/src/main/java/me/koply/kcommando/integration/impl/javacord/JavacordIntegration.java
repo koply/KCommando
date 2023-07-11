@@ -8,8 +8,10 @@ import me.koply.kcommando.integration.Integration;
 import me.koply.kcommando.integration.impl.javacord.listeners.ButtonListener;
 import me.koply.kcommando.integration.impl.javacord.listeners.CommandListener;
 import me.koply.kcommando.integration.impl.javacord.listeners.SlashListener;
+import me.koply.kcommando.internal.DefaultConstants;
 import me.koply.kcommando.internal.Kogger;
 import me.koply.kcommando.internal.OptionType;
+import me.koply.kcommando.internal.annotations.Choice;
 import me.koply.kcommando.internal.annotations.HandleSlash;
 import me.koply.kcommando.internal.annotations.Option;
 import me.koply.kcommando.internal.boxes.SlashBox;
@@ -18,10 +20,7 @@ import org.javacord.api.entity.server.Server;
 import org.javacord.api.event.interaction.ButtonClickEvent;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.event.message.MessageCreateEvent;
-import org.javacord.api.interaction.SlashCommand;
-import org.javacord.api.interaction.SlashCommandBuilder;
-import org.javacord.api.interaction.SlashCommandOption;
-import org.javacord.api.interaction.SlashCommandOptionType;
+import org.javacord.api.interaction.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,9 +66,32 @@ public class JavacordIntegration extends Integration {
             String optionName = option.name();
             String optionDesc = option.desc();
             boolean req = option.required();
+            Choice[] choices = option.choices();
+            SlashCommandOptionChoiceBuilder[] choiceBuilders = new SlashCommandOptionChoiceBuilder[choices.length];
+            int filledChoices = 0;
+
+            for (Choice choice : choices) {
+                // NOT EQUALS, WE NEED TO CHECK OBJECT EQUALITY
+                if (DefaultConstants.DEFAULT_TEXT == choice.name() &&
+                        DefaultConstants.DEFAULT_TEXT == choice.value()) {
+                    continue;
+                }
+
+                choiceBuilders[filledChoices] = new SlashCommandOptionChoiceBuilder()
+                        .setName(choice.name())
+                        .setValue(choice.value());
+                filledChoices++;
+            }
+
+            boolean isNeededToCopy = filledChoices != choiceBuilders.length;
+            SlashCommandOptionChoiceBuilder[] rolledChoiceBuilders = isNeededToCopy ? new SlashCommandOptionChoiceBuilder[filledChoices] : choiceBuilders;
+
+            if (isNeededToCopy) {
+                System.arraycopy(choiceBuilders, 0, rolledChoiceBuilders, 0, filledChoices);
+            }
 
             SlashCommandOptionType type = SlashCommandOptionType.fromValue(option.type().value);
-            SlashCommandOption javacordOption = SlashCommandOption.createWithChoices(type, optionName, optionDesc, req);
+            SlashCommandOption javacordOption = SlashCommandOption.createWithChoices(type, optionName, optionDesc, req, rolledChoiceBuilders);
 
             optionList.add(javacordOption);
         }

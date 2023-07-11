@@ -1,5 +1,6 @@
 package me.koply.kcommando.internal.annotations;
 
+import me.koply.kcommando.internal.DefaultConstants;
 import me.koply.kcommando.internal.OptionType;
 
 import java.lang.annotation.ElementType;
@@ -15,5 +16,6 @@ public @interface Option {
     String name();
     String desc() default "-";
     boolean required() default false;
+    Choice[] choices() default @Choice(name = DefaultConstants.DEFAULT_TEXT, value = DefaultConstants.DEFAULT_TEXT);
 
 }

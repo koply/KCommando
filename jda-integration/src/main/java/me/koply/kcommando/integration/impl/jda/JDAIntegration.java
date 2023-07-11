@@ -8,7 +8,9 @@ import me.koply.kcommando.integration.Integration;
 import me.koply.kcommando.integration.impl.jda.listeners.ButtonListener;
 import me.koply.kcommando.integration.impl.jda.listeners.CommandListener;
 import me.koply.kcommando.integration.impl.jda.listeners.SlashListener;
+import me.koply.kcommando.internal.DefaultConstants;
 import me.koply.kcommando.internal.Kogger;
+import me.koply.kcommando.internal.annotations.Choice;
 import me.koply.kcommando.internal.annotations.HandleSlash;
 import me.koply.kcommando.internal.annotations.Option;
 import me.koply.kcommando.internal.boxes.SlashBox;
@@ -17,6 +19,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -61,11 +64,27 @@ public class JDAIntegration extends Integration {
             if (options[filledDatas].type() == me.koply.kcommando.internal.OptionType.UNKNOWN) continue;
             OptionType type = OptionType.fromKey(option.type().value);
             optionDatas[filledDatas] = new OptionData(type, option.name(), option.desc(), option.required());
+
+            Choice[] choices = option.choices();
+
+            for (Choice choice : choices) {
+                // NOT EQUALS, WE NEED TO CHECK OBJECT EQUALITY
+                if (DefaultConstants.DEFAULT_TEXT == choice.name() &&
+                        DefaultConstants.DEFAULT_TEXT == choice.value()) {
+                    continue;
+                }
+
+                optionDatas[filledDatas].addChoice(choice.name(), choice.value());
+            }
+
             filledDatas++;
         }
+        boolean isNeededToCopy = filledDatas != optionDatas.length;
+        OptionData[] rolledOptionDatas = isNeededToCopy ? new OptionData[filledDatas] : optionDatas;
 
-        OptionData[] rolledOptionDatas = new OptionData[filledDatas];
-        System.arraycopy(optionDatas, 0, rolledOptionDatas, 0, filledDatas);
+        if (isNeededToCopy) {
+            System.arraycopy(optionDatas, 0, rolledOptionDatas, 0, filledDatas);
+        }
 
         boolean guildOnly = !info.enabledInDms();
 
@@ -73,7 +92,9 @@ public class JDAIntegration extends Integration {
                 .setGuildOnly(guildOnly)
                 .addOptions(rolledOptionDatas);
 
-        box.getPerm().ifPresent(perm -> data.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Util.getPermissions(perm.value()))));
+        box.getPerm().ifPresent(perm ->
+                data.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Util.getPermissions(perm.value())))
+        );
 
         if (isglobal) {
             api.upsertCommand(data).queue();

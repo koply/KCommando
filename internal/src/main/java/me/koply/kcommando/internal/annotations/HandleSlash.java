@@ -1,5 +1,6 @@
 package me.koply.kcommando.internal.annotations;
 
+import me.koply.kcommando.internal.DefaultConstants;
 import me.koply.kcommando.internal.OptionType;
 
 import java.lang.annotation.ElementType;
@@ -13,7 +14,7 @@ public @interface HandleSlash {
 
     String name();
     String desc() default "-";
-    Option[] options() default @Option(type = OptionType.UNKNOWN, name = "KCommando Default Option");
+    Option[] options() default @Option(type = OptionType.UNKNOWN, name = DefaultConstants.DEFAULT_TEXT);
     boolean enabledInDms() default false;
     boolean global() default false;
     long[] guildId() default 0;
