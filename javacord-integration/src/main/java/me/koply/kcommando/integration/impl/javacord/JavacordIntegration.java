@@ -101,16 +101,10 @@ public class JavacordIntegration extends Integration {
 
         box.getPerm().ifPresent(perm -> builder.setDefaultEnabledForPermissions(Util.getPermissions(perm.value())));
 
-        if (isglobal) {
-            builder.createGlobal(api).join();
-            return;
-        }
-
         long[] guildIds = info.guildId();
         if (guildIds[0] == 0) {
-            if (KCommando.verbose) {
-                Kogger.warn("The Slash Command named as " + name + " is not global. At the same time it doesn't have guildId. This command cannot be register to Discord.");
-            }
+            if (KCommando.verbose) Kogger.info("The SlashCommand that named as '" + name + "' is upserted as global command.");
+            builder.createGlobal(api).join();
         } else for (long guildId : guildIds) {
             Optional<Server> server =  api.getServerById(guildId);
             if (server.isPresent()) {

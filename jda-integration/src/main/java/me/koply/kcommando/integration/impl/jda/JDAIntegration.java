@@ -96,16 +96,10 @@ public class JDAIntegration extends Integration {
                 data.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Util.getPermissions(perm.value())))
         );
 
-        if (isglobal) {
-            api.upsertCommand(data).queue();
-            return;
-        }
-
         long[] guildIds = info.guildId();
         if (guildIds[0] == 0) {
-            if (KCommando.verbose) {
-                Kogger.warn("The Slash Command named as " + name + " is not global. At the same time it doesn't have guildId. This command cannot be register to Discord.");
-            }
+            if (KCommando.verbose) Kogger.info("The SlashCommand that named as '" + name + "' is upserted as global command.");
+            api.upsertCommand(data).queue();
         } else for (long guildId : guildIds) {
             Guild guild = api.getGuildById(guildId);
             if (guild != null) {
