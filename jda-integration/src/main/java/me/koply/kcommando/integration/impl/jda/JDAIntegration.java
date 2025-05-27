@@ -19,16 +19,23 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 public class JDAIntegration extends Integration {
 
     public final JDA api;
+    private final List<CommandDataImpl> registeredSubCommandGroups = new ArrayList<>();
+
     public JDAIntegration(JDA api) {
         super(api.getSelfUser().getIdLong());
         this.api = api;
@@ -49,6 +56,10 @@ public class JDAIntegration extends Integration {
         api.addEventListener(new ButtonListener(handler));
     }
 
+    public void addSubCommandGroup(CommandDataImpl group) {
+        registeredSubCommandGroups.add(group);
+    }
+
     @Override
     public void registerSlashCommand(SlashBox box) {
         HandleSlash info = box.info;
@@ -56,6 +67,8 @@ public class JDAIntegration extends Integration {
         String name = info.name();
         String desc = info.desc();
         boolean isglobal = info.global();
+        boolean subCommand = info.subCommand();
+        String parent = info.parentGroup();
 
         Option[] options = info.options();
         OptionData[] optionDatas = new OptionData[options.length];
@@ -88,24 +101,50 @@ public class JDAIntegration extends Integration {
 
         boolean guildOnly = !info.enabledInDms();
 
-        CommandData data = new CommandDataImpl(name, desc)
-                .setGuildOnly(guildOnly)
-                .addOptions(rolledOptionDatas);
+        CommandData commandData;
+        SubcommandData subcommandData;
+
+        if (subCommand) {
+            Optional<CommandDataImpl> registeredGroup = registeredSubCommandGroups.stream()
+                    .filter(registered -> registered.getName().equals(parent))
+                    .findFirst();
+
+            if (registeredGroup.isPresent()) {
+                CommandDataImpl found = registeredGroup.get();
+
+                subcommandData = new SubcommandData(name, desc);
+                found.addSubcommands(subcommandData);
+
+                commandData = found;
+            } else {
+                throw new NoSuchElementException("No group with that name is registered. Please register that group first!");
+            }
+        } else {
+            commandData = new CommandDataImpl(name, desc)
+                    .setGuildOnly(guildOnly)
+                    .addOptions(rolledOptionDatas);
+        }
 
         box.getPerm().ifPresent(perm ->
-                data.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Util.getPermissions(perm.value())))
+                commandData.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Util.getPermissions(perm.value())))
         );
 
         long[] guildIds = info.guildId();
         if (guildIds[0] == 0) {
-            if (KCommando.verbose) Kogger.info("The SlashCommand that named as '" + name + "' is upserted as global command.");
-            api.upsertCommand(data).queue();
+            if (KCommando.verbose)
+                Kogger.info("The SlashCommand that named as '" + name + "' is upserted as global command.");
+            api.upsertCommand(commandData).queue();
         } else for (long guildId : guildIds) {
             Guild guild = api.getGuildById(guildId);
             if (guild != null) {
-                guild.upsertCommand(data).queue();
-            } if (KCommando.verbose) {
-                Kogger.warn("Guild not found for Slash Command named as " + name);
+                guild.upsertCommand(commandData).queue();
+                if (KCommando.verbose) {
+                    Kogger.info("The SlashCommand that named as '" + name + "' is upserted as a guild command for guild '" + guildId + "'");
+                }
+            } else {
+                if (KCommando.verbose) {
+                    Kogger.warn("Guild not found for Slash Command named as " + name);
+                }
             }
         }
     }

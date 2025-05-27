@@ -13,10 +13,19 @@ import java.lang.annotation.Target;
 public @interface HandleSlash {
 
     String name();
+
     String desc() default "-";
+
     Option[] options() default @Option(type = OptionType.UNKNOWN, name = DefaultConstants.DEFAULT_TEXT);
+
     boolean enabledInDms() default false;
+
     boolean global() default false;
+
     long[] guildId() default 0;
+
+    boolean subCommand() default false;
+
+    String parentGroup() default "";
 
 }

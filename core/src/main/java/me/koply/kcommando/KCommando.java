@@ -17,6 +17,7 @@ public class KCommando {
 
     public final Integration integration;
     private final KInitializer initializer;
+
     public KCommando(Integration integration) {
         this.integration = integration;
         this.initializer = new KInitializer(this);
@@ -28,7 +29,8 @@ public class KCommando {
         try {
             Constructor<? extends KInitializer> constructor = customInitializer.getDeclaredConstructor(KCommando.class);
             temp = constructor.newInstance(this);
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
+                 IllegalAccessException e) {
             Kogger.warn("Initializer field cannot set to the custom initializer class. KCommando will use the default KInitializer.");
             temp = new KInitializer(this);
         }
@@ -51,7 +53,7 @@ public class KCommando {
         return this;
     }
 
-    public void registerObject(Object...customInstances) {
+    public void registerObject(Object... customInstances) {
         for (Object customInstance : customInstances) {
             if (verbose) Kogger.info("Registering a custom instance named as " + customInstance.getClass().getName());
             initializer.registerClass(customInstance);
@@ -71,7 +73,7 @@ public class KCommando {
         return ownerIds;
     }
 
-    public KCommando setOwners(long...ids) {
+    public KCommando setOwners(long... ids) {
         for (long id : ids) {
             ownerIds.add(id);
         }
