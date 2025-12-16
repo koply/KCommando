@@ -11,7 +11,7 @@ public class AnnotationBox {
     public final Annotation annotation;
     public final Method method;
     public final Class<?> clazz;
-    public AnnotationBox(BoxType type, Annotation annotation, Method method, Class<?> clazz) {
+    public AnnotationBox(final BoxType type, final Annotation annotation, final Method method, final Class<?> clazz) {
         this.type = type;
         this.annotation = annotation;
         this.method = method;

@@ -13,7 +13,7 @@ import java.util.Map;
 public class CommandManager extends Manager {
 
     private final KCommando main;
-    public CommandManager(KCommando main) {
+    public CommandManager(final KCommando main) {
         this.main = main;
     }
 
@@ -21,18 +21,18 @@ public class CommandManager extends Manager {
     public final Map<String, FalseBox> falseBoxMap = new HashMap<>(); // handleFalseMethodName, falseBox
     private SimilarBox similarBox;
 
-    public void setSimilarCallback(SimilarBox box) {
+    public void setSimilarCallback(final SimilarBox box) {
         this.similarBox = box;
     }
 
     @Override
-    public void registerManager(KIntegration integration) {
-        CommandHandler.Options options = new CommandHandler.Options(main.integration,
-                main.getPrefix(), main.getCooldown(),
-                main.isUseCaseSensitivity(), main.isReadBotMessages(), main.isAllowSpacesInPrefix(),
-                main.getOwnerIds(), falseBoxMap, main.getDefaultFalseMethodName());
-        CommandHandler handler = new CommandHandler(commands, options);
-        handler.setSimilarBox(similarBox);
+    public void registerManager(final KIntegration integration) {
+        final CommandHandler.Options options = new CommandHandler.Options(this.main.integration,
+                this.main.getPrefix(), this.main.getCooldown(),
+                this.main.isUseCaseSensitivity(), this.main.isReadBotMessages(), this.main.isAllowSpacesInPrefix(),
+                this.main.getOwnerIds(), this.falseBoxMap, this.main.getDefaultFalseMethodName());
+        final CommandHandler handler = new CommandHandler(this.commands, options);
+        handler.setSimilarBox(this.similarBox);
 
         integration.registerCommandHandler(handler);
     }

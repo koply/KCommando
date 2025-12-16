@@ -3,7 +3,11 @@ package me.koply.kcommando.boot;
 import me.koply.kcommando.KCommando;
 import me.koply.kcommando.integration.Integration;
 import me.koply.kcommando.internal.Kogger;
-import me.koply.kcommando.internal.annotations.*;
+import me.koply.kcommando.internal.annotations.HandleButton;
+import me.koply.kcommando.internal.annotations.HandleCommand;
+import me.koply.kcommando.internal.annotations.HandleFalse;
+import me.koply.kcommando.internal.annotations.HandleSlash;
+import me.koply.kcommando.internal.annotations.SimilarCallback;
 import me.koply.kcommando.internal.boxes.BoxType;
 
 import java.lang.annotation.Annotation;
@@ -18,24 +22,24 @@ public class AnnotationChecks {
     private final Integration integration;
     public final Map<Class<? extends Annotation>, Function<Method, BoxType>> list = new HashMap<>();
 
-    public AnnotationChecks(Integration integration) {
+    public AnnotationChecks(final Integration integration) {
         this.integration = integration;
-        list.put(HandleCommand.class, this::commandoCheck);
-        list.put(HandleSlash.class, method1 -> slashCheck(method1) ? BoxType.SLASH : null);
-        list.put(HandleButton.class, method1 -> buttonCheck(method1) ? BoxType.BUTTON : null);
-        list.put(SimilarCallback.class, this::similarCallbackCheck);
-        list.put(HandleFalse.class, method1 -> {
-            int val = commandoCheck(method1).value; // checks are equal so we could use this
-            int increment = val > 3 ? 9 : 12; // command type to handlefalsetype
+        this.list.put(HandleCommand.class, this::commandoCheck);
+        this.list.put(HandleSlash.class, method1 -> this.slashCheck(method1) ? BoxType.SLASH : null);
+        this.list.put(HandleButton.class, method1 -> this.buttonCheck(method1) ? BoxType.BUTTON : null);
+        this.list.put(SimilarCallback.class, this::similarCallbackCheck);
+        this.list.put(HandleFalse.class, method1 -> {
+            final int val = this.commandoCheck(method1).value; // checks are equal so we could use this
+            final int increment = val > 3 ? 9 : 12; // command type to handlefalsetype
             return BoxType.fromValue(val + increment);
         });
     }
 
-    public AnnotationBox check(Method method, Class<? extends Annotation> annotationType) {
+    public AnnotationBox check(final Method method, final Class<? extends Annotation> annotationType) {
 
-        Annotation annotation = method.getAnnotation(annotationType);
-        Function<Method, BoxType> checkFunc = list.get(annotationType);
-        BoxType type = checkFunc.apply(method);
+        final Annotation annotation = method.getAnnotation(annotationType);
+        final Function<Method, BoxType> checkFunc = this.list.get(annotationType);
+        final BoxType type = checkFunc.apply(method);
 
         // commando - slash - button
         return type == null ? null : new AnnotationBox(type, annotation, method, method.getDeclaringClass());
@@ -47,11 +51,11 @@ public class AnnotationChecks {
      * @param method to be checked
      * @return if correct e-ea-eap[b] else unknown
      */
-    private BoxType commandoCheck(Method method) {
-        Class<?> returnType = method.getReturnType();
-        boolean isboolean;
-        boolean isok = (isboolean = returnType == Boolean.TYPE) || returnType == Void.TYPE;
-        if (!isok) {
+    private BoxType commandoCheck(final Method method) {
+        final Class<?> returnType = method.getReturnType();
+        final boolean isBoolean = returnType == Boolean.TYPE;
+        final boolean isSuitable = isBoolean || returnType == Void.TYPE;
+        if (!isSuitable) {
             if (KCommando.verbose) {
                 Kogger.info("The return type of " + method.getName() + " neither Boolean nor Void.");
             }
@@ -60,9 +64,9 @@ public class AnnotationChecks {
 
         BoxType type = BoxType.UNKNOWN;
 
-        Class<?>[] parameters = method.getParameterTypes();
+        final Class<?>[] parameters = method.getParameterTypes();
         if (parameters.length <= 3) {
-            boolean event = parameters[0].equals(integration.getMessageEventType());
+            final boolean event = parameters[0].equals(this.integration.getMessageEventType());
             if (!event) {
                 return BoxType.UNKNOWN;
             } else if (parameters.length == 1) {
@@ -74,7 +78,7 @@ public class AnnotationChecks {
             }
         }
 
-        return isboolean && type != BoxType.UNKNOWN ? BoxType.fromValue(type.value+3) : type;
+        return isBoolean && type != BoxType.UNKNOWN ? BoxType.fromValue(type.value+3) : type;
     }
 
     /**
@@ -82,9 +86,9 @@ public class AnnotationChecks {
      * @param method to be checked
      * @return returns true if method had correct parameter
      */
-    private boolean slashCheck(Method method) {
-        Class<?>[] parameters = method.getParameterTypes();
-        return parameters[0].equals(integration.getSlashEventType());
+    private boolean slashCheck(final Method method) {
+        final Class<?>[] parameters = method.getParameterTypes();
+        return parameters[0].equals(this.integration.getSlashEventType());
     }
 
     /**
@@ -92,24 +96,24 @@ public class AnnotationChecks {
      * @param method to be checked
      * @return returns true if method had correct parameter
      */
-    private boolean buttonCheck(Method method) {
-        Class<?>[] parameters = method.getParameterTypes();
-        return parameters[0].equals(integration.getButtonEventType());
+    private boolean buttonCheck(final Method method) {
+        final Class<?>[] parameters = method.getParameterTypes();
+        return parameters[0].equals(this.integration.getButtonEventType());
     }
 
-    private BoxType similarCallbackCheck(Method method) {
+    private BoxType similarCallbackCheck(final Method method) {
         // event - Set<String> similars - String usedCommand
-        Parameter[] params = method.getParameters();
+        final Parameter[] params = method.getParameters();
         if (params.length < 2)
             return null;
 
-        if (!params[0].getType().equals(integration.getMessageEventType()))
+        if (!params[0].getType().equals(this.integration.getMessageEventType()))
             return null;
 
-        String typename = params[1].getParameterizedType().getTypeName();
+        final String typename = params[1].getParameterizedType().getTypeName();
 
-        boolean islist = typename.equals("java.util.List<java.lang.String>");
-        boolean isset = typename.equals("java.util.Set<java.lang.String>");
+        final boolean islist = typename.equals("java.util.List<java.lang.String>");
+        final boolean isset = typename.equals("java.util.Set<java.lang.String>");
 
         if (!(islist || isset))
             return null;

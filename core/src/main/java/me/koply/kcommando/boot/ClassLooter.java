@@ -6,16 +6,23 @@ import me.koply.kcommando.internal.Kogger;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ClassLooter {
 
-    public static Set<Class<?>> getClasses(List<String> paths) {
-        Set<Class<?>> classes = new HashSet<>();
+    private ClassLooter() {
+    }
+
+    public static Set<Class<?>> getClasses(final List<String> paths) {
+        final Set<Class<?>> classes = new HashSet<>();
         paths.forEach(path -> classes.addAll(getClasses(path)));
 
         if (KCommando.verbose) {
-            String packages = paths.size() > 1 ? String.join("-", paths) : paths.get(0);
+            final String packages = paths.size() > 1 ? String.join("-", paths) : paths.get(0);
             Kogger.info("Given packages are: [" + packages + "]");
             Kogger.info(classes.size() + " class found.");
         }
@@ -26,25 +33,25 @@ public class ClassLooter {
     /**
      * https://stackoverflow.com/questions/520328/can-you-find-all-classes-in-a-package-using-reflection
      */
-    private static Set<Class<?>> getClasses(String packageName) {
-        Set<Class<?>> classes = new HashSet<>();
+    private static Set<Class<?>> getClasses(final String packageName) {
+        final Set<Class<?>> classes = new HashSet<>();
 
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         assert classLoader != null;
-        String path = packageName.replace('.', '/');
+        final String path = packageName.replace('.', '/');
         try {
-            Enumeration<URL> resources = classLoader.getResources(path);
-            List<File> dirs = new ArrayList<>();
+            final Enumeration<URL> resources = classLoader.getResources(path);
+            final List<File> dirs = new ArrayList<>();
             while (resources.hasMoreElements()) {
-                URL resource = resources.nextElement();
+                final URL resource = resources.nextElement();
                 dirs.add(new File(resource.getFile()));
             }
-            for (File directory : dirs) {
+            for (final File directory : dirs) {
                 classes.addAll(findClasses(directory, packageName));
             }
-        } catch (IOException exception) {
+        } catch (final IOException exception) {
             Kogger.warn("Resources couldn't be read. Package: " + packageName);
-        } catch (ClassNotFoundException exception) {
+        } catch (final ClassNotFoundException exception) {
             Kogger.warn("An error occur while reading a class at the '" + packageName + "' package.");
         }
         return classes;
@@ -53,15 +60,15 @@ public class ClassLooter {
     /**
      * https://stackoverflow.com/questions/520328/can-you-find-all-classes-in-a-package-using-reflection
      */
-    private static List<Class<?>> findClasses(File directory, String packageName) throws ClassNotFoundException {
-        List<Class<?>> classes = new ArrayList<>();
+    private static List<Class<?>> findClasses(final File directory, final String packageName) throws ClassNotFoundException {
+        final List<Class<?>> classes = new ArrayList<>();
         if (!directory.exists()) {
             return classes;
         }
-        File[] files = directory.listFiles();
+        final File[] files = directory.listFiles();
         if (files == null) return classes;
 
-        for (File file : files) {
+        for (final File file : files) {
             if (file.isDirectory()) {
                 assert !file.getName().contains(".");
                 classes.addAll(findClasses(file, packageName + "." + file.getName()));

@@ -11,13 +11,13 @@ public class ButtonManager extends Manager {
 
     private final ButtonClickHandler handler;
     public ButtonManager() {
-        handler = new ButtonClickHandler(buttons);
+        this.handler = new ButtonClickHandler(this.buttons);
     }
 
     public final Map<String, ButtonBox> buttons = new HashMap<>();
 
     @Override
-    public void registerManager(KIntegration integration) {
-        integration.registerButtonClickHandler(handler);
+    public void registerManager(final KIntegration integration) {
+        integration.registerButtonClickHandler(this.handler);
     }
 }

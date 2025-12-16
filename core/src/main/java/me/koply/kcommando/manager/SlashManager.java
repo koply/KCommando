@@ -11,13 +11,13 @@ public class SlashManager extends Manager {
 
     private final SlashCommandHandler handler;
     public SlashManager() {
-        handler = new SlashCommandHandler(commands);
+        this.handler = new SlashCommandHandler(this.commands);
     }
 
     public final Map<String, SlashBox> commands = new HashMap<>();
 
     @Override
-    public void registerManager(KIntegration integration) {
-        integration.registerSlashCommandHandler(handler);
+    public void registerManager(final KIntegration integration) {
+        integration.registerSlashCommandHandler(this.handler);
     }
 }

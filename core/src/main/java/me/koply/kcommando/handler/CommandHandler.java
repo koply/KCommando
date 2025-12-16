@@ -11,7 +11,6 @@ import me.koply.kcommando.internal.util.StringUtil;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.ConcurrentMap;
 
 public class CommandHandler {
 
@@ -26,9 +25,9 @@ public class CommandHandler {
         public final Map<String, FalseBox> falseBoxMap;
         public final String defaultFalseName;
 
-        public Options(Integration integration, String prefix, long cooldown,
-                       boolean useCaseSensitivity, boolean readBotMessages, boolean isAllowSpacesInPrefix,
-                       Set<Long> ownerIds, Map<String, FalseBox> falseBoxMap, String defaultFalseName) {
+        public Options(final Integration integration, final String prefix, final long cooldown,
+                       final boolean useCaseSensitivity, final boolean readBotMessages, final boolean isAllowSpacesInPrefix,
+                       final Set<Long> ownerIds, final Map<String, FalseBox> falseBoxMap, final String defaultFalseName) {
             this.integration = integration;
             this.prefix = prefix;
             this.cooldown = cooldown;
@@ -44,7 +43,7 @@ public class CommandHandler {
     public final Map<String, CommandBox> commands;
     public final CommandHandler.Options options;
 
-    public CommandHandler(Map<String, CommandBox> commands, CommandHandler.Options options) {
+    public CommandHandler(final Map<String, CommandBox> commands, final CommandHandler.Options options) {
         this.commands = commands;
         this.options = options;
         this.customPrefixes = options.integration.getCustomGuildPrefixes();
@@ -54,7 +53,7 @@ public class CommandHandler {
     private SimilarBox similarBox; // getter setter
 
     // guildID, prefixes
-    private final ConcurrentMap<Long, Set<String>> customPrefixes;
+    private final Map<Long, Set<String>> customPrefixes;
 
     // userID's
     private final Set<Long> blacklistedUsers;
@@ -67,9 +66,9 @@ public class CommandHandler {
         public final String guildName;
         public final long guildID;
 
-        public Parameters(Object event, String userName,
-                          long userID, String rawCommand,
-                          String guildName, long guildID) {
+        public Parameters(final Object event, final String userName,
+                          final long userID, final String rawCommand,
+                          final String guildName, final long guildID) {
             this.event = event;
             this.userName = userName;
             this.userID = userID;
@@ -79,12 +78,12 @@ public class CommandHandler {
         }
     }
 
-    private void callSimilarCallback(Object event, SimilarBox box, String command) {
+    private void callSimilarCallback(final Object event, final SimilarBox box, final String command) {
         if (box == null) return;
-        AbstractCollection<String> list = box.listType == SimilarBox.SimilarListType.LIST ? new ArrayList<>() : new HashSet<>();
+        final AbstractCollection<String> list = box.listType == SimilarBox.SimilarListType.LIST ? new ArrayList<>() : new HashSet<>();
 
-        for (Map.Entry<String, CommandBox> entry : commands.entrySet()) {
-            double similarity = StringUtil.similarity(entry.getKey(), command);
+        for (final Map.Entry<String, CommandBox> entry : this.commands.entrySet()) {
+            final double similarity = StringUtil.similarity(entry.getKey(), command);
             if (similarity >= 0.5) {
                 list.add(entry.getKey());
             }
@@ -95,7 +94,7 @@ public class CommandHandler {
                 box.method.invoke(box.instance, event, list, command);
             else
                 box.method.invoke(box.instance, event, list);
-        } catch (InvocationTargetException | IllegalAccessException e) {
+        } catch (final InvocationTargetException | IllegalAccessException e) {
             Kogger.warn("An error occur while calling similar callback. Stacktrace:");
             e.printStackTrace();
         }
@@ -106,36 +105,36 @@ public class CommandHandler {
      * @param guildID guild id for check prefix
      * @return if prefix correct returns prefix's length.
      */
-    protected int checkPrefix(String commandRaw, long guildID) {
-        Set<String> prefixes = customPrefixes.get(guildID);
+    protected int checkPrefix(final String commandRaw, final long guildID) {
+        final Set<String> prefixes = this.customPrefixes.get(guildID);
         if (prefixes != null) {
-            for (String prefix : prefixes)
+            for (final String prefix : prefixes)
                 if (commandRaw.startsWith(prefix))
                     return prefix.length();
-        } else if (commandRaw.startsWith(options.prefix)) {
-            return options.prefix.length();
+        } else if (commandRaw.startsWith(this.options.prefix)) {
+            return this.options.prefix.length();
         }
         return -1;
     }
 
-    public boolean process(Parameters p) {
-        long authorID = p.userID;
-        if (blacklistedUsers.contains(authorID)) return false;
+    public boolean process(final Parameters p) {
+        final long authorID = p.userID;
+        if (this.blacklistedUsers.contains(authorID)) return false;
 
-        String rawCommand = p.rawCommand;
-        int resultPrefix = checkPrefix(rawCommand, p.guildID);
+        final String rawCommand = p.rawCommand;
+        final int resultPrefix = this.checkPrefix(rawCommand, p.guildID);
         if (resultPrefix == -1) return false;
 
-        String[] cmdArgs = rawCommand.substring(resultPrefix).split(" ");
+        final String[] cmdArgs = rawCommand.substring(resultPrefix).split(" ");
 
         if (KCommando.verbose)
             Kogger.info(String.format("Command received | User: %s | Guild: %s | Command: %s", p.userName, p.guildName, rawCommand));
 
-        String command = options.useCaseSensitivity ? cmdArgs[0] : cmdArgs[0].toLowerCase(Locale.ROOT);
-        CommandBox box = commands.get(command);
+        final String command = this.options.useCaseSensitivity ? cmdArgs[0] : cmdArgs[0].toLowerCase(Locale.ROOT);
+        final CommandBox box = this.commands.get(command);
 
         if (box == null) {
-            callSimilarCallback(p.event, similarBox, command);
+            this.callSimilarCallback(p.event, this.similarBox, command);
             return false;
         }
 
@@ -143,7 +142,7 @@ public class CommandHandler {
             return false;
         }
 
-        if (box.annotation.ownerOnly() && !options.ownerIds.contains(p.userID)) {
+        if (box.annotation.ownerOnly() && !this.options.ownerIds.contains(p.userID)) {
             return false;
         }
 
@@ -151,24 +150,23 @@ public class CommandHandler {
             return false;
         }
 
-        String prefix = rawCommand.substring(0,resultPrefix);
+        final String prefix = rawCommand.substring(0,resultPrefix);
 
-        Object result = invoke((box.commandType.ordinal()+1), box.instance, box.method, p.event, cmdArgs, prefix);
+        final Object invokeResult = this.invoke((box.commandType.ordinal()+1), box.instance, box.method, p.event, cmdArgs, prefix);
 
-        if (result instanceof Boolean) {
-            boolean booleanResult = (boolean) result;
-            if (!booleanResult) {
-                String methodName = box.annotation.falseMethod().equals("-")
-                        ? (options.defaultFalseName.equals("-") ? null : options.defaultFalseName)
+        if (invokeResult instanceof Boolean) {
+            if (!((boolean) invokeResult)) {
+                final String methodName = box.annotation.falseMethod().equals("-")
+                        ? (this.options.defaultFalseName.equals("-") ? null : this.options.defaultFalseName)
                         : box.annotation.falseMethod();
 
                 if (methodName == null) return true;
 
-                FalseBox fbox = options.falseBoxMap.get(methodName);
+                final FalseBox fbox = this.options.falseBoxMap.get(methodName);
                 System.out.println(methodName);
                 if (fbox != null) {
                     if (KCommando.verbose) Kogger.info("Calling false method: " + methodName);
-                    invoke(fbox.type.value, fbox.instance, fbox.method, p.event, cmdArgs, prefix);
+                    this.invoke(fbox.type.value, fbox.instance, fbox.method, p.event, cmdArgs, prefix);
                 }
             }
         }
@@ -176,12 +174,12 @@ public class CommandHandler {
         return true;
     }
 
-    private Object invoke(int invokeValue, Object obj, Method method, Object...params) {
+    private Object invoke(final int invokeValue, final Object obj, final Method method, final Object...params) {
         // 1,2,3 - 13,14,15 | possible values from BoxType.java
         // 1 -> E
         // 2 -> EA
         // 3 converts to 0 -> EAP
-        int val = invokeValue % 3;
+        final int val = invokeValue % 3;
         Object result;
         try { switch (val) {
             case 0:
@@ -196,7 +194,7 @@ public class CommandHandler {
             default:
                 Kogger.warn("An impossible situation happened.");
                 result = null;
-        }} catch (InvocationTargetException | IllegalAccessException e) {
+        }} catch (final InvocationTargetException | IllegalAccessException e) {
             Kogger.warn("An error occured while handling the command. Stacktrace:");
             e.printStackTrace();
             result = null;
@@ -205,7 +203,7 @@ public class CommandHandler {
         return result;
     }
 
-    public void setSimilarBox(SimilarBox similarBox) {
+    public void setSimilarBox(final SimilarBox similarBox) {
         this.similarBox = similarBox;
     }
 }

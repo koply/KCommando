@@ -8,8 +8,8 @@ import java.util.Map;
 
 public class SlashCommandHandler {
 
-    private final Map<String, SlashBox> commands;
-    public SlashCommandHandler(Map<String, SlashBox> commands) {
+    private final Map<String, ? extends SlashBox> commands;
+    public SlashCommandHandler(final Map<String, ? extends SlashBox> commands) {
         this.commands = commands;
     }
 
@@ -17,19 +17,19 @@ public class SlashCommandHandler {
         public final Object event;
         public final String name;
 
-        public Parameters(Object event, String name) {
+        public Parameters(final Object event, final String name) {
             this.event = event;
             this.name = name;
         }
     }
 
-    public void process(Parameters p) {
-        SlashBox box = commands.get(p.name);
+    public void process(final Parameters p) {
+        final SlashBox box = this.commands.get(p.name);
         if (box == null) return;
 
         try {
             box.method.invoke(box.instance, p.event);
-        } catch (InvocationTargetException | IllegalAccessException e) {
+        } catch (final InvocationTargetException | IllegalAccessException e) {
             Kogger.warn("An error occured while handling a slash command. Stacktrace:");
             e.printStackTrace();
         }
